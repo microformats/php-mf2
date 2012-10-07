@@ -7,6 +7,7 @@ use DOMDocument,
 	DOMXPath,
 	DOMNode,
 	DOMNodeList,
+	DateTime,
 	Exception;
 
 class Parser
@@ -309,13 +310,20 @@ class Parser
 		// Get current µf name
 		$mfName = Parser::mfNameFromElement($e);
 		
-		echo '<div style="border-left: 2px black solid; padding-left: 1em;"><h3>Handling ' . $mfName . '</h3>';
+		// Initalise var to store the representation in
+		$return = array();
+		
+		// DEBUG
+		//echo '<div style="border-left: 2px black solid; padding-left: 1em;"><h3>Handling ' . $mfName . '</h3>';
 		
 		// Handle nested microformats (h-*)
 		foreach ($this -> xpath -> query('.//*[contains(@class,"h-")]', $e) as $subMF)
 		{
 			// Parse
 			$result = $this -> parseH($subMF);
+			
+			// Add the value to the array for this property type
+			$return[Parser::mfNameFromElement($subMF)][] = $result;
 			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$subMF -> setAttribute('data-h-parsed', 'true');
@@ -328,7 +336,12 @@ class Parser
 			
 			$pValue = $this -> parseP($p);
 			
-			echo '<p><b>' . Parser::mfNameFromElement($p, 'p-') . '</b> (plaintext): ' . $pValue;
+			// Add the value to the array for this property type
+			$return[Parser::mfNameFromElement($p, 'p-')][] = $pValue;
+			
+			// DEBUG
+			//echo '<p><b>' . Parser::mfNameFromElement($p, 'p-') . '</b> (plaintext): ' . $pValue;
+			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$p -> setAttribute('data-p-parsed', 'true');
 		}
@@ -340,7 +353,12 @@ class Parser
 			
 			$uValue = $this -> parseU($u);
 			
-			echo '<p><b>' . Parser::mfNameFromElement($u, 'u-') . '</b> (URL): ' . $uValue;
+			// Add the value to the array for this property type
+			$return[Parser::mfNameFromElement($u, 'u-')][] = $uValue;
+			
+			// DEBUG
+			//echo '<p><b>' . Parser::mfNameFromElement($u, 'u-') . '</b> (URL): ' . $uValue;
+			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$u -> setAttribute('data-u-parsed', 'true');
 		}
@@ -354,7 +372,11 @@ class Parser
 			
 			if ($dtValue)
 			{
-				echo '<p><b>' . Parser::mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
+				// Add the value to the array for this property type
+				$return[Parser::mfNameFromElement($dt, 'dt-')][] = $dtValue -> format(\DateTime::ISO8601);
+			
+				// DEBUG
+				// echo '<p><b>' . Parser::mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$dt -> setAttribute('data-dt-parsed', 'true');
@@ -369,13 +391,23 @@ class Parser
 			
 			if ($eValue)
 			{
-				echo '<p><b>' . Parser::mfNameFromElement($em, 'e-') . '</b> (Embedded): <code>' . htmlspecialchars($eValue) . '</code>';
+				// Add the value to the array for this property type
+				$return[Parser::mfNameFromElement($em, 'e-')][] = $eValue;
+				
+				// DEBUG
+				// echo '<p><b>' . Parser::mfNameFromElement($em, 'e-') . '</b> (Embedded): <code>' . htmlspecialchars($eValue) . '</code>';
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$em -> setAttribute('data-e-parsed', 'true');
 		}
 		
-		echo '</div>';
+		// DEBUG
+		//echo '</div>';
+		
+		// TODO: Any post-processing which needs to happen?
+		
+		// Return the representation of the µf
+		return $return;
 	}
 
 	/**
@@ -383,11 +415,18 @@ class Parser
 	 */
 	public function parse()
 	{
+		$mfs = array();
+		
 		foreach ($this -> xpath -> query('//*[contains(@class,"h-")]') as $node)
 		{
 			// For each microformat
 			$result = $this -> parseH($node);
+			
+			// Add the value to the array for this property type
+			$mfs[Parser::mfNameFromElement($node)][] = $result;
 		}
+		
+		return $mfs;
 	}
 }
 
