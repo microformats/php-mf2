@@ -96,4 +96,8 @@ TODO: Write up as prose
 
 ## Testing
 
-Tests have yet to be written (yes, wrong way round, I know). I’m planning on adding various tests based on real-world µf2 usage, as well as at least some of the [value-class pattern tests](http://microformats.org/wiki/value-class-pattern-tests)
+Tests are written in phpunit and are contained within `/tests/`. Running <kbd>phpunit .</kbd> from the root dir will run them.
+
+Sanity-checks of the basic parsing functions are within `ParserTest.php`, and are organised into groups for each property type.
+
+Some of the [value-class pattern tests](http://microformats.org/wiki/value-class-pattern-tests) are contained within `ValueClassTest.php`
