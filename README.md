@@ -75,10 +75,10 @@ mf2\Parser::parse() returns an associative array. The output pattern at any leve
 
 Different µf-2 property types are returned as different types.
 
-* `h-\*` are associative arrays containing more properties
-* `p-\*` and `u-` are returned as whitespace-trimmed strings
-* `dt-\*` are returned as \DateTime objects
-* `e-\*` are returned as **non HTML encoded** strings of markup representing the `innerHTML` of the element classed as `e-\*`
+* `h-*` are associative arrays containing more properties
+* `p-*` and `u-` are returned as whitespace-trimmed strings
+* `dt-*` are returned as \DateTime objects
+* `e-*` are returned as **non HTML encoded** strings of markup representing the `innerHTML` of the element classed as `e-*`
 
 ### Security
 
