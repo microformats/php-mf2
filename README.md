@@ -5,9 +5,9 @@ php-mf2 is a generic [microformats-2](http://microformats.org/wiki/microformats-
 
 ## Installation
 
-Install with [Composer](http://getcomposer.org) by adding `"mf2\mf2": "*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
+Install with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
 
-php-mf2 is not yet versioned, so you’ll have to either specify `"minimum-stability": "dev"` or `"mf2\mf2": "dev-master"`.
+php-mf2 is not yet versioned, so you’ll have to either specify `"minimum-stability": "dev"` or `"mf2/mf2": "dev-master"`.
 
 ## Usage
 
