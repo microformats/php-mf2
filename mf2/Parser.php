@@ -52,7 +52,7 @@ class Parser
 	 *	Given the value of @class, get the relevant mf classname.
 	 *	Matches the first if there are multiple.
 	 */
-	function mfNameFromClass($class, $prefix='h-')
+	static function mfNameFromClass($class, $prefix='h-')
 	{
 		$classes = explode(' ', $class);
 		foreach ($classes as $classname)
@@ -68,16 +68,16 @@ class Parser
 	/**
 	 *	Wraps mf_name_from_class to handle an element as input (common)
 	 */
-	function mfNameFromElement(\DOMElement $e, $prefix='h-')
+	static function mfNameFromElement(\DOMElement $e, $prefix='h-')
 	{
 		$class = $e -> getAttribute('class');
-		return mfNameFromClass($class, $prefix);
+		return Parser::mfNameFromClass($class, $prefix);
 	}
 	
 	/**
 	 *	Checks to see if a DOMElement has already been parsed
 	 */
-	function mfElementParsed(\DOMElement $e, $type)
+	static function mfElementParsed(\DOMElement $e, $type)
 	{
 		return ($e -> getAttribute('data-' . $type . '-parsed') == 'true');
 	}
@@ -86,7 +86,7 @@ class Parser
 	/**
 	 *	Given an element with class="p-*", get it’s value
 	 */
-	function parseP(\DOMElement $p)
+	public function parseP(\DOMElement $p)
 	{
 		if ($p -> tagName == 'img')
 		{
@@ -108,7 +108,7 @@ class Parser
 	/**
 	 *	Given an element with class="u-*", get the value of the URL
 	 */
-	function parseU(\DOMElement $u)
+	public function parseU(\DOMElement $u)
 	{
 		if ($u -> tagName == 'a' and $u -> getAttribute('href') !== null)
 		{
@@ -137,7 +137,7 @@ class Parser
 	/**
 	 *	Given an element with class="dt-*", get the value of the datetime as a php date object
 	 */
-	function parseDT(\DOMElement $dt)
+	public function parseDT(\DOMElement $dt)
 	{
 		// TODO: check for value-title pattern (http://microformats.org/wiki/vcp#Parsing_value_from_a_title_attribute)
 		
@@ -288,7 +288,7 @@ class Parser
 	/**
 	 *	Given the root element of some embedded markup, return a string representing that markup
 	 */
-	function parseE(\DOMElement $e)
+	public function parseE(\DOMElement $e)
 	{
 		$return = '';
 		foreach ($e -> childNodes as $node)
@@ -301,13 +301,13 @@ class Parser
 	/**
 	 *	Recursively parse microformats
 	 */
-	function parseH(\DOMElement $e)
+	public function parseH(\DOMElement $e)
 	{
 		// If it’s already been parsed (e.g. is a child mf), skip
-		if (mfElementParsed($e, 'h')) return false;
+		if (Parser::mfElementParsed($e, 'h')) return false;
 		
 		// Get current µf name
-		$mfName = mfNameFromElement($e);
+		$mfName = Parser::mfNameFromElement($e);
 		
 		echo '<div style="border-left: 2px black solid; padding-left: 1em;"><h3>Handling ' . $mfName . '</h3>';
 		
@@ -315,7 +315,7 @@ class Parser
 		foreach ($this -> xpath -> query('.//*[contains(@class,"h-")]', $e) as $subMF)
 		{
 			// Parse
-			$result = parseH($subMF);
+			$result = $this -> parseH($subMF);
 			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$subMF -> setAttribute('data-h-parsed', 'true');
@@ -324,11 +324,11 @@ class Parser
 		// Handle p-*
 		foreach ($this -> xpath -> query('.//*[contains(@class,"p-")]', $e) as $p)
 		{
-			if (mfElementParsed($p, 'p')) continue;
+			if (Parser::mfElementParsed($p, 'p')) continue;
 			
-			$pValue = parseP($p);
+			$pValue = $this -> parseP($p);
 			
-			echo '<p><b>' . mfNameFromElement($p, 'p-') . '</b> (plaintext): ' . $pValue;
+			echo '<p><b>' . Parser::mfNameFromElement($p, 'p-') . '</b> (plaintext): ' . $pValue;
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$p -> setAttribute('data-p-parsed', 'true');
 		}
@@ -336,11 +336,11 @@ class Parser
 		// Handle u-*
 		foreach ($this -> xpath -> query('.//*[contains(@class,"u-")]', $e) as $u)
 		{
-			if (mfElementParsed($u, 'u')) continue;
+			if (Parser::mfElementParsed($u, 'u')) continue;
 			
-			$uValue = parseU($u);
+			$uValue = $this -> parseU($u);
 			
-			echo '<p><b>' . mfNameFromElement($u, 'u-') . '</b> (URL): ' . $uValue;
+			echo '<p><b>' . Parser::mfNameFromElement($u, 'u-') . '</b> (URL): ' . $uValue;
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$u -> setAttribute('data-u-parsed', 'true');
 		}
@@ -348,13 +348,13 @@ class Parser
 		// Handle dt-*
 		foreach ($this -> xpath -> query('.//*[contains(@class,"dt-")]', $e) as $dt)
 		{
-			if (mfElementParsed($dt, 'dt')) continue;
+			if (Parser::mfElementParsed($dt, 'dt')) continue;
 			
-			$dtValue = parseDT($dt);
+			$dtValue = $this -> parseDT($dt);
 			
 			if ($dtValue)
 			{
-				echo '<p><b>' . mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
+				echo '<p><b>' . Parser::mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$dt -> setAttribute('data-dt-parsed', 'true');
@@ -363,13 +363,13 @@ class Parser
 		// TODO: Handle e-* (em)
 		foreach ($this -> xpath -> query('.//*[contains(@class,"e-")]', $e) as $em)
 		{
-			if (mfElementParsed($em, 'e')) continue;
+			if (Parser::mfElementParsed($em, 'e')) continue;
 			
-			$eValue = parseE($em);
+			$eValue = $this -> parseE($em);
 			
 			if ($eValue)
 			{
-				echo '<p><b>' . mfNameFromElement($em, 'e-') . '</b> (Embedded): <code>' . htmlspecialchars($eValue) . '</code>';
+				echo '<p><b>' . Parser::mfNameFromElement($em, 'e-') . '</b> (Embedded): <code>' . htmlspecialchars($eValue) . '</code>';
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$em -> setAttribute('data-e-parsed', 'true');
@@ -386,7 +386,7 @@ class Parser
 		foreach ($this -> xpath -> query('//*[contains(@class,"h-")]') as $node)
 		{
 			// For each microformat
-			$result = parseH($node);
+			$result = $this -> parseH($node);
 		}
 	}
 }
