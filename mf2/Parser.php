@@ -181,19 +181,19 @@ class Parser
 				{
 					// Use @alt
 					$alt = $e -> getAttribute('alt');
-					if (!empty($alt)) $dateParts[] = $datetime;
+					if (!empty($alt)) $dateParts[] = $alt;
 				}
 				elseif ($e -> tagName == 'data')
 				{
 					// Use @value, otherwise innertext
 					$value = $e -> hasAttribute('value') ? $e -> getAttribute('value') : trim($e -> nodeValue);
-					if (!empty($value)) $dateParts[] = $datetime;
+					if (!empty($value)) $dateParts[] = $value;
 				}
 				elseif ($e -> tagName == 'abbr')
 				{
 					// Use @title, otherwise innertext
 					$title = $e -> hasAttribute('title') ? $e -> getAttribute('title') : trim($e -> nodeValue);
-					if (!empty($title)) $dateParts[] = $datetime;
+					if (!empty($title)) $dateParts[] = $title;
 				}
 				elseif ($e -> tagName == 'del' or $e -> tagName == 'ins' or $e -> tagName == 'time')
 				{
@@ -223,7 +223,7 @@ class Parser
 				else
 				{
 					// Is the current part a valid time(+TZ?) AND no other time reprentation has been found?
-					if (preg_match('/\d{2}:\d{2}(Z?[+|-]\d{2}:?\d{2})?/', $part) and empty($timePart))
+					if ((preg_match('/\d{2}:\d{2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart))
 					{
 						$timePart = $part;
 					}
