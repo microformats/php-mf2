@@ -82,7 +82,7 @@ Different µf-2 property types are returned as different types.
 
 ### Security
 
-**Little to no filtering of content takes place in mf2\Parser, so treat it’s output as you would any untrusted data from the source of the parsed document**
+**Little to no filtering of content takes place in mf2\Parser, so treat its output as you would any untrusted data from the source of the parsed document**
 
 ## Parsing Behaviour
 
