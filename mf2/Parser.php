@@ -24,7 +24,7 @@ class Parser
 	
 	/**
 	 *	Constructor
-	 *	@param mixed $input Could be a string URL (TODO), a string of DOM or a DOMDocument
+	 *	@param mixed $input The data to parse. Can be a string URL (TODO), a string of DOM or a DOMDocument
 	 */
 	public function __construct($input, $baseurl=null)
 	{
@@ -50,8 +50,12 @@ class Parser
 	// !Utility Functions
 	
 	/**
-	 *	Given the value of @class, get the relevant mf classname.
+	 *	Given the value of @class, get the relevant mf classname (e.g. h-card, p-name).
 	 *	Matches the first if there are multiple.
+	 *
+	 *	@param string $class A space delimited list of classnames
+	 *	@param string $prefix The prefix to look for
+	 *	@return mixed The prefixed name of the first microfomats class found or false
 	 */
 	static function mfNameFromClass($class, $prefix='h-')
 	{
@@ -68,6 +72,10 @@ class Parser
 	
 	/**
 	 *	Wraps mf_name_from_class to handle an element as input (common)
+	 *	
+	 *	@param DOMElement $e The element to get the classname for
+	 *	@param string $prefix The prefix to look for
+	 *	@return mixed See return value of mf2\Parser::mfNameFromClass()
 	 */
 	static function mfNameFromElement(\DOMElement $e, $prefix='h-')
 	{
@@ -77,6 +85,10 @@ class Parser
 	
 	/**
 	 *	Checks to see if a DOMElement has already been parsed
+	 *
+	 *	@param DOMElement $e The element to check
+	 *	@param string $type	The type of parsing to check for
+	 *	@return bool Whether or not $e has already been parsed as $type
 	 */
 	static function mfElementParsed(\DOMElement $e, $type)
 	{
@@ -86,6 +98,9 @@ class Parser
 	// !Parsing Functions
 	/**
 	 *	Given an element with class="p-*", get it’s value
+	 *
+	 *	@param DOMElement $p The element to parse
+	 *	@return string The plaintext value of $p, dependant on type
 	 */
 	public function parseP(\DOMElement $p)
 	{
@@ -108,6 +123,9 @@ class Parser
 	
 	/**
 	 *	Given an element with class="u-*", get the value of the URL
+	 *
+	 *	@param DOMElement $u The element to parse
+	 *	@return string The plaintext value of $u, dependant on type
 	 */
 	public function parseU(\DOMElement $u)
 	{
@@ -137,6 +155,9 @@ class Parser
 	
 	/**
 	 *	Given an element with class="dt-*", get the value of the datetime as a php date object
+	 *
+	 *	@param DOMElement $dt The element to parse
+	 *	@return DateTime An object representing $dt
 	 */
 	public function parseDT(\DOMElement $dt)
 	{
@@ -288,6 +309,9 @@ class Parser
 	
 	/**
 	 *	Given the root element of some embedded markup, return a string representing that markup
+	 *
+	 *	@param DOMElement $e The element to parse
+	 *	@return string $e’s innerHTML
 	 */
 	public function parseE(\DOMElement $e)
 	{
@@ -301,6 +325,9 @@ class Parser
 	
 	/**
 	 *	Recursively parse microformats
+	 *
+	 *	@param DOMElement $e The element to parse
+	 *	@return array A representation of the values contained within microformat $e
 	 */
 	public function parseH(\DOMElement $e)
 	{
@@ -412,6 +439,8 @@ class Parser
 
 	/**
 	 *	Kicks off the parsing routine
+	 *
+	 *	@return array An array containing all the µfs found in the current document
 	 */
 	public function parse()
 	{
