@@ -55,6 +55,8 @@ Array
 )
 ```
 
+A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
+
 ## Output
 
 mf2\Parser::parse() returns an associative array. The output pattern at any level (µf or property) is (expressed as JSON):
@@ -69,6 +71,19 @@ mf2\Parser::parse() returns an associative array. The output pattern at any leve
 }
 ```
 
+### Output Types
+
+Different µf-2 property types are returned as different types.
+
+* `h-\*` are associative arrays containing more properties
+* `p-\*` and `u-` are returned as whitespace-trimmed strings
+* `dt-\*` are returned as \DateTime objects
+* `e-\*` are returned as **non HTML encoded** strings of markup representing the `innerHTML` of the element classed as `e-\*`
+
+### Security
+
+**Little to no filtering of content takes place in mf2\Parser, so treat it’s output as you would any untrusted data from the source of the parsed document**
+
 ## Parsing Behaviour
 
 TODO: Write up as prose
@@ -77,3 +92,4 @@ TODO: Write up as prose
 * At least an approximate implementation of the [Value-Class Pattern](http://microformats.org/wiki/value-class-pattern) on dt-\* **properties only**
 * When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
 * Doesn’t yet handle minimal h-cards (e.g. `<a class="h-card" href="http://waterpigs.co.uk">Barnaby Walters</a>`), TODO
+* Lots of false positives are possible due to the generic parsing structure, put code in place to filter these out (they will usually be empty)

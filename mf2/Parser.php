@@ -373,7 +373,7 @@ class Parser
 			if ($dtValue)
 			{
 				// Add the value to the array for this property type
-				$return[Parser::mfNameFromElement($dt, 'dt-')][] = $dtValue -> format(\DateTime::ISO8601);
+				$return[Parser::mfNameFromElement($dt, 'dt-')][] = $dtValue;
 			
 				// DEBUG
 				// echo '<p><b>' . Parser::mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
