@@ -1,0 +1,20 @@
+{
+    "name": "mf2/mf2",
+    "type": "library",
+    "description": "A pure (generic) microformats-2 parser",
+    "keywords": ["microformats", "microformats 2", "parser", "semantic"],
+    "authors" : [
+    	{
+    		"name": "Barnaby Walters",
+    		"homepage": "http://waterpigs.co.uk"
+    	}
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+    "autoload": {
+    	"psr-0": {
+    		"mf2\\Parser": ""
+    	}
+    }
+}
