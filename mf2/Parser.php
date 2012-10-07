@@ -14,12 +14,12 @@ class Parser
 	/**
 	 *	The baseurl (if any) to use for this parse
 	 */
-	public var $baseurl;
+	public $baseurl;
 	
 	/**
 	 *	A DOMXPath object which can be used to query over any fragment
 	 */
-	protected var $xpath;
+	protected $xpath;
 	
 	/**
 	 *	Constructor
