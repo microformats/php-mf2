@@ -135,7 +135,7 @@ class Parser
 		}
 		elseif ($u -> tagName == 'img' and $u -> getAttribute('src') !== null)
 		{
-			$u -> getAttribute('src');
+			$uValue = $u -> getAttribute('src');
 		}
 		else
 		{
@@ -143,11 +143,14 @@ class Parser
 			$uValue = false;
 		}
 		
-		$host = parse_url($uValue, PHP_URL_HOST);
-		$scheme = parse_url($uValue, PHP_URL_SCHEME);
-		if (empty($host) or empty($host) and !empty($this -> baseurl))
+		if ($uValue !== false)
 		{
-			$uValue = $this -> baseurl . $uValue;
+			$host = parse_url($uValue, PHP_URL_HOST);
+			$scheme = parse_url($uValue, PHP_URL_SCHEME);
+			if (empty($host) and empty($host) and !empty($this -> baseurl))
+			{
+				$uValue = $this -> baseurl . $uValue;
+			}
 		}
 		
 		return $uValue;
