@@ -93,3 +93,7 @@ TODO: Write up as prose
 * When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
 * Doesn’t yet handle minimal h-cards (e.g. `<a class="h-card" href="http://waterpigs.co.uk">Barnaby Walters</a>`), TODO
 * Lots of false positives are possible due to the generic parsing structure, put code in place to filter these out (they will usually be empty)
+
+## Testing
+
+Tests have yet to be written (yes, wrong way round, I know). I’m planning on adding various tests based on real-world µf2 usage, as well as at least some of the [value-class pattern tests](http://microformats.org/wiki/value-class-pattern-tests)
