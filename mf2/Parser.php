@@ -288,7 +288,6 @@ class Parser
 			{
 				// Use @datetime if available, otherwise innertext
 				// Is it an entire dt?
-				echo 'Using <time> @datetime';
 				$dtAttr = $dt -> getAttribute('datetime');
 				if (!empty($dtAttr))
 				{
