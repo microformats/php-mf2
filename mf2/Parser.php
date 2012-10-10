@@ -1,5 +1,6 @@
 <?php
 
+declare(encoding = 'UTF-8');
 namespace mf2;
 
 use DOMDocument,
