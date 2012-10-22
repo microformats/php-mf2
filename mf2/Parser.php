@@ -135,7 +135,7 @@ class Parser
 	 */
 	public function parseU(\DOMElement $u)
 	{
-		if ($u -> tagName == 'a' and $u -> getAttribute('href') !== null)
+		if (($u -> tagName == 'a' or $u -> tagName == 'area') and $u -> getAttribute('href') !== null)
 		{
 			$uValue = $u -> getAttribute('href');
 		}

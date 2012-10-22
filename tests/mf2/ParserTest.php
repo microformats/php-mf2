@@ -118,6 +118,20 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
 	}
 	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesArea()
+	{
+		$input = '<div class="h-card"><area class="u-photo" href="http://example.com/someimage.png"></area></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
 	// Note that value-class tests for dt-* attributes are stored elsewhere, as there are so many of the bloody things
 	
 	/**
