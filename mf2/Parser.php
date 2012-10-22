@@ -97,20 +97,25 @@ class Parser
 	
 	// !Parsing Functions
 	/**
-	 *	Given an element with class="p-*", get it’s value
-	 *
-	 *	@param DOMElement $p The element to parse
-	 *	@return string The plaintext value of $p, dependant on type
+	 * Given an element with class="p-*", get it’s value
+	 * 
+	 * @param DOMElement $p The element to parse
+	 * @return string The plaintext value of $p, dependant on type
+	 * @todo Make this adhere to value-class
 	 */
 	public function parseP(\DOMElement $p)
 	{
-		if ($p -> tagName == 'img')
+		if ($p -> tagName == 'img' and $p -> getAttribute('alt') !== '')
 		{
 			$pValue = $p -> getAttribute('alt');
 		}
-		elseif ($p -> tagName == 'abbr' and $p -> hasAttribute('title'))
+		elseif ($p -> tagName == 'abbr' and $p -> getAttribute('title') !== '')
 		{
 			$pValue = $p -> getAttribute('title');
+		}
+		elseif ($p -> tagName == 'data' and $p -> getAttribute('value') !== '')
+		{
+			$pValue = $p -> getAttribute('value');
 		}
 		else
 		{
@@ -122,10 +127,11 @@ class Parser
 	}
 	
 	/**
-	 *	Given an element with class="u-*", get the value of the URL
-	 *
-	 *	@param DOMElement $u The element to parse
-	 *	@return string The plaintext value of $u, dependant on type
+	 * Given an element with class="u-*", get the value of the URL
+	 * 
+	 * @param DOMElement $u The element to parse
+	 * @return string The plaintext value of $u, dependant on type
+	 * @todo make this adhere to value-class
 	 */
 	public function parseU(\DOMElement $u)
 	{
@@ -414,6 +420,8 @@ class Parser
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$em -> setAttribute('data-e-parsed', 'true');
 		}
+		
+		// TODO: See what we have, deal with implied properties
 		
 		return $return;
 	}

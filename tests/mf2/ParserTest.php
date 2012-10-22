@@ -62,6 +62,35 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	}
 	
 	/**
+	 * @group parseP
+	 */
+	public function testParsePHandlesData()
+	{
+		$input = '<div class="h-card"><data class="p-name" value="Example User"></data></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+	}
+	
+	/**
+	 * @group parseP
+	 */
+	public function testParsePReturnsEmptyStringForBrHr()
+	{
+		$input = '<div class="h-card"><br class="p-name"/></div><div class="h-card"><hr class="p-name"/></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('', $output['h-card'][0]['p-name'][0]);
+		$this -> assertEquals('', $output['h-card'][1]['p-name'][0]);
+	}
+	
+	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesA()
