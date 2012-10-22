@@ -343,7 +343,7 @@ class Parser
 		$return = array();
 		
 		// Handle nested microformats (h-*)
-		foreach ($this -> xpath -> query('.//*[contains(@class,"h-")]', $e) as $subMF)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF)
 		{
 			// Parse
 			$result = $this -> parseH($subMF);
@@ -427,7 +427,7 @@ class Parser
 	{
 		$mfs = array();
 		
-		foreach ($this -> xpath -> query('//*[contains(concat(\' \',  @class, \' \'),"h-")]') as $node)
+		foreach ($this -> xpath -> query('//*[contains(concat(" ",  @class), " h-")]') as $node)
 		{
 			// For each microformat
 			$result = $this -> parseH($node);
