@@ -167,7 +167,7 @@ class Parser
 		// TODO: check for value-title pattern (http://microformats.org/wiki/vcp#Parsing_value_from_a_title_attribute)
 		
 		// Check for value-class pattern
-		$valueClassChildren = $this -> xpath -> query('.//*[contains(@class, "value")]', $dt);
+		$valueClassChildren = $this -> xpath -> query('.//*[contains(concat(" ", @class, " "), " value ")]', $dt);
 		$dtValue = false;
 		
 		if ($valueClassChildren -> length > 0)
@@ -356,7 +356,7 @@ class Parser
 		}
 		
 		// Handle p-*
-		foreach ($this -> xpath -> query('.//*[contains(@class,"p-")]', $e) as $p)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p)
 		{
 			if (Parser::mfElementParsed($p, 'p')) continue;
 			
@@ -384,7 +384,7 @@ class Parser
 		}
 		
 		// Handle dt-*
-		foreach ($this -> xpath -> query('.//*[contains(@class,"dt-")]', $e) as $dt)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt)
 		{
 			if (Parser::mfElementParsed($dt, 'dt')) continue;
 			
@@ -400,7 +400,7 @@ class Parser
 		}
 		
 		// TODO: Handle e-* (em)
-		foreach ($this -> xpath -> query('.//*[contains(@class,"e-")]', $e) as $em)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em)
 		{
 			if (Parser::mfElementParsed($em, 'e')) continue;
 			
