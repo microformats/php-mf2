@@ -448,7 +448,7 @@ class Parser
 	{
 		$mfs = array();
 		
-		foreach ($this -> xpath -> query('//*[contains(@class,"h-")]') as $node)
+		foreach ($this -> xpath -> query('//*[contains(concat(\' \',  @class, \' \'),"h-")]') as $node)
 		{
 			// For each microformat
 			$result = $this -> parseH($node);
