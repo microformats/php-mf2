@@ -67,7 +67,7 @@ class Parser
 		$classes = explode(' ', $class);
 		foreach ($classes as $classname)
 		{
-			if (strstr($classname, $prefix))
+			if (preg_match('/$' . $prefix . '/i', $classname));
 			{
 				return $classname;
 			}
@@ -172,7 +172,7 @@ class Parser
 		// TODO: check for value-title pattern (http://microformats.org/wiki/vcp#Parsing_value_from_a_title_attribute)
 		
 		// Check for value-class pattern
-		$valueClassChildren = $this -> xpath -> query('.//*[contains(@class, "value")]', $dt);
+		$valueClassChildren = $this -> xpath -> query('.//*[contains(concat(" ", @class, " "), " value ")]', $dt);
 		$dtValue = false;
 		
 		if ($valueClassChildren -> length > 0)
@@ -347,11 +347,8 @@ class Parser
 		// Initalise var to store the representation in
 		$return = array();
 		
-		// DEBUG
-		//echo '<div style="border-left: 2px black solid; padding-left: 1em;"><h3>Handling ' . $mfName . '</h3>';
-		
 		// Handle nested microformats (h-*)
-		foreach ($this -> xpath -> query('.//*[contains(@class,"h-")]', $e) as $subMF)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF)
 		{
 			// Parse
 			$result = $this -> parseH($subMF);
@@ -364,7 +361,7 @@ class Parser
 		}
 		
 		// Handle p-*
-		foreach ($this -> xpath -> query('.//*[contains(@class,"p-")]', $e) as $p)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p)
 		{
 			if (Parser::mfElementParsed($p, 'p')) continue;
 			
@@ -372,9 +369,6 @@ class Parser
 			
 			// Add the value to the array for this property type
 			$return[Parser::mfNameFromElement($p, 'p-')][] = $pValue;
-			
-			// DEBUG
-			//echo '<p><b>' . Parser::mfNameFromElement($p, 'p-') . '</b> (plaintext): ' . $pValue;
 			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$p -> setAttribute('data-p-parsed', 'true');
@@ -390,15 +384,12 @@ class Parser
 			// Add the value to the array for this property type
 			$return[Parser::mfNameFromElement($u, 'u-')][] = $uValue;
 			
-			// DEBUG
-			//echo '<p><b>' . Parser::mfNameFromElement($u, 'u-') . '</b> (URL): ' . $uValue;
-			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$u -> setAttribute('data-u-parsed', 'true');
 		}
 		
 		// Handle dt-*
-		foreach ($this -> xpath -> query('.//*[contains(@class,"dt-")]', $e) as $dt)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt)
 		{
 			if (Parser::mfElementParsed($dt, 'dt')) continue;
 			
@@ -408,16 +399,13 @@ class Parser
 			{
 				// Add the value to the array for this property type
 				$return[Parser::mfNameFromElement($dt, 'dt-')][] = $dtValue;
-			
-				// DEBUG
-				// echo '<p><b>' . Parser::mfNameFromElement($dt, 'dt-') . '</b> (DateTime): ' . $dtValue -> format(\DateTime::ISO8601);
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$dt -> setAttribute('data-dt-parsed', 'true');
 		}
 		
 		// TODO: Handle e-* (em)
-		foreach ($this -> xpath -> query('.//*[contains(@class,"e-")]', $e) as $em)
+		foreach ($this -> xpath -> query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em)
 		{
 			if (Parser::mfElementParsed($em, 'e')) continue;
 			
@@ -427,20 +415,11 @@ class Parser
 			{
 				// Add the value to the array for this property type
 				$return[Parser::mfNameFromElement($em, 'e-')][] = $eValue;
-				
-				// DEBUG
-				// echo '<p><b>' . Parser::mfNameFromElement($em, 'e-') . '</b> (Embedded): <code>' . htmlspecialchars($eValue) . '</code>';
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$em -> setAttribute('data-e-parsed', 'true');
 		}
 		
-		// DEBUG
-		//echo '</div>';
-		
-		// TODO: Any post-processing which needs to happen?
-		
-		// Return the representation of the µf
 		return $return;
 	}
 
@@ -453,7 +432,7 @@ class Parser
 	{
 		$mfs = array();
 		
-		foreach ($this -> xpath -> query('//*[contains(@class,"h-")]') as $node)
+		foreach ($this -> xpath -> query('//*[contains(concat(" ",  @class), " h-")]') as $node)
 		{
 			// For each microformat
 			$result = $this -> parseH($node);

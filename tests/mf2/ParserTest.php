@@ -216,6 +216,18 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertArrayHasKey('e-content', $output['h-entry'][0]);
 		$this -> assertEquals('Here is a load of <strong>embedded markup</strong>', $output['h-entry'][0]['e-content'][0]);
 	}
+	
+	/**
+	 * @group parseH
+	 */
+	public function testClassnamesContainingHAreIgnored()
+	{
+		$input = '<div class="asdfgh-jkl"></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayNotHasKey('asdfgh-jkl', $output);
+	}
 }
 
 // EOF tests/mf2/testParser.php
