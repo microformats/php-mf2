@@ -175,15 +175,13 @@ class Parser
 	}
 	
 	/**
-	 *	Given an element with class="dt-*", get the value of the datetime as a php date object
-	 *
-	 *	@param DOMElement $dt The element to parse
-	 *	@return DateTime An object representing $dt
+	 * Given an element with class="dt-*", get the value of the datetime as a php date object
+	 * 
+	 * @param DOMElement $dt The element to parse
+	 * @return DateTime An object representing $dt
 	 */
 	public function parseDT(\DOMElement $dt)
 	{
-		// TODO: check for value-title pattern (http://microformats.org/wiki/vcp#Parsing_value_from_a_title_attribute)
-		
 		// Check for value-class pattern
 		$valueClassChildren = $this -> xpath -> query('.//*[contains(concat(" ", @class, " "), " value ")]', $dt);
 		$dtValue = false;

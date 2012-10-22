@@ -289,6 +289,25 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	}
 	
 	/**
+	 * @group parseDT
+	 */
+	public function testParseDTHandlesInsDelDatetime()
+	{
+		$input = '<div class="h-card"><ins class="dt-start" datetime="2012-08-05T14:50"></ins><del class="dt-end" datetime="2012-08-05T18:00"></del></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$dtStart = new DateTime('2012-08-05T14:50');
+		$dtEnd = new DateTime('2012-08-05T18:00');
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
+		$this -> assertArrayHasKey('dt-end', $output['h-card'][0]);
+		$this -> assertEquals($dtStart -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		$this -> assertEquals($dtEnd -> format(DateTime::ISO8601), $output['h-card'][0]['dt-end'][0] -> format(DateTime::ISO8601));
+	}
+	
+	/**
 	 * @group parseE
 	 */
 	public function testParseE()
