@@ -62,6 +62,35 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	}
 	
 	/**
+	 * @group parseP
+	 */
+	public function testParsePHandlesData()
+	{
+		$input = '<div class="h-card"><data class="p-name" value="Example User"></data></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+	}
+	
+	/**
+	 * @group parseP
+	 */
+	public function testParsePReturnsEmptyStringForBrHr()
+	{
+		$input = '<div class="h-card"><br class="p-name"/></div><div class="h-card"><hr class="p-name"/></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('', $output['h-card'][0]['p-name'][0]);
+		$this -> assertEquals('', $output['h-card'][1]['p-name'][0]);
+	}
+	
+	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesA()
@@ -81,6 +110,62 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	public function testParseUHandlesImg()
 	{
 		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png"></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesArea()
+	{
+		$input = '<div class="h-card"><area class="u-photo" href="http://example.com/someimage.png"></area></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesObject()
+	{
+		$input = '<div class="h-card"><object class="u-photo" data="http://example.com/someimage.png"></object></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesAbbr()
+	{
+		$input = '<div class="h-card"><abbr class="u-photo" title="http://example.com/someimage.png"></abbr></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesData()
+	{
+		$input = '<div class="h-card"><data class="u-photo" value="http://example.com/someimage.png"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
@@ -201,6 +286,25 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertArrayHasKey('h-card', $output);
 		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
 		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+	}
+	
+	/**
+	 * @group parseDT
+	 */
+	public function testParseDTHandlesInsDelDatetime()
+	{
+		$input = '<div class="h-card"><ins class="dt-start" datetime="2012-08-05T14:50"></ins><del class="dt-end" datetime="2012-08-05T18:00"></del></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$dtStart = new DateTime('2012-08-05T14:50');
+		$dtEnd = new DateTime('2012-08-05T18:00');
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
+		$this -> assertArrayHasKey('dt-end', $output['h-card'][0]);
+		$this -> assertEquals($dtStart -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		$this -> assertEquals($dtEnd -> format(DateTime::ISO8601), $output['h-card'][0]['dt-end'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
