@@ -132,6 +132,48 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
 	}
 	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesObject()
+	{
+		$input = '<div class="h-card"><object class="u-photo" data="http://example.com/someimage.png"></object></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesAbbr()
+	{
+		$input = '<div class="h-card"><abbr class="u-photo" title="http://example.com/someimage.png"></abbr></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesData()
+	{
+		$input = '<div class="h-card"><data class="u-photo" value="http://example.com/someimage.png"></data></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+	}
+	
 	// Note that value-class tests for dt-* attributes are stored elsewhere, as there are so many of the bloody things
 	
 	/**

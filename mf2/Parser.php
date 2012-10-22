@@ -143,6 +143,18 @@ class Parser
 		{
 			$uValue = $u -> getAttribute('src');
 		}
+		elseif ($u -> tagName == 'object' and $u -> getAttribute('data') !== null)
+		{
+			$uValue = $u -> getAttribute('data');
+		}
+		elseif ($u -> tagName == 'abbr' and $u -> getAttribute('title') !== null)
+		{
+			$uValue = $u -> getAttribute('title');
+		}
+		elseif ($u -> tagName == 'data' and $u -> getAttribute('value') !== null)
+		{
+			$uValue = $u -> getAttribute('value');
+		}
 		else
 		{
 			// TODO: Check for element contents == a valid URL
