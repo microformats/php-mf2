@@ -62,7 +62,7 @@ class Parser
 		$classes = explode(' ', $class);
 		foreach ($classes as $classname)
 		{
-			if (strstr($classname, $prefix))
+			if (preg_match('/$' . $prefix . '/i', $classname));
 			{
 				return $classname;
 			}
