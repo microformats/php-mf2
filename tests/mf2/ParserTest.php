@@ -19,6 +19,22 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		date_default_timezone_set('Europe/London');
 	}
 	
+	public function testMicroformatNameFromClassReturnsFullRootName()
+	{
+		$expected = 'h-card';
+		$actual = Parser::mfNameFromClass('someclass h-card someotherclass', 'h-');
+		
+		$this -> assertEquals($actual, $expected);
+	}
+	
+	public function testMicroformatStripsPrefixFromPropertyClassname()
+	{
+		$expected = 'name';
+		$actual = Parser::mfNameFromClass('someclass p-name someotherclass', 'p-');
+		
+		$this -> assertEquals($actual, $expected);
+	}
+	
 	/**
 	 * @group parseP
 	 */
@@ -28,9 +44,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -42,9 +57,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+		
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -56,9 +71,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+		
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -70,9 +85,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('Example User', $output['h-card'][0]['p-name'][0]);
+		
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -84,10 +99,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('', $output['h-card'][0]['p-name'][0]);
-		$this -> assertEquals('', $output['h-card'][1]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('', $output['items'][0]['properties']['name'][0]);
+		$this -> assertEquals('', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -99,9 +113,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-url', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com', $output['h-card'][0]['u-url'][0]);
+		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
 	}
 	
 	/**
@@ -113,9 +126,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+		
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -127,9 +140,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+		
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -141,9 +154,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+		
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -155,9 +168,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+		
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -169,9 +182,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/someimage.png', $output['h-card'][0]['u-photo'][0]);
+		
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	// Note that value-class tests for dt-* attributes are stored elsewhere, as there are so many of the bloody things
@@ -187,9 +200,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -203,9 +216,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -219,9 +232,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -235,9 +248,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -251,9 +264,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -267,9 +280,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -283,9 +296,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-08-05T14:50');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -300,11 +313,11 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$dtStart = new DateTime('2012-08-05T14:50');
 		$dtEnd = new DateTime('2012-08-05T18:00');
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-card'][0]);
-		$this -> assertArrayHasKey('dt-end', $output['h-card'][0]);
-		$this -> assertEquals($dtStart -> format(DateTime::ISO8601), $output['h-card'][0]['dt-start'][0] -> format(DateTime::ISO8601));
-		$this -> assertEquals($dtEnd -> format(DateTime::ISO8601), $output['h-card'][0]['dt-end'][0] -> format(DateTime::ISO8601));
+		
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertArrayHasKey('end', $output['items'][0]['properties']);
+		$this -> assertEquals($dtStart -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
+		$this -> assertEquals($dtEnd -> format(DateTime::ISO8601), $output['items'][0]['properties']['end'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -316,9 +329,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-entry', $output);
-		$this -> assertArrayHasKey('e-content', $output['h-entry'][0]);
-		$this -> assertEquals('Here is a load of <strong>embedded markup</strong>', $output['h-entry'][0]['e-content'][0]);
+		
+		$this -> assertArrayHasKey('content', $output['items'][0]['properties']);
+		$this -> assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]);
 	}
 	
 	/**
@@ -355,9 +368,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('The Name', $output['h-card'][0]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -370,9 +382,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('The Name', $output['h-card'][0]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -385,9 +396,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('The Name', $output['h-card'][0]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -400,9 +410,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
-		$this -> assertEquals('The Name', $output['h-card'][0]['p-name'][0]);
+		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -415,9 +424,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo'][0]);
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -429,10 +437,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$input = '<div class="h-card"><img src="http://example.com/img.png" alt="" /></div>';
 		$parser = new Parser($input);
 		$output = $parser -> parse();
-		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo'][0]);
+				
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -445,9 +452,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo'][0]);
+		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -460,9 +466,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-url', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/', $output['h-card'][0]['u-url'][0]);
+		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 	
 	/**
@@ -475,9 +480,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayHasKey('h-card', $output);
-		$this -> assertArrayHasKey('u-url', $output['h-card'][0]);
-		$this -> assertEquals('http://example.com/', $output['h-card'][0]['u-url'][0]);
+		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this -> assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 }
 

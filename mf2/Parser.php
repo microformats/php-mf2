@@ -55,8 +55,12 @@ class Parser
 	// !Utility Functions
 	
 	/**
+	 * Microformat Name From Class string
+	 * 
 	 * Given the value of @class, get the relevant mf classname (e.g. h-card, p-name).
 	 * Matches the first if there are multiple.
+	 * 
+	 * For h-*, it returns the entire name, but for property names it strips the prefix.
 	 * 
 	 * @param string $class A space delimited list of classnames
 	 * @param string $prefix The prefix to look for
@@ -69,7 +73,7 @@ class Parser
 		{
 			if (stristr(' '.$classname, ' '.$prefix) !== false)
 			{
-				return $classname;
+				return ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 			}
 		}
 		return false;
@@ -438,72 +442,75 @@ class Parser
 		
 		// TODO: See what we have, deal with implied properties
 		// Check for p-name
-		if (!array_key_exists('p-name', $return))
+		if (!array_key_exists('name', $return))
 		{
 			// Look for img @alt
 			if ($e -> tagName == 'img')
-				$return['p-name'][] = $e -> getAttribute('alt');
+			$return['name'][] = $e -> getAttribute('alt');
 			
 			// Look for nested img @alt
 			foreach ($this -> xpath -> query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
 			{
-				$return['p-name'][] = $em -> getAttribute('alt');
+				$return['name'][] = $em -> getAttribute('alt');
 				break;
 			}
 			
 			// Look for double nested img @alt
 			foreach ($this -> xpath -> query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
 			{
-				$return['p-name'][] = $em -> getAttribute('alt');
+				$return['name'][] = $em -> getAttribute('alt');
 				break;
 			}
 			
 			// If we still don’t have it, use innerText
-			if (!array_key_exists('p-name', $return))
-				$return['p-name'][] = trim($e -> nodeValue);
+			if (!array_key_exists('name', $return))
+				$return['name'][] = trim($e -> nodeValue);
 		}
 		
 		// Check for u-photo
-		if (!array_key_exists('u-photo', $return))
+		if (!array_key_exists('photo', $return))
 		{
 			// Look for img @src
 			// @todo resolve relative URLs
 			if ($e -> tagName == 'img')
-				$return['u-photo'][] = $e -> getAttribute('src');
+				$return['photo'][] = $e -> getAttribute('src');
 			
 			// Look for nested img @src
 			foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
 			{
-				$return['u-photo'][] = $em -> getAttribute('src');
+				$return['photo'][] = $em -> getAttribute('src');
 				break;
 			}
 			
 			// Look for double nested img @src
 			foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
 			{
-				$return['u-photo'][] = $em -> getAttribute('src');
+				$return['photo'][] = $em -> getAttribute('src');
 				break;
 			}
 		}
 		
 		// Check for u-url
-		if (!array_key_exists('u-url', $return))
+		if (!array_key_exists('url', $return))
 		{
 			// Look for img @src
 			// @todo resolve relative URLs
 			if ($e -> tagName == 'a')
-				$return['u-url'][] = $e -> getAttribute('href');
+				$return['url'][] = $e -> getAttribute('href');
 			
 			// Look for nested img @src
 			foreach ($this -> xpath -> query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em)
 			{
-				$return['u-url'][] = $em -> getAttribute('href');
+				$return['url'][] = $em -> getAttribute('href');
 				break;
 			}
 		}
 		
 		// Phew. Return the final result.
-		return $return;
+		return array(
+			'properties' => $return,
+			'type' => $mfName
+		);
 	}
 
 	/**
@@ -521,10 +528,10 @@ class Parser
 			$result = $this -> parseH($node);
 			
 			// Add the value to the array for this property type
-			$mfs[Parser::mfNameFromElement($node)][] = $result;
+			$mfs[] = $result;
 		}
 		
-		return $mfs;
+		return array('items' => $mfs);
 	}
 }
 
