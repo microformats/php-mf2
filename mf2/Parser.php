@@ -508,8 +508,8 @@ class Parser
 		
 		// Phew. Return the final result.
 		return array(
+			'type' => array($mfName),
 			'properties' => $return,
-			'type' => $mfName
 		);
 	}
 
