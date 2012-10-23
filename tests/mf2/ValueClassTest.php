@@ -31,9 +31,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-10-07T21:18');
 		
-		$this -> assertArrayHasKey('h-event', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-event'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-event'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -48,9 +47,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-10-07T21:18');
 		
-		$this -> assertArrayHasKey('h-event', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-event'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-event'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 	
 	/**
@@ -65,9 +63,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$datetime = new DateTime('2012-10-07T21:00');
 		
-		$this -> assertArrayHasKey('h-event', $output);
-		$this -> assertArrayHasKey('dt-start', $output['h-event'][0]);
-		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['h-event'][0]['dt-start'][0] -> format(DateTime::ISO8601));
+		$this -> assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this -> assertEquals($datetime -> format(DateTime::ISO8601), $output['items'][0]['properties']['start'][0] -> format(DateTime::ISO8601));
 	}
 }
 
