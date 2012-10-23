@@ -392,6 +392,51 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
 		$this -> assertEquals('The Name', $output['h-card'][0]['p-name']);
 	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedUPhotoFromImgSrc()
+	{
+		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedUPhotoFromNestedImgSrc()
+	{
+		$input = '<div class="h-card"><img src="http://example.com/img.png" alt="" /></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc()
+	{
+		$input = '<div class="h-card"><span><img src="http://example.com/img.png" alt="" /></span></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo']);
+	}
 }
 
 // EOF tests/mf2/testParser.php

@@ -458,6 +458,30 @@ class Parser
 				$return['p-name'] = trim($e -> nodeValue);
 		}
 		
+		// Check for u-photo
+		if (!array_key_exists('u-photo', $return))
+		{
+			// Look for img @src
+			// @todo resolve relative URLs
+			if ($e -> tagName == 'img')
+				$return['u-photo'] = $e -> getAttribute('src');
+			
+			// Look for nested img @src
+			foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+			{
+				$return['u-photo'] = $em -> getAttribute('src');
+				break;
+			}
+			
+			// Look for double nested img @src
+			foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+			{
+				$return['u-photo'] = $em -> getAttribute('src');
+				break;
+			}
+		}
+		
+		// Phew. Return the final result.
 		return $return;
 	}
 
