@@ -76,11 +76,11 @@ class Parser
 	}
 	
 	/**
-	 *	Wraps mf_name_from_class to handle an element as input (common)
-	 *	
-	 *	@param DOMElement $e The element to get the classname for
-	 *	@param string $prefix The prefix to look for
-	 *	@return mixed See return value of mf2\Parser::mfNameFromClass()
+	 * Wraps mf_name_from_class to handle an element as input (common)
+	 * 
+	 * @param DOMElement $e The element to get the classname for
+	 * @param string $prefix The prefix to look for
+	 * @return mixed See return value of mf2\Parser::mfNameFromClass()
 	 */
 	static function mfNameFromElement(\DOMElement $e, $prefix='h-')
 	{
@@ -89,11 +89,11 @@ class Parser
 	}
 	
 	/**
-	 *	Checks to see if a DOMElement has already been parsed
-	 *
-	 *	@param DOMElement $e The element to check
-	 *	@param string $type	The type of parsing to check for
-	 *	@return bool Whether or not $e has already been parsed as $type
+	 * Checks to see if a DOMElement has already been parsed
+	 * 
+	 * @param DOMElement $e The element to check
+	 * @param string $type	The type of parsing to check for
+	 * @return bool Whether or not $e has already been parsed as $type
 	 */
 	static function mfElementParsed(\DOMElement $e, $type)
 	{
@@ -347,10 +347,10 @@ class Parser
 	}
 	
 	/**
-	 *	Recursively parse microformats
-	 *
-	 *	@param DOMElement $e The element to parse
-	 *	@return array A representation of the values contained within microformat $e
+	 * Recursively parse microformats
+	 * 
+	 * @param DOMElement $e The element to parse
+	 * @return array A representation of the values contained within microformat $e
 	 */
 	public function parseH(\DOMElement $e)
 	{
@@ -507,9 +507,9 @@ class Parser
 	}
 
 	/**
-	 *	Kicks off the parsing routine
-	 *
-	 *	@return array An array containing all the µfs found in the current document
+	 * Kicks off the parsing routine
+	 * 
+	 * @return array An array containing all the µfs found in the current document
 	 */
 	public function parse()
 	{
