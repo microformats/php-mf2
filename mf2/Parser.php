@@ -69,14 +69,16 @@ class Parser
 	static function mfNameFromClass($class, $prefix='h-')
 	{
 		$classes = explode(' ', $class);
+		$matches = array();
 		foreach ($classes as $classname)
 		{
 			if (stristr(' '.$classname, ' '.$prefix) !== false)
 			{
-				return ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
+				$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 			}
 		}
-		return false;
+		
+		return ($prefix == 'h-') ? $matches : $matches[0];
 	}
 	
 	/**
@@ -362,7 +364,7 @@ class Parser
 		if (Parser::mfElementParsed($e, 'h')) return false;
 		
 		// Get current µf name
-		$mfName = Parser::mfNameFromElement($e);
+		$mfTypes = Parser::mfNameFromElement($e);
 		
 		// Initalise var to store the representation in
 		$return = array();
@@ -374,7 +376,8 @@ class Parser
 			$result = $this -> parseH($subMF);
 			
 			// Add the value to the array for this property type
-			$return[Parser::mfNameFromElement($subMF)][] = $result;
+			// TODO: Check for a property name to attach this to instead of just sticking everything in children
+			$return['children'][] = $result;
 			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$subMF -> setAttribute('data-h-parsed', 'true');
@@ -508,7 +511,7 @@ class Parser
 		
 		// Phew. Return the final result.
 		return array(
-			'type' => array($mfName),
+			'type' => $mfTypes,
 			'properties' => $return,
 		);
 	}

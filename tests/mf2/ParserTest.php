@@ -21,8 +21,16 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	
 	public function testMicroformatNameFromClassReturnsFullRootName()
 	{
-		$expected = 'h-card';
+		$expected = array('h-card');
 		$actual = Parser::mfNameFromClass('someclass h-card someotherclass', 'h-');
+		
+		$this -> assertEquals($actual, $expected);
+	}
+	
+	public function testMicroformatNameFromClassHandlesMultipleHNames()
+	{
+		$expected = array('h-card', 'h-person');
+		$actual = Parser::mfNameFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
 		
 		$this -> assertEquals($actual, $expected);
 	}
@@ -67,10 +75,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testParsePHandlesAbbr()
 	{
-		$input = '<div class="h-card"><abbr class="p-name" title="Example User">@example</abbr></div>';
+		$input = '<div class="h-card h-person"><abbr class="p-name" title="Example User">@example</abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser -> parse();
-		
 		
 		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this -> assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
@@ -348,6 +355,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	
 	/**
 	 * @group parseH
+	 * @todo implement for canonical JSOn structure
 	 */
 	public function testNonMicroformatsHyphenatedClassnamesAreIgnored()
 	{
@@ -355,7 +363,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayNotHasKey('thin-column', $output);
+		$this -> fail();
 	}
 	
 	/**
