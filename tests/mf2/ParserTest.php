@@ -437,6 +437,36 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		$this -> assertArrayHasKey('u-photo', $output['h-card'][0]);
 		$this -> assertEquals('http://example.com/img.png', $output['h-card'][0]['u-photo']);
 	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedUUrlFromAHref()
+	{
+		$input = '<a class="h-card" href="http://example.com/">Some Name</a>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-url', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/', $output['h-card'][0]['u-url']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedUUrlFromNestedAHref()
+	{
+		$input = '<span class="h-card"><a href="http://example.com/">Some Name</a></span>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('u-url', $output['h-card'][0]);
+		$this -> assertEquals('http://example.com/', $output['h-card'][0]['u-url']);
+	}
 }
 
 // EOF tests/mf2/testParser.php

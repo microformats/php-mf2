@@ -481,6 +481,22 @@ class Parser
 			}
 		}
 		
+		// Check for u-url
+		if (!array_key_exists('u-url', $return))
+		{
+			// Look for img @src
+			// @todo resolve relative URLs
+			if ($e -> tagName == 'a')
+				$return['u-url'] = $e -> getAttribute('href');
+			
+			// Look for nested img @src
+			foreach ($this -> xpath -> query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em)
+			{
+				$return['u-url'] = $em -> getAttribute('href');
+				break;
+			}
+		}
+		
 		// Phew. Return the final result.
 		return $return;
 	}
