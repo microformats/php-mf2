@@ -519,7 +519,7 @@ class Parser
 			$mfs[Parser::mfNameFromElement($node)][] = $result;
 		}
 		
-		return $mfs;
+		return array('items' => $mfs);
 	}
 }
 
