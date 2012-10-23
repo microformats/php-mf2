@@ -18,13 +18,13 @@ class Parser
 	public $baseurl;
 	
 	/**
-	 *	A DOMXPath object which can be used to query over any fragment
+	 * A DOMXPath object which can be used to query over any fragment
 	 */
 	protected $xpath;
 	
 	/**
-	 *	Constructor
-	 *	@param mixed $input The data to parse. Can be a string URL (TODO), a string of DOM or a DOMDocument
+	 * Constructor
+	 * @param mixed $input The data to parse. Can be a string URL (TODO), a string of DOM or a DOMDocument
 	 */
 	public function __construct($input, $baseurl=null)
 	{
@@ -50,19 +50,19 @@ class Parser
 	// !Utility Functions
 	
 	/**
-	 *	Given the value of @class, get the relevant mf classname (e.g. h-card, p-name).
-	 *	Matches the first if there are multiple.
-	 *
-	 *	@param string $class A space delimited list of classnames
-	 *	@param string $prefix The prefix to look for
-	 *	@return mixed The prefixed name of the first microfomats class found or false
+	 * Given the value of @class, get the relevant mf classname (e.g. h-card, p-name).
+	 * Matches the first if there are multiple.
+	 * 
+	 * @param string $class A space delimited list of classnames
+	 * @param string $prefix The prefix to look for
+	 * @return mixed The prefixed name of the first microfomats class found or false
 	 */
 	static function mfNameFromClass($class, $prefix='h-')
 	{
 		$classes = explode(' ', $class);
 		foreach ($classes as $classname)
 		{
-			if (preg_match('/$' . $prefix . '/i', $classname));
+			if (stristr(' '.$classname, ' '.$prefix) !== false)
 			{
 				return $classname;
 			}

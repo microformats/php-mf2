@@ -335,6 +335,18 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	
 	/**
 	 * @group parseH
+	 */
+	public function testNonMicroformatsHyphenatedClassnamesAreIgnored()
+	{
+		$input = '<div class="thin-column h-feed"><span class="h-card">Name</span></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayNotHasKey('thin-column', $output);
+	}
+	
+	/**
+	 * @group parseH
 	 * @group implied
 	 */
 	public function testParsesImpliedPNameFromNodeValue()
