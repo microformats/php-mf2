@@ -332,6 +332,66 @@ class ParserTest extends PHPUnit_Framework_TestCase
 		
 		$this -> assertArrayNotHasKey('asdfgh-jkl', $output);
 	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedPNameFromNodeValue()
+	{
+		$input = '<span class="h-card">The Name</span>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('The Name', $output['h-card'][0]['p-name']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedPNameFromImgAlt()
+	{
+		$input = '<img class="h-card" src="" alt="The Name" />';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('The Name', $output['h-card'][0]['p-name']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedPNameFromNestedImgAlt()
+	{
+		$input = '<div class="h-card"><img src="" alt="The Name" /></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('The Name', $output['h-card'][0]['p-name']);
+	}
+	
+	/**
+	 * @group parseH
+	 * @group implied
+	 */
+	public function testParsesImpliedPNameFromDoublyNestedImgAlt()
+	{
+		$input = '<div class="h-card"><span><img src="" alt="The Name" /></span></div>';
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertArrayHasKey('h-card', $output);
+		$this -> assertArrayHasKey('p-name', $output['h-card'][0]);
+		$this -> assertEquals('The Name', $output['h-card'][0]['p-name']);
+	}
 }
 
 // EOF tests/mf2/testParser.php

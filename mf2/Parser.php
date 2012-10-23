@@ -432,6 +432,31 @@ class Parser
 		}
 		
 		// TODO: See what we have, deal with implied properties
+		// Check for p-name
+		if (!array_key_exists('p-name', $return))
+		{
+			// Look for img @alt
+			if ($e -> tagName == 'img')
+				$return['p-name'] = $e -> getAttribute('alt');
+			
+			// Look for nested img @alt
+			foreach ($this -> xpath -> query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+			{
+				$return['p-name'] = $em -> getAttribute('alt');
+				break;
+			}
+			
+			// Look for double nested img @alt
+			foreach ($this -> xpath -> query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+			{
+				$return['p-name'] = $em -> getAttribute('alt');
+				break;
+			}
+			
+			// If we still don’t have it, use innerText
+			if (!array_key_exists('p-name', $return))
+				$return['p-name'] = trim($e -> nodeValue);
+		}
 		
 		return $return;
 	}
