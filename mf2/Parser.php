@@ -437,7 +437,72 @@ class Parser
 		}
 		
 		// TODO: See what we have, deal with implied properties
+		// Check for p-name
+		if (!array_key_exists('p-name', $return))
+		{
+			// Look for img @alt
+			if ($e -> tagName == 'img')
+				$return['p-name'] = $e -> getAttribute('alt');
+			
+			// Look for nested img @alt
+			foreach ($this -> xpath -> query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+			{
+				$return['p-name'] = $em -> getAttribute('alt');
+				break;
+			}
+			
+			// Look for double nested img @alt
+			foreach ($this -> xpath -> query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+			{
+				$return['p-name'] = $em -> getAttribute('alt');
+				break;
+			}
+			
+			// If we still don’t have it, use innerText
+			if (!array_key_exists('p-name', $return))
+				$return['p-name'] = trim($e -> nodeValue);
+		}
 		
+		// Check for u-photo
+		if (!array_key_exists('u-photo', $return))
+		{
+			// Look for img @src
+			// @todo resolve relative URLs
+			if ($e -> tagName == 'img')
+				$return['u-photo'] = $e -> getAttribute('src');
+			
+			// Look for nested img @src
+			foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+			{
+				$return['u-photo'] = $em -> getAttribute('src');
+				break;
+			}
+			
+			// Look for double nested img @src
+			foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+			{
+				$return['u-photo'] = $em -> getAttribute('src');
+				break;
+			}
+		}
+		
+		// Check for u-url
+		if (!array_key_exists('u-url', $return))
+		{
+			// Look for img @src
+			// @todo resolve relative URLs
+			if ($e -> tagName == 'a')
+				$return['u-url'] = $e -> getAttribute('href');
+			
+			// Look for nested img @src
+			foreach ($this -> xpath -> query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em)
+			{
+				$return['u-url'] = $em -> getAttribute('href');
+				break;
+			}
+		}
+		
+		// Phew. Return the final result.
 		return $return;
 	}
 
