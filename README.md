@@ -5,9 +5,7 @@ php-mf2 is a generic [microformats-2](http://microformats.org/wiki/microformats-
 
 ## Installation
 
-Install with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
-
-php-mf2 is not yet versioned, so you’ll have to either specify `"minimum-stability": "dev"` or `"mf2/mf2": "dev-master"`.
+Install with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.1.*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
 
 ## Usage
 
@@ -19,7 +17,7 @@ mf2 is PRS-0 autoloadable, so all you have to do to load it is:
 
 ### Example Code
 
-```
+```php
 <?php
 
 include $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
@@ -34,19 +32,23 @@ print_r($output);
 // EOF
 ```
 
-This should result in the following output:
+Parser::parse() should return an array structure mirroring the canonical JSON serialisation introduced with µf2. `print_r`ed, it looks something like this:
 
 ```
 Array
 (
-    [h-card] => Array
+    [items] => Array
         (
             [0] => Array
                 (
-                    [p-name] => Array
+                    [type] => Array
                         (
-                            [0] => Barnaby Walters
+                            [0] => h-card
                         )
+                    [properties] => Array
+                    	(
+                    		[name] => Barnaby Walters
+                    	)
 
                 )
 
@@ -55,21 +57,9 @@ Array
 )
 ```
 
+Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname is left on.
+
 A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
-
-## Output
-
-mf2\Parser::parse() returns an associative array. The output pattern at any level (µf or property) is (expressed as JSON):
-
-```
-{
-	"property-name": [
-		"first instance of property-name",
-		"second instance of property-name",
-		•••
-	]
-}
-```
 
 ### Output Types
 
@@ -86,18 +76,23 @@ Different µf-2 property types are returned as different types.
 
 ## Parsing Behaviour
 
-TODO: Write up as prose
+php-mf2 follows the various µf2 parsing guidelines on the microformats wiki. Useful reference:
 
-* Follows [µf2 prefix parsing guidelines](http://microformats.org/wiki/microformats-2-prefixes)
-* At least an approximate implementation of the [Value-Class Pattern](http://microformats.org/wiki/value-class-pattern) on dt-\* **properties only**
-* When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
-* Doesn’t yet handle minimal h-cards (e.g. `<a class="h-card" href="http://waterpigs.co.uk">Barnaby Walters</a>`), TODO
-* Lots of false positives are possible due to the generic parsing structure, put code in place to filter these out (they will usually be empty)
+* [µf2 prefix parsing guidelines](http://microformats.org/wiki/microformats-2-prefixes)
+* [µf2 parsing process](http://microformats.org/wiki/microformats2-parsing)
+
+php-mf2 includes support for implied `p-name`, `u-url` and `u-photo` as per the µf2 parsing process, with the result that **every** microformat **will** have a `name` property whether or not it is explicitly declared. More info on what this is any why it exists in the [µf2 FAQ](http://microformats.org/wiki/microformats-2-faq).
+
+It also includes an approximate implementation of the [Value-Class Pattern](http://microformats.org/wiki/value-class-pattern), currently acting only on `dt-*` properties but soon to be rolled out to all property types
+
+When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
 
 ## Testing
 
+**Currently php-mf2 is tested fairly thoroughly, but the code itself is not hugely testable (lots of repetition and redundancy). This is something I’m working on changing**
+
 Tests are written in phpunit and are contained within `/tests/`. Running <kbd>phpunit .</kbd> from the root dir will run them.
 
-Sanity-checks of the basic parsing functions are within `ParserTest.php`, and are organised into groups for each property type.
+Sanity-checks of the basic parsing functions are within `ParserTest.php`, and are organised into groups for each property type (todo: there are now too many, so split these into a file for each property type).
 
 Some of the [value-class pattern tests](http://microformats.org/wiki/value-class-pattern-tests) are contained within `ValueClassTest.php`
