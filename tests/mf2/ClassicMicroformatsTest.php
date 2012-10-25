@@ -17,7 +17,7 @@ use mf2\Parser,
  * 
  * 
  */
-class ParserTest extends PHPUnit_Framework_TestCase
+class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase
 {	
 	public function setUp()
 	{

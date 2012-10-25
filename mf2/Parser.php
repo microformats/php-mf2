@@ -40,7 +40,7 @@ class Parser
 			
 			// Perform classic microformats conversion if required
 			if ($convertClassic)
-				$input = Parser::convertClassic($input);
+				$input = $this -> convertClassic($input);
 			
 			$doc = new DOMDocument(null, 'UTF-8');
 			@$doc -> loadHTML($input); // TODO: handle seriously malformed HTML better
