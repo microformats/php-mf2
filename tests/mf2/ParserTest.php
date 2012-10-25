@@ -344,26 +344,18 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	/**
 	 * @group parseH
 	 */
-	public function testClassnamesContainingHAreIgnored()
+	public function testInvalidClassnamesContainingHAreIgnored()
 	{
 		$input = '<div class="asdfgh-jkl"></div>';
 		$parser = new Parser($input);
 		$output = $parser -> parse();
 		
-		$this -> assertArrayNotHasKey('asdfgh-jkl', $output);
-	}
-	
-	/**
-	 * @group parseH
-	 * @todo implement for canonical JSON structure
-	 */
-	public function testNonMicroformatsHyphenatedClassnamesAreIgnored()
-	{
-		$input = '<div class="thin-column h-feed"><span class="h-card">Name</span></div>';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> fail();
+		// Look through $output for an item which indicate failure
+		foreach ($output['items'] as $item)
+		{
+			if (in_array('asdfgh-jkl', $item['type']))
+				$this -> fail();
+		}
 	}
 	
 	/**
