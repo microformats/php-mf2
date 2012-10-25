@@ -443,53 +443,58 @@ class Parser
 			$em -> setAttribute('data-e-parsed', 'true');
 		}
 		
-		// TODO: See what we have, deal with implied properties
+		// !Implied Properties
 		// Check for p-name
 		if (!array_key_exists('name', $return))
 		{
-			// Look for img @alt
-			if ($e -> tagName == 'img')
-			$return['name'][] = $e -> getAttribute('alt');
-			
-			// Look for nested img @alt
-			foreach ($this -> xpath -> query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
-			{
-				$return['name'][] = $em -> getAttribute('alt');
-				break;
+			try {
+				// Look for img @alt
+				if ($e -> tagName == 'img' and $e -> getAttribute('alt') != '')
+					throw new Exception($e -> getAttribute('alt'));
+				
+				// Look for nested img @alt
+				foreach ($this -> xpath -> query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('alt') != '')
+						throw new Exception($em -> getAttribute('alt'));
+				}
+				
+				// Look for double nested img @alt
+				foreach ($this -> xpath -> query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('alt') != '')
+						throw new Exception($em -> getAttribute('alt'));
+				}
+				
+				throw new Exception(trim($e -> nodeValue));
+			} catch (Exception $exc) {
+				$return['name'][] = $exc -> getMessage();
 			}
-			
-			// Look for double nested img @alt
-			foreach ($this -> xpath -> query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em)
-			{
-				$return['name'][] = $em -> getAttribute('alt');
-				break;
-			}
-			
-			// If we still don’t have it, use innerText
-			if (!array_key_exists('name', $return))
-				$return['name'][] = trim($e -> nodeValue);
 		}
 		
 		// Check for u-photo
 		if (!array_key_exists('photo', $return))
 		{
 			// Look for img @src
-			// @todo resolve relative URLs
-			if ($e -> tagName == 'img')
-				$return['photo'][] = $e -> getAttribute('src');
-			
-			// Look for nested img @src
-			foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
-			{
-				$return['photo'][] = $em -> getAttribute('src');
-				break;
-			}
-			
-			// Look for double nested img @src
-			foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
-			{
-				$return['photo'][] = $em -> getAttribute('src');
-				break;
+			try {
+				if ($e -> tagName == 'img')
+					throw new Exception($e -> getAttribute('src'));
+				
+				// Look for nested img @src
+				foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('src') != '')
+						throw new Exception($em -> getAttribute('src'));
+				}
+				
+				// Look for double nested img @src
+				foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('src') != '')
+						throw new Exception($em -> getAttribute('src'));
+				}
+			} catch (Exception $exc) {
+				$return['photo'][] = $exc -> getMessage();
 			}
 		}
 		
