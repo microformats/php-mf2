@@ -355,7 +355,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 	
 	/**
 	 * @group parseH
-	 * @todo implement for canonical JSOn structure
+	 * @todo implement for canonical JSON structure
 	 */
 	public function testNonMicroformatsHyphenatedClassnamesAreIgnored()
 	{
