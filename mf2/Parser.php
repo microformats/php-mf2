@@ -586,9 +586,40 @@ class Parser
 	 * Maps classic classnames to their µf2 equivalents
 	 */
 	private $classicMap = array(
+		// hCard
 		'vcard' => 'h-card',
 		'fn' => 'p-name',
-		'url' => 'u-url'
+		'url' => 'u-url',
+		'honorific-prefix' => 'p-honorific-prefix',
+		'given-name' => 'p-given-name',
+		'additional-name' => 'p-additional-name',
+		'family-name' => 'p-family-name',
+		'honorific-suffix' => 'p-honorific-suffix',
+		'nickname' => 'p-nickname',
+		'email' => 'u-email',
+		'logo' => 'u-logo',
+		'photo' => 'u-photo',
+		'url' => 'u-url',
+		'uid' => 'u-uid',
+		'category' => 'p-category',
+		'adr' => 'p-adr h-adr',
+		'extended-address' => 'p-extended-address',
+		'street-address' => 'p-street-address',
+		'locality' => 'p-locality',
+		'region' => 'p-region',
+		'postal-code' => 'p-postal-code',
+		'country-name' => 'p-country-name',
+		'label' => 'p-label',
+		'geo' => 'p-geo h-geo',
+		'latitude' => 'p-latitude',
+		'longitude' => 'p-longitude',
+		'tel' => 'p-tel',
+		'note' => 'p-note',
+		'bday' => 'dt-bday',
+		'key' => 'u-key',
+		'org' => 'p-org',
+		'organization-name' => 'p-organization-name',
+		'organization-unit' => 'p-organization-unit'
 	);
 }
 
