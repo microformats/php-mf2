@@ -144,6 +144,55 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this -> assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
+	
+	public function testMultipleImpliedHCards()
+	{
+		$input = '<span class="h-card">Frances Berriman</span>
+ 
+<a class="h-card" href="http://benward.me">Ben Ward</a>
+ 
+<img class="h-card" alt="Sally Ride" 
+     src="http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg"/>
+ 
+<a class="h-card" href="http://tantek.com">
+ <img alt="Tantek Çelik" src="http://ttk.me/logo.jpg"/>
+</a>';
+		$expected = '{
+	"items": [{
+		"type": ["h-card"],
+		"properties": {
+			"name": ["Frances Berriman"]
+		}
+	},
+	{
+		"type": ["h-card"],
+		"properties": {
+			"name": ["Ben Ward"],
+			"url": ["http://benward.me"]
+		}
+	},
+	{
+		"type": ["h-card"],
+		"properties": {
+			"name": ["Sally Ride"],
+			"photo": ["http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg"]
+		}
+	},
+	{
+		"type": ["h-card"],
+		"properties": {
+			"name": ["Tantek Çelik"],
+			"url": ["http://tantek.com"],
+			"photo": ["http://ttk.me/logo.jpg"]
+		}
+	}]
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 }
 
 // EOF tests/mf2/testParser.php

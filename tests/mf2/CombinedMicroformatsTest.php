@@ -23,6 +23,9 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
 		date_default_timezone_set('Europe/London');
 	}
 	
+	/**
+	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 */
 	public function testHEventLocationHCard()
 	{
 		$input = '<div class="h-event">
@@ -61,6 +64,144 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
         }
       }]
     }
+  }]
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	/**
+	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 */
+	public function testHCardOrgPOrg()
+	{
+		$input = '<div class="h-card">
+  <a class="p-name u-url"
+     href="http://blog.lizardwrangler.com/" 
+    >Mitchell Baker</a> 
+  (<span class="p-org">Mozilla Foundation</span>)
+</div>';
+		$expected = '{
+  "items": [{ 
+    "type": ["h-card"],
+    "properties": {
+      "name": ["Mitchell Baker"],
+      "url": ["http://blog.lizardwrangler.com/"],
+      "org": ["Mozilla Foundation"]
+    }
+  }]
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	/**
+	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 */
+	public function testHCardOrgHCard()
+	{
+		$input = '<div class="h-card">
+  <a class="p-name u-url"
+     href="http://blog.lizardwrangler.com/" 
+    >Mitchell Baker</a> 
+  (<a class="p-org h-card" 
+      href="http://mozilla.org/"
+     >Mozilla Foundation</a>)
+</div>';
+		$expected = '{
+  "items": [{ 
+    "type": ["h-card"],
+    "properties": {
+      "name": ["Mitchell Baker"],
+      "url": ["http://blog.lizardwrangler.com/"],
+      "org": [{
+        "value": "Mozilla Foundation",
+        "type": ["h-card"],
+        "properties": {
+          "name": ["Mozilla Foundation"],
+          "url": ["http://mozilla.org/"]
+         }
+      }]
+    }
+  }]
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	/**
+	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 */
+	public function testHCardPOrgHCardHOrg()
+	{
+		$input = '<div class="h-card">
+  <a class="p-name u-url"
+     href="http://blog.lizardwrangler.com/" 
+    >Mitchell Baker</a> 
+  (<a class="p-org h-card h-org" 
+      href="http://mozilla.org/"
+     >Mozilla Foundation</a>)
+</div>';
+		$expected = '{
+  "items": [{ 
+    "type": ["h-card"],
+    "properties": {
+      "name": ["Mitchell Baker"],
+      "url": ["http://blog.lizardwrangler.com/"],
+      "org": [{
+        "value": "Mozilla Foundation",
+        "type": ["h-card", "h-org"],
+        "properties": {
+          "name": ["Mozilla Foundation"],
+          "url": ["http://mozilla.org/"]
+        }
+      }]
+    }
+  }]
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser -> parse();
+		
+		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	/**
+	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 */
+	public function testHCardChildHCard()
+	{
+		$input = '<div class="h-card">
+  <a class="p-name u-url"
+     href="http://blog.lizardwrangler.com/" 
+    >Mitchell Baker</a> 
+  (<a class="h-org h-card" 
+      href="http://mozilla.org/"
+     >Mozilla Foundation</a>)
+</div>';
+		$expected = '{
+  "items": [{ 
+    "type": ["h-card"],
+    "properties": {
+      "name": ["Mitchell Baker"],
+      "url": ["http://blog.lizardwrangler.com/"]
+    },
+    "children": [{
+      "type": ["h-card","h-org"],
+      "properties": {
+        "name": ["Mozilla Foundation"],
+        "url": ["http://mozilla.org/"]
+      }
+    }]
   }]
 }';
 		
