@@ -96,8 +96,14 @@ TODO: Write up as prose
 
 ## Testing
 
-Tests are written in phpunit and are contained within `/tests/`. Running <kbd>phpunit .</kbd> from the root dir will run them.
+Tests are written in phpunit and are contained within `/tests/`. Running <kbd>phpunit .</kbd> from the root dir will run them all.
 
-Sanity-checks of the basic parsing functions are within `ParserTest.php`, and are organised into groups for each property type.
+There are enough tests to warrant putting them into separate suites for maintenance. The different suits are:
 
-Some of the [value-class pattern tests](http://microformats.org/wiki/value-class-pattern-tests) are contained within `ValueClassTest.php`
+* `ParserTest.php`: Tests for internal, `e-*` parsing and sanity checks.
+* `ParseImpliedTest.php`: Tests of the implied property patterns
+* `CombinedMicroformatsTest.php`: Tests of nested microformats
+* `MicroformatsWikiExamplesTest.php`: Tests taken directly from the wiki pages about µf2
+* `Parse*Test.php` for `P`, `U` and `DT`. Contains tests for a particular property type.
+
+As of v0.1.6, the only property with any support for value-class is `dt-*`, so that currently contains the value-class tests. These should be moved elsewhere as value-class and value-title are abstracted and rolled out to all properties.
