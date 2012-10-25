@@ -26,7 +26,7 @@ class Parser
 	 * Constructor
 	 * @param mixed $input The data to parse. Can be a string URL (TODO), a string of DOM or a DOMDocument
 	 */
-	public function __construct($input, $baseurl=null)
+	public function __construct($input, $baseurl=null, $convertClassic=false)
 	{
 		// TODO: Check is URL
 		
@@ -37,6 +37,10 @@ class Parser
 			{
 				$input = mb_convert_encoding($input, 'HTML-ENTITIES', "UTF-8");
 			}
+			
+			// Perform classic microformats conversion if required
+			if ($convertClassic)
+				$input = Parser::convertClassic($input);
 			
 			$doc = new DOMDocument(null, 'UTF-8');
 			@$doc -> loadHTML($input); // TODO: handle seriously malformed HTML better
@@ -541,6 +545,51 @@ class Parser
 		
 		return array('items' => $mfs);
 	}
+	
+	/**
+	 * Convert Classic Microformats
+	 * 
+	 * Converts classic µf classnames to their µf2 equivalents
+	 */
+	public function convertClassic($text)
+	{
+		$map = $this -> classicMap;
+		
+		$text = preg_replace_callback('/class="([a-zA-Z0-9_-]* ?)*"/i', function ($matches) use ($map) {
+			
+			// Replace classic classnames in @class with their µf2 eqivalents
+			$text = $matches[0];
+			
+			// Get just the classes out
+			$text = preg_replace('/class="(.*)"/', '$1', $text);
+			$classnames = explode(' ', $text);
+			
+			foreach ($classnames as $key => $class)
+			{
+				// If there’s a replacement, replace it
+				if (($mf2Class = $map[$class]) != '')
+					$classnames[$key] = $mf2Class;
+			}
+			
+			// Rebuild and return
+			$classString = join(' ', $classnames);
+			return 'class="' . $classString . '"';
+			
+		}, $text);
+		
+		return $text;
+	}
+	
+	/**
+	 * Classic Microformats Map
+	 * 
+	 * Maps classic classnames to their µf2 equivalents
+	 */
+	private $classicMap = array(
+		'vcard' => 'h-card',
+		'fn' => 'p-name',
+		'url' => 'u-url'
+	);
 }
 
 // EOF mf2/Parser.php
