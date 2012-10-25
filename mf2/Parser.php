@@ -476,22 +476,25 @@ class Parser
 		if (!array_key_exists('photo', $return))
 		{
 			// Look for img @src
-			// @todo resolve relative URLs
-			if ($e -> tagName == 'img')
-				$return['photo'][] = $e -> getAttribute('src');
-			
-			// Look for nested img @src
-			foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
-			{
-				$return['photo'][] = $em -> getAttribute('src');
-				break;
-			}
-			
-			// Look for double nested img @src
-			foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
-			{
-				$return['photo'][] = $em -> getAttribute('src');
-				break;
+			try {
+				if ($e -> tagName == 'img')
+					throw new Exception($e -> getAttribute('src'));
+				
+				// Look for nested img @src
+				foreach ($this -> xpath -> query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('src') != '')
+						throw new Exception($em -> getAttribute('src'));
+				}
+				
+				// Look for double nested img @src
+				foreach ($this -> xpath -> query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em)
+				{
+					if ($em -> getAttribute('src') != '')
+						throw new Exception($em -> getAttribute('src'));
+				}
+			} catch (Exception $exc) {
+				$return['photo'][] = $exc -> getMessage();
 			}
 		}
 		
