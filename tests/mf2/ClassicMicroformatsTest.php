@@ -15,7 +15,9 @@ use mf2\Parser,
 /**
  * Classic Microformats Test
  * 
+ * Contains tests of the classic microformat => µf2 functionality.
  * 
+ * Mainly based off BC tables on http://microformats.org/wiki/microformats2#v2_vocabularies
  */
 class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase
 {	
