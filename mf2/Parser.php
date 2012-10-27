@@ -619,7 +619,19 @@ class Parser
 		'key' => 'u-key',
 		'org' => 'p-org',
 		'organization-name' => 'p-organization-name',
-		'organization-unit' => 'p-organization-unit'
+		'organization-unit' => 'p-organization-unit',
+		// hAtom
+		'hentry' => 'h-entry',
+		'entry-title' => 'p-name',
+		'entry-summary' => 'p-summary',
+		'entry-content' => 'e-content',
+		'published' => 'dt-published',
+		'updated' => 'dt-updated',
+		'author' => 'p-author h-card',
+		'category' => 'p-category',
+		'geo' => 'p-geo h-geo',
+		'latitude' => 'p-latitude',
+		'longitude' => 'p-longitude'
 	);
 }
 
