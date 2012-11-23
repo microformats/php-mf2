@@ -443,11 +443,14 @@ class Parser {
         }
 
         // Phew. Return the final result.
-        return array(
+        $parsed = array(
             'type' => $mfTypes,
-            'properties' => $return,
-            'children' => $children
+            'properties' => $return
         );
+        if (!empty($children))
+            $parsed['children'] = $children;
+        
+        return $parsed;
     }
 
     /**
@@ -465,8 +468,8 @@ class Parser {
             // Add the value to the array for this property type
             $mfs[] = $result;
         }
-
-        return array('items' => $mfs);
+        
+        return array('items' => array_filter($mfs));
     }
 
     /**

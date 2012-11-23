@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Tests of the parsing methods within mf2\Parser
  */
@@ -9,8 +10,8 @@ namespace mf2\Parser\test;
 $autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
 
 use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+    PHPUnit_Framework_TestCase,
+    DateTime;
 
 /**
  * Microformats Wiki Examples
@@ -22,20 +23,18 @@ use mf2\Parser,
  * 
  * @author Barnaby Walters waterpigs.co.uk <barnaby@waterpigs.co.uk>
  */
-class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
-{	
-	public function setUp()
-	{
-		date_default_timezone_set('Europe/London');
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats-2
-	 */
-	public function testSimplePersonReference()
-	{
-		$input = '<span class="h-card">Frances Berriman</span>';
-		$expected = '{
+class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
+
+    public function setUp() {
+        date_default_timezone_set('Europe/London');
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats-2
+     */
+    public function testSimplePersonReference() {
+        $input = '<span class="h-card">Frances Berriman</span>';
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -43,19 +42,18 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats-2
-	 */
-	public function testSimpleHyperlinkedPersonReference()
-	{
-		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
-		$expected = '{
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats-2
+     */
+    public function testSimpleHyperlinkedPersonReference() {
+        $input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -64,43 +62,41 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats-2-implied-properties
-	 */
-	public function testSimplePersonImage()
-	{
-		$input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
-		// Added root items key
-		$expected = '{"items": [{ 
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats-2-implied-properties
+     */
+    public function testSimplePersonImage() {
+        $input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
+        // Added root items key
+        $expected = '{"items": [{ 
   "type": ["h-card"],
   "properties": {
     "name": ["Chris Messina"],
     "photo": ["http://example.org/pic.jpg"]
   }
 }]}';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats-2-implied-properties
-	 */
-	public function testHyperlinkedImageNameAndPhotoProperties()
-	{
-		$input = '<a class="h-card" href="http://rohit.khare.org/">
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats-2-implied-properties
+     */
+    public function testHyperlinkedImageNameAndPhotoProperties() {
+        $input = '<a class="h-card" href="http://rohit.khare.org/">
  <img alt="Rohit Khare"
       src="https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg" />
 </a>';
-		// Added root items key
-		$expected = '{"items": [{ 
+        // Added root items key
+        $expected = '{"items": [{ 
   "type": ["h-card"],
   "properties": {
     "name": ["Rohit Khare"],
@@ -108,18 +104,17 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
     "photo": ["https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg"]
   }
 }]}';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats-2
-	 */
-	public function testMoreDetailedPerson()
-	{
-		$input = '<div class="h-card">
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats-2
+     */
+    public function testMoreDetailedPerson() {
+        $input = '<div class="h-card">
   <img class="u-photo" alt="photo of Mitchell"
        src="https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"/>
   <a class="p-name u-url"
@@ -135,8 +130,8 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
   <span class="p-category">Strategy</span>
   <span class="p-category">Leadership</span>
 </div>';
-		
-		$expected = '{
+
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -155,11 +150,12 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
 }
 
 // EOF tests/mf2/testParser.php
