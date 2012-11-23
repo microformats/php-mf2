@@ -448,7 +448,7 @@ class Parser {
             'properties' => $return
         );
         if (!empty($children))
-            $parsed['children'] = $children;
+            $parsed['children'] = array_filter($children);
         
         return $parsed;
     }
