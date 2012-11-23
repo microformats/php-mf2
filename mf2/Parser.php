@@ -306,6 +306,7 @@ class Parser {
 
         // Initalise var to store the representation in
         $return = array();
+        $children = array();
 
         // Handle nested microformats (h-*)
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF) {
@@ -442,10 +443,14 @@ class Parser {
         }
 
         // Phew. Return the final result.
-        return array(
+        $parsed = array(
             'type' => $mfTypes,
-            'properties' => $return,
+            'properties' => $return
         );
+        if (!empty($children))
+            $parsed['children'] = $children;
+
+        return $parsed;
     }
 
     /**
@@ -464,7 +469,7 @@ class Parser {
             $mfs[] = $result;
         }
 
-        return array('items' => $mfs);
+        return array('items' => array_filter($mfs));
     }
 
     /**
@@ -477,23 +482,23 @@ class Parser {
 
         $text = preg_replace_callback('/class="([a-zA-Z0-9_-]* ?)*"/i', function ($matches) use ($map) {
 
-            // Replace classic classnames in @class with their µf2 eqivalents
-            $text = $matches[0];
+                    // Replace classic classnames in @class with their µf2 eqivalents
+                    $text = $matches[0];
 
-            // Get just the classes out
-            $text = preg_replace('/class="(.*)"/', '$1', $text);
-            $classnames = explode(' ', $text);
+                    // Get just the classes out
+                    $text = preg_replace('/class="(.*)"/', '$1', $text);
+                    $classnames = explode(' ', $text);
 
-            foreach ($classnames as $key => $class) {
-                // If there’s a replacement, replace it
-                if (($mf2Class = $map[$class]) != '')
-                    $classnames[$key] = $mf2Class;
-            }
+                    foreach ($classnames as $key => $class) {
+                        // If there’s a replacement, replace it
+                        if (($mf2Class = $map[$class]) != '')
+                            $classnames[$key] = $mf2Class;
+                    }
 
-            // Rebuild and return
-            $classString = join(' ', $classnames);
-            return 'class="' . $classString . '"';
-        }, $text);
+                    // Rebuild and return
+                    $classString = join(' ', $classnames);
+                    return 'class="' . $classString . '"';
+                }, $text);
 
         return $text;
     }

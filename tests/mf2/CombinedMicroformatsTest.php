@@ -1,34 +1,33 @@
 <?php
+
 namespace mf2\Parser\test;
 
 // Include Parser.php
 $autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
 
 use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+    PHPUnit_Framework_TestCase,
+    DateTime;
 
 /**
  * Combined Microformats Test
  * 
- * Tests the ability of Parser::parse() to handle nested microformats correctly. More info
- * at http://microformats.org/wiki/microformats-2#combining_microformats
+ * Tests the ability of Parser::parse() to handle nested microformats correctly.
+ * More info at http://microformats.org/wiki/microformats-2#combining_microformats
  * 
  * @todo implement
  */
-class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
-{	
-	public function setUp()
-	{
-		date_default_timezone_set('Europe/London');
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
-	 */
-	public function testHEventLocationHCard()
-	{
-		$input = '<div class="h-event">
+class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
+
+    public function setUp() {
+        date_default_timezone_set('Europe/London');
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats2#combining_microformats
+     */
+    public function testHEventLocationHCard() {
+        $input = '<div class="h-event">
   <a class="p-name u-url" href="http://indiewebcamp.com/2012">
     IndieWebCamp 2012
   </a>
@@ -43,7 +42,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     <abbr class="p-region" title="Oregon">OR</abbr>
   </span>
 </div>';
-		$expected = '{
+        $expected = '{
   "items": [{ 
     "type": ["h-event"],
     "properties": {
@@ -66,25 +65,24 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
-	 */
-	public function testHCardOrgPOrg()
-	{
-		$input = '<div class="h-card">
+
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats2#combining_microformats
+     */
+    public function testHCardOrgPOrg() {
+        $input = '<div class="h-card">
   <a class="p-name u-url"
      href="http://blog.lizardwrangler.com/" 
     >Mitchell Baker</a> 
   (<span class="p-org">Mozilla Foundation</span>)
 </div>';
-		$expected = '{
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -94,19 +92,18 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
-	 */
-	public function testHCardOrgHCard()
-	{
-		$input = '<div class="h-card">
+
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats2#combining_microformats
+     */
+    public function testHCardOrgHCard() {
+        $input = '<div class="h-card">
   <a class="p-name u-url"
      href="http://blog.lizardwrangler.com/" 
     >Mitchell Baker</a> 
@@ -114,7 +111,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
       href="http://mozilla.org/"
      >Mozilla Foundation</a>)
 </div>';
-		$expected = '{
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -131,19 +128,18 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
-	 */
-	public function testHCardPOrgHCardHOrg()
-	{
-		$input = '<div class="h-card">
+
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats2#combining_microformats
+     */
+    public function testHCardPOrgHCardHOrg() {
+        $input = '<div class="h-card">
   <a class="p-name u-url"
      href="http://blog.lizardwrangler.com/" 
     >Mitchell Baker</a> 
@@ -151,7 +147,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
       href="http://mozilla.org/"
      >Mozilla Foundation</a>)
 </div>';
-		$expected = '{
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -168,27 +164,25 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     }
   }]
 }';
-		
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
-	
-	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
-	 */
-	public function testHCardChildHCard()
-	{
-		$input = '<div class="h-card">
+
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
+    /**
+     * From http://microformats.org/wiki/microformats2#combining_microformats
+     */
+    public function testHCardChildHCard() {
+        $input = '<div class="h-card">
   <a class="p-name u-url"
-     href="http://blog.lizardwrangler.com/" 
-    >Mitchell Baker</a> 
-  (<a class="h-org h-card" 
-      href="http://mozilla.org/"
-     >Mozilla Foundation</a>)
+     href="http://blog.lizardwrangler.com/">
+     Mitchell Baker</a> 
+  (<a class="h-org h-card" href="http://mozilla.org/">
+      Mozilla Foundation</a>)
 </div>';
-		$expected = '{
+        $expected = '{
   "items": [{ 
     "type": ["h-card"],
     "properties": {
@@ -204,12 +198,13 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase
     }]
   }]
 }';
-		
-		$parser = new Parser($input);
-		$output = $parser -> parse();
-		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
-	}
+
+        $parser = new Parser($input);
+        $output = $parser->parse();
+        
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+
 }
 
 // EOF
