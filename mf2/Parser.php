@@ -449,7 +449,6 @@ class Parser {
         );
         if (!empty($children))
             $parsed['children'] = array_filter($children);
-        
         return $parsed;
     }
 
@@ -468,7 +467,7 @@ class Parser {
             // Add the value to the array for this property type
             $mfs[] = $result;
         }
-        
+
         return array('items' => array_filter($mfs));
     }
 
