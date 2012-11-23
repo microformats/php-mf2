@@ -315,7 +315,7 @@ class Parser {
 
             // Add the value to the array for this property type
             // TODO: Check for a property name to attach this to instead of just sticking everything in children
-            $return['children'][] = $result;
+            $children[] = $result;
 
             // Make sure this sub-mf won’t get parsed as a top level mf
             $subMF->setAttribute('data-h-parsed', 'true');
