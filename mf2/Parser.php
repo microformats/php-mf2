@@ -21,6 +21,11 @@ class Parser {
      * A DOMXPath object which can be used to query over any fragment
      */
     protected $xpath;
+    
+    /**
+     * @var bool Whether or not to output datetimes as strings
+     */
+    public $stringDateTimes = false;
 
     /**
      * Constructor
@@ -273,6 +278,9 @@ class Parser {
         }
 
         // Whatever happened, $dtValue is now either a \DateTime or false.
+        if ($dtValue instanceof DateTime and $this->stringDateTimes)
+            return $dtValue->format(DateTime::W3C);
+        
         return $dtValue;
     }
 
