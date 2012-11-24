@@ -35,7 +35,7 @@ class Parser {
             }
 
             // Perform classic microformats conversion if required
-            if ($convertClassic)
+            if ($convertClassic != false)
                 $input = $this->convertClassic($input);
 
             $doc = new DOMDocument(null, 'UTF-8');
@@ -448,7 +448,7 @@ class Parser {
             'properties' => $return
         );
         if (!empty($children))
-            $parsed['children'] = array_filter($children);
+            $parsed['children'] = array_values(array_filter($children));
         return $parsed;
     }
 
@@ -468,7 +468,7 @@ class Parser {
             $mfs[] = $result;
         }
 
-        return array('items' => array_filter($mfs));
+        return array('items' => array_values(array_filter($mfs)));
     }
 
     /**
