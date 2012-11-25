@@ -48,8 +48,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
     "properties": {
       "name": ["IndieWebCamp 2012"],
       "url": ["http://indiewebcamp.com/2012"],
-      "start": ["2012-06-30"],
-      "end": ["2012-07-01"],
+      "start": ["2012-06-30T00:00:00+01:00"],
+      "end": ["2012-07-01T00:00:00+01:00"],
       "location": [{
         "value": "Geoloqi, 920 SW 3rd Ave. Suite 400, Portland, OR",
         "type": ["h-card"],
@@ -67,8 +67,9 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 }';
 
         $parser = new Parser($input);
+        $parser->stringDateTimes = true;
         $output = $parser->parse();
-
+        
         $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
     }
 
@@ -94,6 +95,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 }';
 
         $parser = new Parser($input);
+        $parser->stringDateTimes = true;
         $output = $parser->parse();
 
         $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
@@ -130,6 +132,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 }';
 
         $parser = new Parser($input);
+        $parser->stringDateTimes = true;
         $output = $parser->parse();
 
         $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
@@ -179,7 +182,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
   <a class="p-name u-url"
      href="http://blog.lizardwrangler.com/">
      Mitchell Baker</a> 
-  (<a class="h-org h-card" href="http://mozilla.org/">
+  (<a class="h-card h-org" href="http://mozilla.org/">
       Mozilla Foundation</a>)
 </div>';
         $expected = '{
