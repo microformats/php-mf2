@@ -57,6 +57,19 @@ class Parser {
     }
 
     // !Utility Functions
+    
+    /**
+     * Collapse Whitespace
+     * 
+     * Collapses any sequences of whitespace within a string into a single space
+     * character.
+     * 
+     * @param string $str
+     * @return string
+     */
+    public static function collapseWhitespace($str) {
+        return preg_replace('/\s+/', ' ', $str);
+    }
 
     /**
      * Microformat Name From Class string
@@ -156,8 +169,8 @@ class Parser {
             // Use innertext
             $pValue = trim($p->nodeValue);
         }
-
-        return $pValue;
+        
+        return self::collapseWhitespace($pValue);
     }
 
     /**
