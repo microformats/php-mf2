@@ -574,7 +574,7 @@ class Parser {
      * Maps classic classnames to their µf2 equivalents
      */
     private $classicMap = array(
-        // hCard
+        // hCard (inc. h-adr and h-geo)
         'vcard' => 'h-card',
         'fn' => 'p-name',
         'url' => 'u-url',
@@ -631,7 +631,12 @@ class Parser {
         'education' => 'h-event p-education',
         'experience' => 'h-event p-experience',
         'skill' => 'p-skill',
-        'affiliation' => 'p-affiliation h-card'
+        'affiliation' => 'p-affiliation h-card',
+        // hEvent
+        'dtstart' => 'dt-start',
+        'dtend' => 'dt-end',
+        'duration' => 'dt-duration',
+        'description' => 'p-description'
     );
 
 }
