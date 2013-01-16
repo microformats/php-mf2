@@ -11,7 +11,6 @@ use DOMDocument,
     Exception;
 
 class Parser {
-
     /**
      * 	The baseurl (if any) to use for this parse
      */
@@ -620,7 +619,14 @@ class Parser {
         'category' => 'p-category',
         'geo' => 'p-geo h-geo',
         'latitude' => 'p-latitude',
-        'longitude' => 'p-longitude'
+        'longitude' => 'p-longitude',
+        // hRecipe
+        'ingredient' => 'p-ingredient',
+        'yield' => 'p-yield',
+        'instructions' => 'e-instructions',
+        'duration' => 'dt-duration',
+        'nutrition' => 'p-nutrition',
+        // hResume
     );
 
 }
