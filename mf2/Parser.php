@@ -627,6 +627,11 @@ class Parser {
         'duration' => 'dt-duration',
         'nutrition' => 'p-nutrition',
         // hResume
+        'contact' => 'h-card p-contact',
+        'education' => 'h-event p-education',
+        'experience' => 'h-event p-experience',
+        'skill' => 'p-skill',
+        'affiliation' => 'p-affiliation h-card'
     );
 
 }
