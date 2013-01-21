@@ -210,7 +210,7 @@ class Parser {
      * Given an element with class="dt-*", get the value of the datetime as a php date object
      * 
      * @param DOMElement $dt The element to parse
-     * @return DateTime An object representing $dt
+     * @return string The datetime string found
      */
     public function parseDT(\DOMElement $dt) {
         // Check for value-class pattern
@@ -260,7 +260,7 @@ class Parser {
                 // Is this part a full ISO8601 datetime?
                 if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
                     // Break completely, we’ve got our value
-                    $dtValue = date_create($part);
+                    $dtValue = $part;
                     break;
                 } else {
                     // Is the current part a valid time(+TZ?) AND no other time reprentation has been found?
@@ -272,59 +272,44 @@ class Parser {
                     }
                 }
             }
-
-            // If we have both a $datePart and $timePart, create date from those
-            if (!empty($datePart) and !empty($timePart)) {
-                $dateTime = $datePart . ' ' . $timePart;
-                $dtValue = date_create($dateTime);
-            }
-            // Otherwise, fail (TODO: perhaps try to use any parts we do have to build an approximate date?)
         } else {
             // Not using value-class (phew).
             if ($dt->tagName == 'img' or $dt->tagName == 'area') {
                 // Use @alt
                 // Is it an entire dt?
                 $alt = $dt->getAttribute('alt');
-                if (!empty($alt)) {
-                    $dtValue = date_create($alt);
-                }
+                if (!empty($alt))
+                    $dtValue = $alt;
             } elseif ($dt->tagName == 'data') {
                 // Use @value, otherwise innertext
                 // Is it an entire dt?
                 $value = $dt->getAttribute('value');
-                if (!empty($value)) {
-                    $dtValue = date_create($value);
-                } else {
-                    $dtValue = date_create($dt->nodeValue);
-                }
+                if (!empty($value))
+                    $dtValue = $value;
+                else
+                    $dtValue = $dt->nodeValue;
             } elseif ($dt->tagName == 'abbr') {
                 // Use @title, otherwise innertext
                 // Is it an entire dt?
                 $title = $dt->getAttribute('title');
-                if (!empty($title)) {
-                    $dtValue = date_create($title);
-                } else {
-                    $dtValue = date_create($dt->nodeValue);
-                }
+                if (!empty($title))
+                    $dtValue = $title;
+                else
+                    $dtValue = $dt->nodeValue;
             } elseif ($dt->tagName == 'del' or $dt->tagName == 'ins' or $dt->tagName == 'time') {
                 // Use @datetime if available, otherwise innertext
                 // Is it an entire dt?
                 $dtAttr = $dt->getAttribute('datetime');
-                if (!empty($dtAttr)) {
-                    $dtValue = date_create($dtAttr);
-                } else {
-                    $dtValue = date_create($dt->nodeValue);
-                }
+                if (!empty($dtAttr))
+                    $dtValue = $dtAttr;
+                else
+                    $dtValue = $dt->nodeValue;
             } else {
                 // Use innertext
-                $dtValue = date_create($dt->nodeValue);
+                $dtValue = $dt->nodeValue;
             }
         }
 
-        // Whatever happened, $dtValue is now either a \DateTime or false.
-        if ($dtValue instanceof DateTime and $this->stringDateTimes)
-            return $dtValue->format(DateTime::W3C);
-        
         return $dtValue;
     }
 
