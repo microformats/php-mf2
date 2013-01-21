@@ -609,6 +609,7 @@ class Parser {
         'organization-name' => 'p-organization-name',
         'organization-unit' => 'p-organization-unit',
         // hAtom
+        'hfeed' => 'h-feed',
         'hentry' => 'h-entry',
         'entry-title' => 'p-name',
         'entry-summary' => 'p-summary',
