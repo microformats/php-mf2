@@ -556,8 +556,8 @@ class Parser {
 
                     foreach ($classnames as $key => $class) {
                         // If there’s a replacement, replace it
-                        if (($mf2Class = $map[$class]) != '')
-                            $classnames[$key] = $mf2Class;
+                        if (isset($map[$class]))
+                            $classnames[$key] = $map[$class];
                     }
 
                     // Rebuild and return
