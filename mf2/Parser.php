@@ -166,7 +166,7 @@ class Parser {
             $pValue = $p->getAttribute('value');
         } else {
             // Use innertext
-            $pValue = trim($p->nodeValue);
+            $pValue = trim($p->textContent);
         }
         
         return self::collapseWhitespace($pValue);
