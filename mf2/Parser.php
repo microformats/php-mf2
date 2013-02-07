@@ -130,7 +130,7 @@ class Parser {
      */
     static function nestedMfPropertyNamesFromElement(\DOMElement $e) {
         $class = $e->getAttribute('class');
-        return self::nestedMfPropertyNameFromClass($class);
+        return self::nestedMfPropertyNamesFromClass($class);
     }
     
     private function elementPrefixParsed(\DOMElement $e, $prefix) {
@@ -341,7 +341,7 @@ class Parser {
             return null;
 
         // Get current µf name
-        $mfTypes = Parser::mfNameFromElement($e);
+        $mfTypes = self::mfNamesFromElement($e, 'h-');
 
         // Initalise var to store the representation in
         $return = array();
@@ -355,7 +355,7 @@ class Parser {
             // TODO: Populate $result->value
 
             // Does this µf have any property names other than h-*?
-            $properties = self::nestedMfPropertyNameFromElement($subMF);
+            $properties = self::nestedMfPropertyNamesFromElement($subMF);
             
             if (!empty($properties)) {
                 // Yes! It’s a nested property µf
@@ -412,7 +412,7 @@ class Parser {
 
             if ($dtValue) {
                 // Add the value to the array for dt- properties
-                foreach (self::mfNameFromElement($dt, 'dt-') as $propName) {
+                foreach (self::mfNamesFromElement($dt, 'dt-') as $propName) {
                     $return[$propName][] = $dtValue;
                 }
             }
