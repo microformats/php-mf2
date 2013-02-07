@@ -71,17 +71,14 @@ class Parser {
     /**
      * Microformat Name From Class string
      * 
-     * Given the value of @class, get the relevant mf classname (e.g. h-card, 
-     * p-name). Matches the first if there are multiple.
-     * 
-     * For h-*, it returns an array containing all full h-* names, but for 
-     * property names it returns a string and strips the prefix.
+     * Given the value of @class, get the relevant mf classnames (e.g. h-card, 
+     * p-name).
      * 
      * @param string $class A space delimited list of classnames
      * @param string $prefix The prefix to look for
      * @return string|array The prefixed name of the first microfomats class found or false
      */
-    public static function mfNameFromClass($class, $prefix = 'h-') {
+    public static function mfNamesFromClass($class, $prefix = 'h-') {
         $classes = explode(' ', $class);
         $matches = array();
         
@@ -91,25 +88,25 @@ class Parser {
             }
         }
 
-        return ($prefix == 'h-') ? $matches : $matches[0];
+        return $matches;
     }
     
     /**
      * Get Nested µf Property Name From Class
      * 
-     * Returns the first p-, u-, dt- or e- prefixed classname it finds in a 
+     * Returns all the p-, u-, dt- or e- prefixed classnames it finds in a 
      * space-separated string.
      * 
      * @param string $class
      * @return string|null
      */
-    public static function nestedMfPropertyNameFromClass($class) {
+    public static function nestedMfPropertyNamesFromClass($class) {
         $prefixes = array('p-', 'u-', 'dt-', 'e-');
         
         foreach (explode(' ', $class) as $classname) {
             foreach ($prefixes as $prefix) {
                 if (stristr($classname, $prefix))
-                    return self::mfNameFromClass($classname, $prefix);
+                    return self::mfNamesFromClass($classname, $prefix);
             }
         }
         
@@ -117,56 +114,39 @@ class Parser {
     }
 
     /**
-     * Wraps mf_name_from_class to handle an element as input (common)
+     * Wraps mfNamesFromClass to handle an element as input (common)
      * 
      * @param DOMElement $e The element to get the classname for
      * @param string $prefix The prefix to look for
      * @return mixed See return value of mf2\Parser::mfNameFromClass()
      */
-    static function mfNameFromElement(\DOMElement $e, $prefix = 'h-') {
+    static function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
         $class = $e->getAttribute('class');
-        return Parser::mfNameFromClass($class, $prefix);
+        return Parser::mfNamesFromClass($class, $prefix);
     }
     
     /**
-     * Wraps nestedMfPropertyNameFromClass to handle an element as input
+     * Wraps nestedMfPropertyNamesFromClass to handle an element as input
      */
-    static function nestedMfPropertyNameFromElement(\DOMElement $e) {
+    static function nestedMfPropertyNamesFromElement(\DOMElement $e) {
         $class = $e->getAttribute('class');
         return self::nestedMfPropertyNameFromClass($class);
     }
     
-    /**
-     * Checks to see if a DOMElement has already been parsed for a particular
-     * property.
-     * 
-     * @param DOMElement $e The element to check
-     * @param string $property The property to check for
-     * @return bool Whether or not $e has already been parsed as $property
-     */
-    private function isElementParsed(\DOMElement $e, $property) {
-        return $this->parsed->contains($e)
-            ? in_array($property, $this->parsed[$e])
-            : false;
-    }
-    
-    /**
-     * Element Parsed
-     * 
-     * Register than an element has been parsed for a particular property name
-     * with the internal set.
-     * 
-     * @param \DOMElement $e The element which has been parsed
-     * @param string $propertyName The name of the property it has been parsed as
-     */
-    private function elementParsed(\DOMElement $e, $propertyName) {
+    private function elementPrefixParsed(\DOMElement $e, $prefix) {
         if (!$this->parsed->contains($e))
             $this->parsed->attach($e, []);
         
-        $props = $this->parsed[$e];
-        $props[] = $propertyName;
+        $prefixes = $this->parsed[$e];
+        $prefixes[] = $prefix;
+        $this->parsed[$e] = $prefxes;
+    }
+    
+    private function isElementParsed(\DOMElement $e, $prefix) {
+        if (!$this->parsed->contains($e))
+            return false;
         
-        $this->parsed[$e] = $props;
+        return in_array($prefix, $this->parsed[$e]);
     }
     
     // !Parsing Functions
@@ -357,8 +337,8 @@ class Parser {
      */
     public function parseH(\DOMElement $e) {
         // If it’s already been parsed (e.g. is a child mf), skip
-        if (Parser::isElementParsed($e, 'h'))
-            return false;
+        if ($this->parsed->contains($e))
+            return null;
 
         // Get current µf name
         $mfTypes = Parser::mfNameFromElement($e);
@@ -374,79 +354,85 @@ class Parser {
             
             // TODO: Populate $result->value
 
-            // Does this µf have a property name other than h-*?
-            $property = self::nestedMfPropertyNameFromElement($subMF);
-            if (!empty($property)) {
-                // Yes: Put it under that array
-                $return[$property][] = $result;
-                // Set $subMF as parsed for the other property
-                // TODO: Clean this
-                $subMF->setAttribute('data-p-parsed', 'true');
-                $subMF->setAttribute('data-u-parsed', 'true');
-                $subMF->setAttribute('data-e-parsed', 'true');
-                $subMF->setAttribute('data-dt-parsed', 'true');
+            // Does this µf have any property names other than h-*?
+            $properties = self::nestedMfPropertyNameFromElement($subMF);
+            
+            if (!empty($properties)) {
+                // Yes! It’s a nested property µf
+                foreach ($properties as $property) {
+                    $return[$property] = $result;
+                }
             } else {
-                // No: It’s a plain child, put it in [children]
+                // No, it’s a child µf
                 $children[] = $result;
             }
-
+            
             // Make sure this sub-mf won’t get parsed as a top level mf
-            $subMF->setAttribute('data-h-parsed', 'true');
+            $this->elementPrefixParsed($subMF, 'h');
         }
 
         // Handle p-*
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
-            if (Parser::isElementParsed($p, 'p'))
+            if ($this->isElementParsed($p, 'p'))
                 continue;
 
             $pValue = $this->parseP($p);
 
-            // Add the value to the array for this property type
-            $return[Parser::mfNameFromElement($p, 'p-')][] = $pValue;
+            // Add the value to the array for it’s p- properties
+            foreach (self::mfNamesFromElement($p, 'p-') as $propName) {
+                $return[$propName][] = $pValue;
+            }
 
             // Make sure this sub-mf won’t get parsed as a top level mf
-            $p->setAttribute('data-p-parsed', 'true');
+            $this->elementPrefixParsed($p, 'p');
         }
 
         // Handle u-*
         foreach ($this->xpath->query('.//*[contains(@class,"u-")]', $e) as $u) {
-            if (Parser::isElementParsed($u, 'u'))
+            if ($this->isElementParsed($u, 'u'))
                 continue;
 
             $uValue = $this->parseU($u);
 
-            // Add the value to the array for this property type
-            $return[Parser::mfNameFromElement($u, 'u-')][] = $uValue;
+            // Add the value to the array for it’s property types
+            foreach (self::mfNamesFromElement($u, 'u-') as $propName) {
+                $return[$propName][] = $uValue;
+            }
 
             // Make sure this sub-mf won’t get parsed as a top level mf
-            $u->setAttribute('data-u-parsed', 'true');
+            $this->elementPrefixParsed($u, 'u');
         }
 
         // Handle dt-*
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
-            if (Parser::isElementParsed($dt, 'dt'))
+            if ($this->isElementParsed($dt, 'dt'))
                 continue;
 
             $dtValue = $this->parseDT($dt);
 
             if ($dtValue) {
-                // Add the value to the array for this property type
-                $return[Parser::mfNameFromElement($dt, 'dt-')][] = $dtValue;
+                // Add the value to the array for dt- properties
+                foreach (self::mfNameFromElement($dt, 'dt-') as $propName) {
+                    $return[$propName][] = $dtValue;
+                }
             }
+            
             // Make sure this sub-mf won’t get parsed as a top level mf
-            $dt->setAttribute('data-dt-parsed', 'true');
+            $this->elementPrefixParsed($dt, 'dt');
         }
 
         // TODO: Handle e-* (em)
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
-            if (Parser::isElementParsed($em, 'e'))
+            if ($this->isElementParsed($e, 'e'))
                 continue;
 
             $eValue = $this->parseE($em);
 
             if ($eValue) {
-                // Add the value to the array for this property type
-                $return[Parser::mfNameFromElement($em, 'e-')][] = $eValue;
+                // Add the value to the array for e- properties
+                foreach (self::mfNamesFromElement($em, 'e-') as $propName) {
+                    $return[$propName][] = $eValue;
+                }
             }
             // Make sure this sub-mf won’t get parsed as a top level mf
             $em->setAttribute('data-e-parsed', 'true');
