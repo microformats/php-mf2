@@ -36,6 +36,15 @@ class ParseValueClassTitleTest extends PHPUnit_Framework_TestCase {
         $this->assertArrayHasKey('name', $output['items'][0]['properties']);
         $this->assertEquals('NameEndname', $output['items'][0]['properties']['name'][0]);
     }
+    
+    public function testValueClassTitleHandlesSingleValueTitle() {
+        $input = '<div class="h-card"><p class="p-name"><span class="value-title" title="Real Name">Wrong Name</span> (this should not be included)</p></div>';
+        $parser = new Parser($input);
+        $output = $parser->parse();
+
+        $this->assertArrayHasKey('name', $output['items'][0]['properties']);
+        $this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
+    }
 }
 
 // EOF tests/mf2/testParser.php
