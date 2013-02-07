@@ -162,6 +162,8 @@ class Parser {
             return '';
         elseif ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
             $pValue = $p->getAttribute('alt');
+        } elseif ($p->tagName == 'area' and $p->getAttribute('alt') !== '') {
+            $pValue = $p->getAttribute('alt');
         } elseif ($p->tagName == 'abbr' and $p->getAttribute('title') !== '') {
             $pValue = $p->getAttribute('title');
         } elseif ($p->tagName == 'data' and $p->getAttribute('value') !== '') {
