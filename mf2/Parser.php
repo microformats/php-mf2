@@ -11,20 +11,17 @@ use DOMDocument,
     Exception;
 
 class Parser {
-    /**
-     * 	The baseurl (if any) to use for this parse
-     */
+    /** @var string The baseurl (if any) to use for this parse */
     public $baseurl;
 
-    /**
-     * A DOMXPath object which can be used to query over any fragment
-     */
+    /** @var DOMXPath object which can be used to query over any fragment*/
     protected $xpath;
     
-    /**
-     * @var bool Whether or not to output datetimes as strings
-     */
+    /** @var bool Whether or not to output datetimes as strings */
     public $stringDateTimes = false;
+    
+    /** @var SplObjectStorage */
+    private $parsed;
 
     /**
      * Constructor
@@ -50,6 +47,7 @@ class Parser {
         }
 
         $this->xpath = new DOMXPath($doc);
+        $this->parsed = new \SplObjectStorage();
 
         // TODO: Check for <base> if $baseURL not supplied
         $this->baseurl = $baseurl;
@@ -139,14 +137,17 @@ class Parser {
     }
     
     /**
-     * Checks to see if a DOMElement has already been parsed
+     * Checks to see if a DOMElement has already been parsed for a particular
+     * property.
      * 
      * @param DOMElement $e The element to check
-     * @param string $type	The type of parsing to check for
-     * @return bool Whether or not $e has already been parsed as $type
+     * @param string $property The property to check for
+     * @return bool Whether or not $e has already been parsed as $property
      */
-    static function mfElementParsed(\DOMElement $e, $type) {
-        return ($e->getAttribute('data-' . $type . '-parsed') == 'true');
+    static function mfElementParsed(\DOMElement $e, $property) {
+        return $this->parsed->contains($e)
+            ? in_array($property, $this->parsed[$e])
+            : false;
     }
 
     // !Parsing Functions
