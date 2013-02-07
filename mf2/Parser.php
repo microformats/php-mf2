@@ -198,7 +198,7 @@ class Parser {
         if ($uValue !== false) {
             $host = parse_url($uValue, PHP_URL_HOST);
             $scheme = parse_url($uValue, PHP_URL_SCHEME);
-            if (empty($host) and empty($host) and !empty($this->baseurl)) {
+            if (empty($scheme) and empty($host) and !empty($this->baseurl)) {
                 $uValue = $this->baseurl . $uValue;
             }
         }
