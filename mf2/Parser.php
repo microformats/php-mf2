@@ -65,7 +65,7 @@ class Parser {
      * @return string
      */
     public static function collapseWhitespace($str) {
-        return preg_replace('/\s+/', ' ', $str);
+        return preg_replace('/[\s|\n]+/', ' ', $str);
     }
 
     /**
