@@ -139,7 +139,7 @@ class Parser {
         
         $prefixes = $this->parsed[$e];
         $prefixes[] = $prefix;
-        $this->parsed[$e] = $prefxes;
+        $this->parsed[$e] = $prefixes;
     }
     
     private function isElementParsed(\DOMElement $e, $prefix) {
@@ -360,7 +360,7 @@ class Parser {
             if (!empty($properties)) {
                 // Yes! It’s a nested property µf
                 foreach ($properties as $property) {
-                    $return[$property] = $result;
+                    $return[$property][] = $result;
                 }
             } else {
                 // No, it’s a child µf
