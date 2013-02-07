@@ -561,6 +561,9 @@ class Parser {
             }
         }
 
+        // Make sure things are in alphabetical order
+        sort($mfTypes);
+        
         // Phew. Return the final result.
         $parsed = array(
             'type' => $mfTypes,
