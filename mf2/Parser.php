@@ -150,6 +150,32 @@ class Parser {
     }
     
     // !Parsing Functions
+    
+    /**
+     * Parse value-class/value-title on an element
+     * @param \DOMElement $e
+     * @return string|null the parsed value or null if value-class or -title aren’t in use
+     */
+    public function parseValueClassTitle(\DOMElement $e) {
+        $valueClassElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ")]', $e);
+        
+        if ($valueClassElements->length !== 0) {
+            // Process value-class stuff
+            
+            return;
+        }
+        
+        $valueTitleElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value-title ")]', $e);
+        
+        if ($valueTitleElements->length !== 0) {
+            // Process value-title stuff
+            return;
+        }
+        
+        // No value-title or -class in this element
+        return null;
+    }
+    
     /**
      * Given an element with class="p-*", get it’s value
      * 
