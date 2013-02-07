@@ -158,7 +158,9 @@ class Parser {
      * @todo Make this adhere to value-class
      */
     public function parseP(\DOMElement $p) {
-        if ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
+        if (in_array($p->tagName, ['br', 'hr']))
+            return '';
+        elseif ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
             $pValue = $p->getAttribute('alt');
         } elseif ($p->tagName == 'abbr' and $p->getAttribute('title') !== '') {
             $pValue = $p->getAttribute('title');
