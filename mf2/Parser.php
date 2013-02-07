@@ -367,8 +367,13 @@ class Parser {
                 $children[] = $result;
             }
             
-            // Make sure this sub-mf won’t get parsed as a top level mf
+            // Make sure this sub-mf won’t get parsed as a µf or property
+            // TODO: Determine if clearing this is required?
             $this->elementPrefixParsed($subMF, 'h');
+            $this->elementPrefixParsed($subMF, 'p');
+            $this->elementPrefixParsed($subMF, 'u');
+            $this->elementPrefixParsed($subMF, 'dt');
+            $this->elementPrefixParsed($subMF, 'e');
         }
 
         // Handle p-*
