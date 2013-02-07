@@ -270,6 +270,8 @@ class Parser {
                         // Is the current part a valid date AND no other date reprentation has been found?
                         $datePart = $part;
                     }
+                    
+                    $dtValue = rtrim($datePart, 'T') . 'T' . trim($timePart, 'T');
                 }
             }
         } else {
