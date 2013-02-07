@@ -156,17 +156,17 @@ class Parser {
      * @param \DOMElement $e
      * @return string|null the parsed value or null if value-class or -title aren’t in use
      */
-    public function parseValueClassTitle(\DOMElement $e) {
+    public function parseValueClassTitle(\DOMElement $e, $separator = '') {
         $valueClassElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ")]', $e);
         
         if ($valueClassElements->length !== 0) {
             // Process value-class stuff
             $val = '';
             foreach ($valueClassElements as $el) {
-                $val .= $el->textContent;
+                $val .= $el->textContent . $separator;
             }
             
-            return $val;
+            return trim($val);
         }
         
         $valueTitleElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value-title ")]', $e);
@@ -175,9 +175,10 @@ class Parser {
             // Process value-title stuff
             $val = '';
             foreach ($valueTitleElements as $el) {
-                $val .= $el->getAttribute('title');
+                $val .= $el->getAttribute('title') . $separator;
             }
-            return $val;
+            
+            return trim($val);
         }
         
         // No value-title or -class in this element
@@ -192,7 +193,7 @@ class Parser {
      * @todo Make this adhere to value-class
      */
     public function parseP(\DOMElement $p) {
-        $classTitle = $this->parseValueClassTitle($p);
+        $classTitle = $this->parseValueClassTitle($p, ' ');
         
         if ($classTitle !== null)
             return $classTitle;
