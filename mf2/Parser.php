@@ -352,7 +352,7 @@ class Parser {
             // Parse
             $result = $this->parseH($subMF);
             
-            // TODO: Populate $result->value
+            $result['value'] = $this->parseP($subMF);
 
             // Does this µf have any property names other than h-*?
             $properties = self::nestedMfPropertyNamesFromElement($subMF);
