@@ -161,15 +161,23 @@ class Parser {
         
         if ($valueClassElements->length !== 0) {
             // Process value-class stuff
+            $val = '';
+            foreach ($valueClassElements as $el) {
+                $val .= $el->textContent;
+            }
             
-            return;
+            return $val;
         }
         
         $valueTitleElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value-title ")]', $e);
         
         if ($valueTitleElements->length !== 0) {
             // Process value-title stuff
-            return;
+            $val = '';
+            foreach ($valueTitleElements as $el) {
+                $val .= $el->getAttribute('title');
+            }
+            return $val;
         }
         
         // No value-title or -class in this element
