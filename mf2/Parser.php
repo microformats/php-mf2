@@ -192,6 +192,11 @@ class Parser {
      * @todo Make this adhere to value-class
      */
     public function parseP(\DOMElement $p) {
+        $classTitle = $this->parseValueClassTitle($p);
+        
+        if ($classTitle !== null)
+            return $classTitle;
+        
         if (in_array($p->tagName, ['br', 'hr']))
             return '';
         elseif ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
