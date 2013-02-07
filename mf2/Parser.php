@@ -223,6 +223,11 @@ class Parser {
      * @todo make this adhere to value-class
      */
     public function parseU(\DOMElement $u) {
+        $classTitle = $this->parseValueClassTitle($u);
+        
+        if ($classTitle !== null)
+            return $classTitle;
+        
         if (($u->tagName == 'a' or $u->tagName == 'area') and $u->getAttribute('href') !== null) {
             $uValue = $u->getAttribute('href');
         } elseif ($u->tagName == 'img' and $u->getAttribute('src') !== null) {
@@ -365,6 +370,11 @@ class Parser {
      * 	@return string $e’s innerHTML
      */
     public function parseE(\DOMElement $e) {
+        $classTitle = $this->parseValueClassTitle($e);
+        
+        if ($classTitle !== null)
+            return $classTitle;
+        
         $return = '';
         foreach ($e->childNodes as $node) {
             $return .= $node->C14N();
