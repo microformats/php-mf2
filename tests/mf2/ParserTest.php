@@ -29,29 +29,29 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 
     public function testMicroformatNameFromClassReturnsFullRootName() {
         $expected = array('h-card');
-        $actual = Parser::mfNameFromClass('someclass h-card someotherclass', 'h-');
+        $actual = Parser::mfNamesFromClass('someclass h-card someotherclass', 'h-');
 
         $this->assertEquals($actual, $expected);
     }
 
     public function testMicroformatNameFromClassHandlesMultipleHNames() {
         $expected = array('h-card', 'h-person');
-        $actual = Parser::mfNameFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
+        $actual = Parser::mfNamesFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
 
         $this->assertEquals($actual, $expected);
     }
 
     public function testMicroformatStripsPrefixFromPropertyClassname() {
-        $expected = 'name';
-        $actual = Parser::mfNameFromClass('someclass p-name someotherclass', 'p-');
+        $expected = ['name'];
+        $actual = Parser::mfNamesFromClass('someclass p-name someotherclass', 'p-');
 
         $this->assertEquals($actual, $expected);
     }
 
     public function testNestedMicroformatPropertyNameWorks() {
-        $expected = 'location';
+        $expected = ['location'];
         $test = 'someclass p-location someotherclass';
-        $actual = Parser::nestedMfPropertyNameFromClass($test);
+        $actual = Parser::nestedMfPropertyNamesFromClass($test);
         
         $this->assertEquals($actual, $expected);
     }
