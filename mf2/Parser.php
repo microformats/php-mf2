@@ -386,12 +386,13 @@ class Parser {
                 continue;
 
             $pValue = $this->parseP($p);
-
+            
             // Add the value to the array for it’s p- properties
             foreach (self::mfNamesFromElement($p, 'p-') as $propName) {
-                $return[$propName][] = $pValue;
+                if (!empty($propName))
+                    $return[$propName][] = $pValue;
             }
-
+            
             // Make sure this sub-mf won’t get parsed as a top level mf
             $this->elementPrefixParsed($p, 'p');
         }
