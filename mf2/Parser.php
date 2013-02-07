@@ -144,12 +144,31 @@ class Parser {
      * @param string $property The property to check for
      * @return bool Whether or not $e has already been parsed as $property
      */
-    static function mfElementParsed(\DOMElement $e, $property) {
+    private function isElementParsed(\DOMElement $e, $property) {
         return $this->parsed->contains($e)
             ? in_array($property, $this->parsed[$e])
             : false;
     }
-
+    
+    /**
+     * Element Parsed
+     * 
+     * Register than an element has been parsed for a particular property name
+     * with the internal set.
+     * 
+     * @param \DOMElement $e The element which has been parsed
+     * @param string $propertyName The name of the property it has been parsed as
+     */
+    private function elementParsed(\DOMElement $e, $propertyName) {
+        if (!$this->parsed->contains($e))
+            $this->parsed->attach($e, []);
+        
+        $props = $this->parsed[$e];
+        $props[] = $propertyName;
+        
+        $this->parsed[$e] = $props;
+    }
+    
     // !Parsing Functions
     /**
      * Given an element with class="p-*", get it’s value
@@ -338,7 +357,7 @@ class Parser {
      */
     public function parseH(\DOMElement $e) {
         // If it’s already been parsed (e.g. is a child mf), skip
-        if (Parser::mfElementParsed($e, 'h'))
+        if (Parser::isElementParsed($e, 'h'))
             return false;
 
         // Get current µf name
@@ -377,7 +396,7 @@ class Parser {
 
         // Handle p-*
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
-            if (Parser::mfElementParsed($p, 'p'))
+            if (Parser::isElementParsed($p, 'p'))
                 continue;
 
             $pValue = $this->parseP($p);
@@ -391,7 +410,7 @@ class Parser {
 
         // Handle u-*
         foreach ($this->xpath->query('.//*[contains(@class,"u-")]', $e) as $u) {
-            if (Parser::mfElementParsed($u, 'u'))
+            if (Parser::isElementParsed($u, 'u'))
                 continue;
 
             $uValue = $this->parseU($u);
@@ -405,7 +424,7 @@ class Parser {
 
         // Handle dt-*
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
-            if (Parser::mfElementParsed($dt, 'dt'))
+            if (Parser::isElementParsed($dt, 'dt'))
                 continue;
 
             $dtValue = $this->parseDT($dt);
@@ -420,7 +439,7 @@ class Parser {
 
         // TODO: Handle e-* (em)
         foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
-            if (Parser::mfElementParsed($em, 'e'))
+            if (Parser::isElementParsed($em, 'e'))
                 continue;
 
             $eValue = $this->parseE($em);
