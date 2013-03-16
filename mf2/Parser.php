@@ -36,11 +36,12 @@ class Parser {
             }
 
             // Perform classic microformats conversion if required
-            if ($convertClassic != false)
-                $input = $this->convertClassic($input);
-
-            $doc = new DOMDocument(null, 'UTF-8');
-            @$doc->loadHTML($input); // TODO: handle seriously malformed HTML better
+            if ($convertClassic)
+                $doc = $this->convertClassic($input);
+            else {
+                $doc = new DOMDocument();
+                @$doc->loadHTML($input);
+            }
         }
         elseif (is_a($input, 'DOMDocument')) {
             $doc = $input;
@@ -597,32 +598,37 @@ class Parser {
      * Convert Classic Microformats
      * 
      * Converts classic µf classnames to their µf2 equivalents
+     * 
+     * @param DOMDocument|string $html The content to add classnames to
+     * @return DOMDocument
      */
-    public function convertClassic($text) {
-        $map = $this->classicMap;
+    public function convertClassic($html, $maps = null) {
+        if ($maps === null)
+            $maps = [$this->classicMap];
         
-        if (strtolower(mb_detect_encoding($text)) == 'utf-8') {
-            $text = mb_convert_encoding($text, 'HTML-ENTITIES', "UTF-8");
+        if (is_string($html)) {
+            if (strtolower(mb_detect_encoding($html)) === 'utf-8') {
+                $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
+            }
+            
+            $doc = new DOMDocument();
+            @$doc->loadHTML($html);
+        } else {
+            $doc = $html;
         }
         
-        $doc = new DOMDocument();
-        $doc->loadHTML($text);
         $xp = new DOMXPath($doc);
         
-        foreach ($map as $old => $new) {
-            // Find all elements with .old but not .new
-            foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
-                $el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+        foreach ($maps as $map) {
+            foreach ($map as $old => $new) {
+                // Find all elements with .old but not .new
+                foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
+                    $el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+                }
             }
         }
         
-        $out = '';
-        
-        foreach ($doc->documentElement->childNodes->item(0)->childNodes as $node) {
-            $out .= $node->C14N();
-        }
-        
-        return $out;
+        return $doc;
     }
 
     /**
