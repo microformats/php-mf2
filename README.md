@@ -86,6 +86,8 @@ $parser->addClassMap([
     'oldclassname' => 'p-new-class-name'
 ]);
 
+$parser->convertLegacy();
+
 // Then parse
 $out = $parser->parse();
 ```
