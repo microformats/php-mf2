@@ -601,27 +601,18 @@ class Parser {
     public function convertClassic($text) {
         $map = $this->classicMap;
 
-        $text = preg_replace_callback('/class="([a-zA-Z0-9_-]* ?)*"/i', function ($matches) use ($map) {
-
-                    // Replace classic classnames in @class with their µf2 eqivalents
-                    $text = $matches[0];
-
-                    // Get just the classes out
-                    $text = preg_replace('/class="(.*)"/', '$1', $text);
-                    $classnames = explode(' ', $text);
-
-                    foreach ($classnames as $key => $class) {
-                        // If there’s a replacement, replace it
-                        if (isset($map[$class]))
-                            $classnames[$key] = $map[$class];
-                    }
-
-                    // Rebuild and return
-                    $classString = join(' ', $classnames);
-                    return 'class="' . $classString . '"';
-                }, $text);
-
-        return $text;
+        $doc = new DOMDocument();
+        $doc->loadHTML($text);
+        $xp = new DOMXPath($doc);
+        
+        foreach ($map as $old => $new) {
+            // Find all elements with .old but not .new
+            foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
+                $el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+            }
+        }
+        
+        return $doc->C14N();
     }
 
     /**
@@ -698,4 +689,4 @@ class Parser {
 
 }
 
-// EOF mf2/Parser.php
+// EOF
