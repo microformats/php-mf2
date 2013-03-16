@@ -630,13 +630,43 @@ class Parser {
         
         return $doc;
     }
-
+    
+    public function addClassMap(array $map) {
+        $this->classicMap = array_merge($this->classicMap, $map);
+        return $this;
+    }
+    
+    public function addTwitterClassMap() {
+        $this->addClassMap($this->twitterMap);
+        return $this;
+    }
+    
+    public $twitterMap = [
+        // Tweet Page
+        'stream-uncapped' => 'h-feed',
+        'tweet' => 'h-entry',
+        'tweet-text' => 'p-content',
+        'twitter-atreply' => 'h-x-username',
+        'account-group' => 'h-card p-author',
+        'avatar' => 'u-photo',
+        'fullname' => 'p-name',
+        'username' => 'p-nickname',
+        'js-permalink' => 'u-url',
+        'replies-to' => 'h-feed h-x-replies',
+        'js-user-profile-link' => 'u-url',
+        // User Page
+        'profile-card' => 'h-card',
+        'bio' => 'p-note',
+        'location' => 'p-location h-adr',
+        'stream' => 'h-feed'
+    ];
+    
     /**
      * Classic Microformats Map
      * 
      * Maps classic classnames to their µf2 equivalents
      */
-    private $classicMap = array(
+    public $classicMap = array(
         // hCard (inc. h-adr and h-geo)
         'vcard' => 'h-card',
         'fn' => 'p-name',
