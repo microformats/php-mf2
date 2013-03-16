@@ -22,32 +22,31 @@ class Parser {
     
     /** @var SplObjectStorage */
     private $parsed;
+    
+    /** @var DOMDocument */
+    private $doc;
 
     /**
      * Constructor
-     * @param mixed $input The data to parse. Can be a string URL (TODO), a string of DOM or a DOMDocument
+     * 
+     * @param DOMDocument|string $input The data to parse. A string of DOM or a DOMDocument
      */
-    public function __construct($input, $baseurl = null, $convertClassic = false) {
-        // TODO: Check is URL
+    public function __construct($input, $baseurl = null) {
         // For the moment: assume string = string of HTML
         if (is_string($input)) {
             if (strtolower(mb_detect_encoding($input)) == 'utf-8') {
                 $input = mb_convert_encoding($input, 'HTML-ENTITIES', "UTF-8");
             }
 
-            // Perform classic microformats conversion if required
-            if ($convertClassic)
-                $doc = $this->convertClassic($input);
-            else {
-                $doc = new DOMDocument();
-                @$doc->loadHTML($input);
-            }
+            $doc = new DOMDocument();
+            @$doc->loadHTML($input);
         }
         elseif (is_a($input, 'DOMDocument')) {
             $doc = $input;
         }
+        
+        $this->doc = $doc;
 
-        $this->xpath = new DOMXPath($doc);
         $this->parsed = new \SplObjectStorage();
 
         // TODO: Check for <base> if $baseURL not supplied
@@ -581,7 +580,9 @@ class Parser {
      * @return array An array containing all the µfs found in the current document
      */
     public function parse() {
-        $mfs = array();
+        $this->xpath = new DOMXPath($this->doc);
+        
+        $mfs = [];
 
         foreach ($this->xpath->query('//*[contains(concat(" ",  @class), " h-")]') as $node) {
             // For each microformat
@@ -595,52 +596,64 @@ class Parser {
     }
 
     /**
-     * Convert Classic Microformats
+     * Convert Legacy Classnames
      * 
-     * Converts classic µf classnames to their µf2 equivalents
+     * Adds microformats-2 classnames into a document containing only legacy
+     * semantic classnames. By default performs classic microformat conversion,
+     * but other builtin/arbitrary classmaps can be added.
      * 
-     * @param DOMDocument|string $html The content to add classnames to
-     * @return DOMDocument
+     * @return Parser $this
      */
-    public function convertClassic($html, $maps = null) {
-        if ($maps === null)
-            $maps = [$this->classicMap];
+    public function convertLegacy() {
+        $map = $this->classicMap;
         
-        if (is_string($html)) {
-            if (strtolower(mb_detect_encoding($html)) === 'utf-8') {
-                $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
-            }
-            
-            $doc = new DOMDocument();
-            @$doc->loadHTML($html);
-        } else {
-            $doc = $html;
-        }
+        $doc = $this->doc;
         
         $xp = new DOMXPath($doc);
         
-        foreach ($maps as $map) {
-            foreach ($map as $old => $new) {
-                // Find all elements with .old but not .new
-                foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
-                    $el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
-                }
+        foreach ($map as $old => $new) {
+            // Find all elements with .old but not .new
+            foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
+                $el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
             }
         }
         
-        return $doc;
+        return $this;
     }
     
+    /**
+     * Add Class Map
+     * 
+     * Adds a mapping of legacy classes to microformats-2 classes to replace them
+     * with. These are converted when <code>convertLegacy()</code> is called.
+     * 
+     * @param array $map
+     * @return \mf2\Parser
+     */
     public function addClassMap(array $map) {
         $this->classicMap = array_merge($this->classicMap, $map);
         return $this;
     }
     
+    /**
+     * Add Twitter Class Map
+     * 
+     * Adds a mapping of twitter.com classnames -> microformats 2 classnames.
+     * Converted when <code>convertLegacy()</code> is called.
+     * 
+     * @return \mf2\Parser
+     */
     public function addTwitterClassMap() {
         $this->addClassMap($this->twitterMap);
         return $this;
     }
     
+    /**
+     * A mapping of classnames found on twitter.com to their microformats-2 
+     * equivalents.
+     * 
+     * @var array
+     */
     public $twitterMap = [
         // Tweet Page
         'stream-uncapped' => 'h-feed',
