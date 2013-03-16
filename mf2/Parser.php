@@ -658,7 +658,7 @@ class Parser {
         // Tweet Page
         'stream-uncapped' => 'h-feed',
         'tweet' => 'h-entry',
-        'tweet-text' => 'p-content',
+        'js-tweet-text' => 'p-content',
         'twitter-atreply' => 'h-x-username',
         'account-group' => 'h-card p-author',
         'avatar' => 'u-photo',
@@ -671,7 +671,6 @@ class Parser {
         'profile-card' => 'h-card',
         'bio' => 'p-note',
         'location' => 'p-location h-adr',
-        'stream' => 'h-feed'
     ];
     
     /**
