@@ -20,12 +20,12 @@ mf2 is PRS-0 autoloadable, so all you have to do to load it is:
 ```php
 <?php
 
-include $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+include '/vendor/autoload.php';
 
 use mf2\Parser;
 
 $parser = new Parser('<div class="h-card"><p class="p-name">Barnaby Walters</p></div>');
-$output = $parser -> parse();
+$output = $parser->parse();
 
 print_r($output);
 
@@ -60,6 +60,35 @@ Array
 Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname is left on.
 
 A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
+
+### Classic Microformat/Classmap Markup Support
+
+php-mf2 has limited support for classic microformats — it doesn’t actually parse
+them but can convert legacy classnames into µf2 classnames (e.g. `vcard` =>
+`h-card`, `fn` => `p-name`, etc.).
+
+```php
+// Once your parser has been initialised:
+$parser->convertLegacy(); // Converts classic microformats by default
+$out = $parser->parse();
+```
+
+You can also define your own custom class mappings, to provide some support for
+popular sites which don’t use mf2 but do use use semantic classnames. An experimental
+set for twitter.com is provided.
+
+```php
+// Once your have $parser
+$parser->convertTwitter(); // Adds twitter mapping
+
+// Or, add your own mapping:
+$parser->addClassMap([
+    'oldclassname' => 'p-new-class-name'
+]);
+
+// Then parse
+$out = $parser->parse();
+```
 
 ### Output Types
 
