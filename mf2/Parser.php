@@ -600,7 +600,11 @@ class Parser {
      */
     public function convertClassic($text) {
         $map = $this->classicMap;
-
+        
+        if (strtolower(mb_detect_encoding($text)) == 'utf-8') {
+            $text = mb_convert_encoding($text, 'HTML-ENTITIES', "UTF-8");
+        }
+        
         $doc = new DOMDocument();
         $doc->loadHTML($text);
         $xp = new DOMXPath($doc);
@@ -612,7 +616,13 @@ class Parser {
             }
         }
         
-        return $doc->C14N();
+        $out = '';
+        
+        foreach ($doc->documentElement->childNodes->item(0)->childNodes as $node) {
+            $out .= $node->C14N();
+        }
+        
+        return $out;
     }
 
     /**
