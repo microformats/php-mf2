@@ -146,14 +146,17 @@ class Parser {
         if (!$this->parsed->contains($e))
             return false;
         
-        return in_array($prefix, $this->parsed[$e]);
+        return true;
     }
     
     // !Parsing Functions
     
     /**
-     * Parse value-class/value-title on an element
+     * Parse value-class/value-title on an element, joining with $separator if 
+     * there are multiple.
+     * 
      * @param \DOMElement $e
+     * @param string $separator = '' if multiple value-title elements, join with this string
      * @return string|null the parsed value or null if value-class or -title aren’t in use
      */
     public function parseValueClassTitle(\DOMElement $e, $separator = '') {
