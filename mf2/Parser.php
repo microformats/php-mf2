@@ -40,13 +40,13 @@ class Parser {
 
             $doc = new DOMDocument();
             @$doc->loadHTML($input);
+            $this->doc = $doc;
         }
         elseif (is_a($input, 'DOMDocument')) {
             $doc = $input;
+            $this->doc = $doc;
         }
         
-        $this->doc = $doc;
-
         $this->parsed = new \SplObjectStorage();
 
         // TODO: Check for <base> if $baseURL not supplied
@@ -583,16 +583,19 @@ class Parser {
      * @return array An array containing all the µfs found in the current document
      */
     public function parse() {
-        $this->xpath = new DOMXPath($this->doc);
-        
         $mfs = array();
 
-        foreach ($this->xpath->query('//*[contains(concat(" ",  @class), " h-")]') as $node) {
-            // For each microformat
-            $result = $this->parseH($node);
+        // Only attempt to parse XML if given a non-empty document
+        if($this->doc) {
+            $this->xpath = new DOMXPath($this->doc);
+            
+            foreach ($this->xpath->query('//*[contains(concat(" ",  @class), " h-")]') as $node) {
+                // For each microformat
+                $result = $this->parseH($node);
 
-            // Add the value to the array for this property type
-            $mfs[] = $result;
+                // Add the value to the array for this property type
+                $mfs[] = $result;
+            }
         }
 
         return array('items' => array_values(array_filter($mfs)));
