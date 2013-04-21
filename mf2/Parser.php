@@ -135,7 +135,7 @@ class Parser {
     
     private function elementPrefixParsed(\DOMElement $e, $prefix) {
         if (!$this->parsed->contains($e))
-            $this->parsed->attach($e, []);
+            $this->parsed->attach($e, array());
         
         $prefixes = $this->parsed[$e];
         $prefixes[] = $prefix;
@@ -201,7 +201,7 @@ class Parser {
         if ($classTitle !== null)
             return $classTitle;
         
-        if (in_array($p->tagName, ['br', 'hr']))
+        if (in_array($p->tagName, array('br', 'hr')))
             return '';
         elseif ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
             $pValue = $p->getAttribute('alt');
@@ -585,7 +585,7 @@ class Parser {
     public function parse() {
         $this->xpath = new DOMXPath($this->doc);
         
-        $mfs = [];
+        $mfs = array();
 
         foreach ($this->xpath->query('//*[contains(concat(" ",  @class), " h-")]') as $node) {
             // For each microformat
@@ -657,7 +657,7 @@ class Parser {
      * 
      * @var array
      */
-    public $twitterMap = [
+    public $twitterMap = array(
         // Tweet Page
         'stream-uncapped' => 'h-feed',
         'tweet' => 'h-entry',
@@ -674,7 +674,7 @@ class Parser {
         'profile-card' => 'h-card',
         'bio' => 'p-note',
         'location' => 'p-location h-adr',
-    ];
+    );
     
     /**
      * Classic Microformats Map
