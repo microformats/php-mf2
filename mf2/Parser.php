@@ -40,9 +40,12 @@ class Parser {
 
             $doc = new DOMDocument();
             @$doc->loadHTML($input);
-        }
-        elseif (is_a($input, 'DOMDocument')) {
+        } elseif (is_a($input, 'DOMDocument')) {
             $doc = $input;
+        } else {
+            // TODO: should we throw an exception here?
+            $doc = new DOMDocument();
+            @$doc->loadHTML('');
         }
         
         $this->doc = $doc;

@@ -28,7 +28,31 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         date_default_timezone_set('Europe/London');
     }
-
+		
+    public function testHandlesEmptyStringsCorrectly() {
+        $input = '';
+        $expected = '{
+    "items": []
+}';
+        
+        $parser = new Parser($input);
+        $output = $parser->parse();
+        
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+    
+    public function testHandlesNullCorrectly() {
+        $input = Null;
+        $expected = '{
+    "items": []
+}';
+        
+        $parser = new Parser($input);
+        $output = $parser->parse();
+        
+        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+    }
+		
     /**
      * From http://microformats.org/wiki/microformats-2
      */
