@@ -57,6 +57,8 @@ Array
 )
 ```
 
+If no microformats are found, `items` will be an empty array.
+
 Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname is left on.
 
 A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
