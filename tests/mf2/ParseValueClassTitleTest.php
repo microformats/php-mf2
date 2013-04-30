@@ -56,4 +56,4 @@ class ParseValueClassTitleTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-// EOF tests/mf2/testParser.php
+// EOF
