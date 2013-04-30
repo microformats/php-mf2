@@ -159,6 +159,16 @@ class Parser {
 		return true;
 	}
 	
+	private function resolveUrl($url) {
+		$scheme = parse_url($url, PHP_URL_SCHEME);
+		if (empty($scheme) and !empty($this->baseurl)) {
+			$deriver = new AbsoluteUrlDeriver($url, $this->baseurl);
+			return (string) $deriver->getAbsoluteUrl();
+		} else {
+			return $url;
+		}
+	}
+	
 	// !Parsing Functions
 	
 	/**
@@ -256,16 +266,8 @@ class Parser {
 			// TODO: Check for element contents == a valid URL
 			$uValue = false;
 		}
-
-		if (!empty($uValue)) {
-			$scheme = parse_url($uValue, PHP_URL_SCHEME);
-			if (empty($scheme) and !empty($this->baseurl)) {
-				$deriver = new AbsoluteUrlDeriver($uValue, $this->baseurl);
-				$uValue = (string) $deriver->getAbsoluteUrl();
-			}
-		}
 		
-		return $uValue;
+		return $this->resolveUrl($uValue);
 	}
 
 	/**
@@ -556,22 +558,24 @@ class Parser {
 						throw new Exception($em->getAttribute('src'));
 				}
 			} catch (Exception $exc) {
-				$return['photo'][] = $exc->getMessage();
+				$return['photo'][] = $this->resolveUrl($exc->getMessage());
 			}
 		}
 
 		// Check for u-url
 		if (!array_key_exists('url', $return)) {
 			// Look for img @src
-			// @todo resolve relative URLs
 			if ($e->tagName == 'a')
-				$return['url'][] = $e->getAttribute('href');
+				$url = $e->getAttribute('href');
 
 			// Look for nested img @src
 			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
-				$return['url'][] = $em->getAttribute('href');
+				$url = $em->getAttribute('href');
 				break;
 			}
+			
+			if (!empty($url))
+				$return['url'][] = $this->resolveUrl($url);
 		}
 
 		// Make sure things are in alphabetical order
