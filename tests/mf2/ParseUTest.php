@@ -89,14 +89,20 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
+	/**
+	 * @group baseUrl
+	 */
 	public function testResolvesRelativeUrlsFromDocumentUrl() {
 		$input = '<div class="h-card"><img class="u-photo" src="../image.png" /></div>';
-		$parser = new Parser($input, 'http://example.com/things/more.html');
+		$parser = new Parser($input, 'http://example.com/things/more/more.html');
 		$output = $parser->parse();
 		
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
+	/**
+	 * @group baseUrl
+	 */
 	public function testResolvesRelativeUrlsFromBaseUrl() {
 		$input = '<head><base href="http://example.com/things/more/andmore/" /></head><body><div class="h-card"><img class="u-photo" src="../image.png" /></div></body>';
 		$parser = new Parser($input, 'http://example.com/things/more.html');

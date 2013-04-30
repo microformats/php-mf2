@@ -49,12 +49,18 @@ class Parser {
 			@$doc->loadHTML('');
 		}
 		
+		$this->xpath = new DOMXPath($doc);
+		
+		foreach ($this->xpath->query('//base[@href]') as $base) {
+			$baseurl = $base->getAttribute('href');
+			break;
+		}
+		
+		$this->baseurl = $baseurl;
+		
 		$this->doc = $doc;
 
 		$this->parsed = new \SplObjectStorage();
-
-		// TODO: Check for <base> if $baseURL not supplied
-		$this->baseurl = $baseurl;
 	}
 
 	// !Utility Functions
@@ -587,8 +593,6 @@ class Parser {
 	 * @return array An array containing all the µfs found in the current document
 	 */
 	public function parse() {
-		$this->xpath = new DOMXPath($this->doc);
-		
 		$mfs = array();
 
 		foreach ($this->xpath->query('//*[contains(concat(" ",	@class), " h-")]') as $node) {
