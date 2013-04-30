@@ -22,7 +22,7 @@ use DateTime;
  */
 class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 
-    public function setUp() {
-        date_default_timezone_set('Europe/London');
-    }
+	public function setUp() {
+		date_default_timezone_set('Europe/London');
+	}
 }

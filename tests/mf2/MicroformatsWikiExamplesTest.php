@@ -10,8 +10,8 @@ namespace mf2\Parser\test;
 $autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
 
 use mf2\Parser,
-    PHPUnit_Framework_TestCase,
-    DateTime;
+	PHPUnit_Framework_TestCase,
+	DateTime;
 
 /**
  * Microformats Wiki Examples
@@ -25,160 +25,160 @@ use mf2\Parser,
  */
 class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 
-    public function setUp() {
-        date_default_timezone_set('Europe/London');
-    }
+	public function setUp() {
+		date_default_timezone_set('Europe/London');
+	}
 		
-    public function testHandlesEmptyStringsCorrectly() {
-        $input = '';
-        $expected = '{
-    "items": []
+	public function testHandlesEmptyStringsCorrectly() {
+		$input = '';
+		$expected = '{
+	"items": []
 }';
-        
-        $parser = new Parser($input);
-        $output = $parser->parse();
-        
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
-    
-    public function testHandlesNullCorrectly() {
-        $input = Null;
-        $expected = '{
-    "items": []
-}';
-        
-        $parser = new Parser($input);
-        $output = $parser->parse();
-        
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
 		
-    /**
-     * From http://microformats.org/wiki/microformats-2
-     */
-    public function testSimplePersonReference() {
-        $input = '<span class="h-card">Frances Berriman</span>';
-        $expected = '{
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	public function testHandlesNullCorrectly() {
+		$input = Null;
+		$expected = '{
+	"items": []
+}';
+		
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+		
+	/**
+	 * From http://microformats.org/wiki/microformats-2
+	 */
+	public function testSimplePersonReference() {
+		$input = '<span class="h-card">Frances Berriman</span>';
+		$expected = '{
   "items": [{ 
-    "type": ["h-card"],
-    "properties": {
-      "name": ["Frances Berriman"] 
-    }
+	"type": ["h-card"],
+	"properties": {
+	  "name": ["Frances Berriman"] 
+	}
   }]
 }';
-        $parser = new Parser($input);
-        $output = $parser->parse();
+		$parser = new Parser($input);
+		$output = $parser->parse();
 
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 
-    /**
-     * From http://microformats.org/wiki/microformats-2
-     */
-    public function testSimpleHyperlinkedPersonReference() {
-        $input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
-        $expected = '{
+	/**
+	 * From http://microformats.org/wiki/microformats-2
+	 */
+	public function testSimpleHyperlinkedPersonReference() {
+		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
+		$expected = '{
   "items": [{ 
-    "type": ["h-card"],
-    "properties": {
-      "name": ["Ben Ward"],
-      "url": ["http://benward.me"]
-    }
+	"type": ["h-card"],
+	"properties": {
+	  "name": ["Ben Ward"],
+	  "url": ["http://benward.me"]
+	}
   }]
 }';
-        $parser = new Parser($input);
-        $output = $parser->parse();
+		$parser = new Parser($input);
+		$output = $parser->parse();
 
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 
-    /**
-     * From http://microformats.org/wiki/microformats-2-implied-properties
-     */
-    public function testSimplePersonImage() {
-        $input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
-        // Added root items key
-        $expected = '{"items": [{ 
+	/**
+	 * From http://microformats.org/wiki/microformats-2-implied-properties
+	 */
+	public function testSimplePersonImage() {
+		$input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
+		// Added root items key
+		$expected = '{"items": [{ 
   "type": ["h-card"],
   "properties": {
-    "name": ["Chris Messina"],
-    "photo": ["http://example.org/pic.jpg"]
+	"name": ["Chris Messina"],
+	"photo": ["http://example.org/pic.jpg"]
   }
 }]}';
-        $parser = new Parser($input);
-        $output = $parser->parse();
+		$parser = new Parser($input);
+		$output = $parser->parse();
 
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 
-    /**
-     * From http://microformats.org/wiki/microformats-2-implied-properties
-     */
-    public function testHyperlinkedImageNameAndPhotoProperties() {
-        $input = '<a class="h-card" href="http://rohit.khare.org/">
+	/**
+	 * From http://microformats.org/wiki/microformats-2-implied-properties
+	 */
+	public function testHyperlinkedImageNameAndPhotoProperties() {
+		$input = '<a class="h-card" href="http://rohit.khare.org/">
  <img alt="Rohit Khare"
-      src="https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg" />
+	  src="https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg" />
 </a>';
-        // Added root items key
-        $expected = '{"items": [{ 
+		// Added root items key
+		$expected = '{"items": [{ 
   "type": ["h-card"],
   "properties": {
-    "name": ["Rohit Khare"],
-    "url": ["http://rohit.khare.org/"],
-    "photo": ["https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg"]
+	"name": ["Rohit Khare"],
+	"url": ["http://rohit.khare.org/"],
+	"photo": ["https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg"]
   }
 }]}';
-        $parser = new Parser($input);
-        $output = $parser->parse();
+		$parser = new Parser($input);
+		$output = $parser->parse();
 
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 
-    /**
-     * From http://microformats.org/wiki/microformats-2
-     */
-    public function testMoreDetailedPerson() {
-        $input = '<div class="h-card">
+	/**
+	 * From http://microformats.org/wiki/microformats-2
+	 */
+	public function testMoreDetailedPerson() {
+		$input = '<div class="h-card">
   <img class="u-photo" alt="photo of Mitchell"
-       src="https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"/>
+	   src="https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"/>
   <a class="p-name u-url"
-     href="http://blog.lizardwrangler.com/" 
-    >Mitchell Baker</a>
+	 href="http://blog.lizardwrangler.com/" 
+	>Mitchell Baker</a>
  (<a class="u-url" 
-     href="https://twitter.com/MitchellBaker"
-    >@MitchellBaker</a>)
+	 href="https://twitter.com/MitchellBaker"
+	>@MitchellBaker</a>)
   <span class="p-org">Mozilla Foundation</span>
   <p class="p-note">
-    Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.
+	Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.
   </p>
   <span class="p-category">Strategy</span>
   <span class="p-category">Leadership</span>
 </div>';
 
-        $expected = '{
+		$expected = '{
   "items": [{ 
-    "type": ["h-card"],
-    "properties": {
-      "photo": ["https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"],
-      "name": ["Mitchell Baker"],
-      "url": [
-        "http://blog.lizardwrangler.com/",
-        "https://twitter.com/MitchellBaker"
-      ],
-      "org": ["Mozilla Foundation"],
-      "note": ["Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities."],
-      "category": [
-        "Strategy",
-        "Leadership"
-      ]
-    }
+	"type": ["h-card"],
+	"properties": {
+	  "photo": ["https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"],
+	  "name": ["Mitchell Baker"],
+	  "url": [
+		"http://blog.lizardwrangler.com/",
+		"https://twitter.com/MitchellBaker"
+	  ],
+	  "org": ["Mozilla Foundation"],
+	  "note": ["Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities."],
+	  "category": [
+		"Strategy",
+		"Leadership"
+	  ]
+	}
   }]
 }';
-        $parser = new Parser($input);
-        $output = $parser->parse();
+		$parser = new Parser($input);
+		$output = $parser->parse();
 
-        $this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
-    }
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 
 }
 

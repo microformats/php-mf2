@@ -152,7 +152,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 <a class="h-card" href="http://benward.me">Ben Ward</a>
  
 <img class="h-card" alt="Sally Ride" 
-     src="http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg"/>
+	 src="http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg"/>
  
 <a class="h-card" href="http://tantek.com">
  <img alt="Tantek Çelik" src="http://ttk.me/logo.jpg"/>
