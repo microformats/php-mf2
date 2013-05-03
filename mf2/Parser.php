@@ -52,7 +52,20 @@ class Parser {
 		$this->xpath = new DOMXPath($doc);
 		
 		foreach ($this->xpath->query('//base[@href]') as $base) {
-			$baseurl = $base->getAttribute('href');
+			$baseElementUrl = $base->getAttribute('href');
+			
+			if (parse_url($baseElementUrl, PHP_URL_SCHEME) === null) {
+				/* The base element URL is relative to the document URL.
+				 *
+				 * :/
+				 *
+				 * Perhaps the author was high? */
+				
+				$deriver = new AbsoluteUrlDeriver($baseElementUrl, $baseurl);
+				$baseurl = (string) $deriver->getAbsoluteUrl(); 
+			} else {
+				$baseurl = $baseElementUrl;
+			}
 			break;
 		}
 		
