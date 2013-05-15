@@ -9,7 +9,7 @@ Install with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.1.*"` t
 
 ## Usage
 
-mf2 is PRS-0 autoloadable, so all you have to do to load it is:
+mf2 is PSR-0 autoloadable, so all you have to do to load it is:
 
 1. Include Composer’s auto-generated autoload file (`/vendor/autoload.php`)
 1. Declare `mf2\Parser` in your `use` statement
