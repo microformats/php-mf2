@@ -27,10 +27,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<span class="h-card">The Name</span>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
-		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -41,10 +41,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<img class="h-card" src="" alt="The Name" />';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
-		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -55,10 +55,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<div class="h-card"><img src="" alt="The Name" /></div>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
-		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -69,10 +69,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<div class="h-card"><span><img src="" alt="The Name" /></span></div>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('name', $output['items'][0]['properties']);
-		$this -> assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
 	/**
@@ -83,10 +83,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -97,10 +97,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<div class="h-card"><img src="http://example.com/img.png" alt="" /></div>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 				
-		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -111,10 +111,26 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<div class="h-card"><span><img src="http://example.com/img.png" alt="" /></span></div>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this -> assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+	}
+	
+	public function testIgnoresImgIfNotOnlyChild() {
+		$input = '<div class="h-card"><img src="http://example.com/img.png" /> <p>Moar text</p></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
+	}
+	
+	public function testIgnoresDoublyNestedImgIfNotOnlyDoublyNestedChild() {
+		$input = '<div class="h-card"><span><img src="http://example.com/img.png" /> <p>Moar text</p></span></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
 	
 	/**
@@ -125,10 +141,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<a class="h-card" href="http://example.com/">Some Name</a>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this -> assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 	
 	/**
@@ -139,10 +155,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 	{
 		$input = '<span class="h-card"><a href="http://example.com/">Some Name</a></span>';
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this -> assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 	
 	public function testMultipleImpliedHCards()
@@ -189,9 +205,9 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 }';
 		
 		$parser = new Parser($input);
-		$output = $parser -> parse();
+		$output = $parser->parse();
 		
-		$this -> assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
 }
 
