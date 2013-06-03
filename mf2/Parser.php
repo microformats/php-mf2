@@ -560,13 +560,13 @@ class Parser {
 					throw new Exception($e->getAttribute('src'));
 
 				// Look for nested img @src
-				foreach ($this->xpath->query('./img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em) {
+				foreach ($this->xpath->query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
 					if ($em->getAttribute('src') != '')
 						throw new Exception($em->getAttribute('src'));
 				}
 
 				// Look for double nested img @src
-				foreach ($this->xpath->query('./*[count(preceding-sibling::img)+count(following-sibling::img)=0]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]', $e) as $em) {
+				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
 					if ($em->getAttribute('src') != '')
 						throw new Exception($em->getAttribute('src'));
 				}
