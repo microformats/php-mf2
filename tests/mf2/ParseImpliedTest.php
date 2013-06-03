@@ -8,23 +8,20 @@ namespace mf2\Parser\test;
 // Include Parser.php
 $autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
 
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use mf2\Parser;
+use PHPUnit_Framework_TestCase;
+use DateTime;
 
-class ParseImpliedTest extends PHPUnit_Framework_TestCase
-{	
-	public function setUp()
-	{
+/**
+ * @todo some of these can be made into single tests with dataProviders
+ */
+class ParseImpliedTest extends PHPUnit_Framework_TestCase {	
+	public function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedPNameFromNodeValue()
-	{
+	
+	public function testParsesImpliedPNameFromNodeValue() {
 		$input = '<span class="h-card">The Name</span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -33,12 +30,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedPNameFromImgAlt()
-	{
+	public function testParsesImpliedPNameFromImgAlt() {
 		$input = '<img class="h-card" src="" alt="The Name" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -47,12 +39,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedPNameFromNestedImgAlt()
-	{
+	public function testParsesImpliedPNameFromNestedImgAlt() {
 		$input = '<div class="h-card"><img src="" alt="The Name" /></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -61,12 +48,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedPNameFromDoublyNestedImgAlt()
-	{
+	public function testParsesImpliedPNameFromDoublyNestedImgAlt() {
 		$input = '<div class="h-card"><span><img src="" alt="The Name" /></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -75,12 +57,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedUPhotoFromImgSrc()
-	{
+	public function testParsesImpliedUPhotoFromImgSrc() {
 		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -89,12 +66,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedUPhotoFromNestedImgSrc()
-	{
+	public function testParsesImpliedUPhotoFromNestedImgSrc() {
 		$input = '<div class="h-card"><img src="http://example.com/img.png" alt="" /></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -103,12 +75,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc()
-	{
+	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc() {
 		$input = '<div class="h-card"><span><img src="http://example.com/img.png" alt="" /></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -133,12 +100,8 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedUUrlFromAHref()
-	{
+	
+	public function testParsesImpliedUUrlFromAHref() {
 		$input = '<a class="h-card" href="http://example.com/">Some Name</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -147,12 +110,8 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 	
-	/**
-	 * @group parseH
-	 * @group implied
-	 */
-	public function testParsesImpliedUUrlFromNestedAHref()
-	{
+	
+	public function testParsesImpliedUUrlFromNestedAHref() {
 		$input = '<span class="h-card"><a href="http://example.com/">Some Name</a></span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -161,8 +120,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 	
-	public function testMultipleImpliedHCards()
-	{
+	public function testMultipleImpliedHCards() {
 		$input = '<span class="h-card">Frances Berriman</span>
  
 <a class="h-card" href="http://benward.me">Ben Ward</a>
@@ -210,5 +168,3 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
 }
-
-// EOF tests/mf2/testParser.php
