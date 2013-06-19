@@ -111,6 +111,16 @@ It also includes an approximate implementation of the [Value-Class Pattern](http
 
 When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
 
+## Contributing
+
+Pull requests very welcome, please try to maintain stylistic, structural and naming consistency with the existing codebase, and don’t be too upset if I make naming changes :)
+
+Please add tests which cover changes you plan to make or have made. I use PHPUnit, which is the de-facto standard for modern PHP development.
+
+At the very least, run the test suite before and after making your changes to make sure you haven’t broken anything.
+
+Issues/bug reports welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
+
 ## Testing
 
 **Currently php-mf2 is tested fairly thoroughly, but the code itself is not hugely testable (lots of repetition and redundancy). This is something I’m working on changing**
