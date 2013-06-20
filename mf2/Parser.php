@@ -633,7 +633,24 @@ class Parser {
 			$parsed['children'] = array_values(array_filter($children));
 		return $parsed;
 	}
+	
+	public function parseRelsAndAlternates() {
+		$rels = array();
+		$alternates = array();
+		
+		// Iterate through all a, area and link elements with rel attributes
+		
+		// Resolve the href
 
+		// Split up the rel into space-separated values
+		
+		// If alternate in rels, create alternate structure, append
+		
+		// Else, add href to rels[rel][]
+		
+		return [$rels, $alternates];
+	}
+	
 	/**
 	 * Kicks off the parsing routine
 	 * 
@@ -648,7 +665,8 @@ class Parser {
 			$oldHtmlSafe = $this->htmlSafe;
 			$this->htmlSafe = $htmlSafe;
 		}
-
+		
+		// Parser microformats
 		foreach ($this->xpath->query('//*[contains(concat(" ",	@class), " h-")]') as $node) {
 			// For each microformat
 			$result = $this->parseH($node);
@@ -657,10 +675,16 @@ class Parser {
 			$mfs[] = $result;
 		}
 		
+		// Parse rels
+		list($rels, $alternates) = $this->parseRelsAndAlternates();
+		
 		if (!empty($oldHtmlSafe))
 			$this->htmlSafe = $oldHtmlSafe;
 		
-		return array('items' => array_values(array_filter($mfs)));
+		return array(
+			'items' => array_values(array_filter($mfs)),
+			'rels' => $rels,
+			'alternates' => $alternates);
 	}
 
 	/**
