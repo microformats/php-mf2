@@ -104,7 +104,14 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testHtmlEncodesImpliedProperties() {
-		$this->markTestSkipped();
+		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" />&lt;name&gt;</a>';
+		$parser = new Parser($input);
+		
+		$output = $parser->parse(true);
+		
+		$this->assertEquals('&lt;name&gt;', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('&lt;url&gt;', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('&lt;uimggt;', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	public function testParsesRelValues() {
