@@ -533,7 +533,7 @@ class Parser {
 			$this->elementPrefixParsed($dt, 'dt');
 		}
 
-		// TODO: Handle e-* (em)
+		// Handle e-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
 			if ($this->isElementParsed($e, 'e'))
 				continue;
@@ -572,7 +572,9 @@ class Parser {
 
 				throw new Exception(trim($e->nodeValue));
 			} catch (Exception $exc) {
-				$return['name'][] = $exc->getMessage();
+				$return['name'][] = $this->htmlSafe
+					? htmlspecialchars($exc->getMessage(), ENT_NOQUOTES)
+					: $exc->getMessage();
 			}
 		}
 
@@ -595,7 +597,9 @@ class Parser {
 						throw new Exception($em->getAttribute('src'));
 				}
 			} catch (Exception $exc) {
-				$return['photo'][] = $this->resolveUrl($exc->getMessage());
+				$return['photo'][] = $this->htmlSafe
+					? htmlspecialchars($this->resolveUrl($exc->getMessage()), ENT_NOQUOTES)
+					: $this->resolveUrl($exc->getMessage());
 			}
 		}
 
@@ -612,7 +616,9 @@ class Parser {
 			}
 			
 			if (!empty($url))
-				$return['url'][] = $this->resolveUrl($url);
+				$return['url'][] = $this->htmlSafe
+					? htmlspecialchars($this->resolveUrl($url), ENT_NOQUOTES)
+					: $this->resolveUrl($url);
 		}
 
 		// Make sure things are in alphabetical order
