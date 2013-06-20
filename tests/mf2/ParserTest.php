@@ -83,7 +83,36 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 				$this->fail();
 		}
 	}
+	
+	public function testHtmlSpecialCharactersWorks() {
+		$this->assertEquals('&lt;&gt;', htmlspecialchars('<>'));
+	}
+	
+	public function testHtmlEncodesNonEProperties() {
+		$input = '<div class="h-card">
+			<span class="p-name">&lt;p&gt;</span>
+			<span class="dt-published">&lt;dt&gt;</span>
+			<span class="u-url">&lt;u&gt;</span>
+			</div>';
+		
+		$parser = new Parser($input);
+		$output = $parser->parse(true);
+		
+		$this->assertEquals('&lt;p&gt;', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('&lt;dt&gt;', $output['items'][0]['properties']['published'][0]);
+		$this->assertEquals('&lt;u&gt;', $output['items'][0]['properties']['url'][0]);
+	}
+	
+	public function testHtmlEncodesImpliedProperties() {
+		$this->markTestSkipped();
+	}
+	
+	public function testParsesRelValues() {
+		$this->markTestSkipped();
+	}
+	
+	public function testParsesRelAlternateValues() {
+		$this->markTestSkipped();
+	}
 
 }
-
-// EOF tests/mf2/testParser.php
