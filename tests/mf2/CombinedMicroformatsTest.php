@@ -43,6 +43,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
   </span>
 </div>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-event"],
 	"properties": {
@@ -84,6 +86,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
   (<span class="p-org">Mozilla Foundation</span>)
 </div>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -114,6 +118,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	 >Mozilla Foundation</a>)
 </div>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -151,6 +157,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	 >Mozilla Foundation</a>)
 </div>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -188,6 +196,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	  Mozilla Foundation</a>)
 </div>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -211,5 +221,3 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	}
 
 }
-
-// EOF

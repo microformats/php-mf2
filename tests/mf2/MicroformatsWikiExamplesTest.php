@@ -32,6 +32,8 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testHandlesEmptyStringsCorrectly() {
 		$input = '';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
 	"items": []
 }';
 		
@@ -44,6 +46,8 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testHandlesNullCorrectly() {
 		$input = Null;
 		$expected = '{
+	"rels": [],
+	"alternates": [],
 	"items": []
 }';
 		
@@ -59,6 +63,8 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testSimplePersonReference() {
 		$input = '<span class="h-card">Frances Berriman</span>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -78,6 +84,8 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testSimpleHyperlinkedPersonReference() {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
 		$expected = '{
+	"rels": [],
+	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -98,7 +106,10 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testSimplePersonImage() {
 		$input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
 		// Added root items key
-		$expected = '{"items": [{ 
+		$expected = '{
+	"rels": [],
+	"alternates": [],	
+	"items": [{ 
   "type": ["h-card"],
   "properties": {
 	"name": ["Chris Messina"],
@@ -120,7 +131,10 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	  src="https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg" />
 </a>';
 		// Added root items key
-		$expected = '{"items": [{ 
+		$expected = '{
+	"rels": [],
+	"alternates": [],
+	"items": [{ 
   "type": ["h-card"],
   "properties": {
 	"name": ["Rohit Khare"],
@@ -156,7 +170,9 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 </div>';
 
 		$expected = '{
-  "items": [{ 
+  "rels": [],
+	"alternates": [],
+	"items": [{ 
 	"type": ["h-card"],
 	"properties": {
 	  "photo": ["https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"],
@@ -181,5 +197,3 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	}
 
 }
-
-// EOF tests/mf2/testParser.php
