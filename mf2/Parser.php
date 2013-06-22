@@ -639,14 +639,33 @@ class Parser {
 		$alternates = array();
 		
 		// Iterate through all a, area and link elements with rel attributes
-		
-		// Resolve the href
-
-		// Split up the rel into space-separated values
-		
-		// If alternate in rels, create alternate structure, append
-		
-		// Else, add href to rels[rel][]
+		foreach ($this->xpath->query('//*[@rel and @href]') as $hyperlink) {
+			if ($hyperlink->getAttribute('rel') == '')
+				continue;
+			
+			// Resolve the href
+			$href = $this->resolveUrl($hyperlink->getAttribute('href'));
+			
+			// Split up the rel into space-separated values
+			$linkRels = array_filter(explode(' ', $hyperlink->getAttribute('rel')));
+			
+			// If alternate in rels, create alternate structure, append
+			if (in_array('alternate', $rels)) {
+				$alt = array(
+					'url' => $href,
+					'rel' => array_diff($linkRels, ['alternate'])
+				);
+				if ($hyperlink->hasAttribute('media'))
+					$alt['media'] = $hyperlink->getAttribute('media');
+				
+				if ($hyperlink->hasAttribute('hreflang'))
+					$alt['hreflang'] = $hyperlink->getAttribute('hreflang');
+			} else {
+				foreach ($linkRels as $rel) {
+					$rels[$rel][] = $href;
+				}
+			}
+		}
 		
 		return [$rels, $alternates];
 	}
