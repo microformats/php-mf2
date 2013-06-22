@@ -650,16 +650,18 @@ class Parser {
 			$linkRels = array_filter(explode(' ', $hyperlink->getAttribute('rel')));
 			
 			// If alternate in rels, create alternate structure, append
-			if (in_array('alternate', $rels)) {
+			if (in_array('alternate', $linkRels)) {
 				$alt = array(
 					'url' => $href,
-					'rel' => array_diff($linkRels, ['alternate'])
+					'rel' => implode(' ', array_diff($linkRels, ['alternate']))
 				);
 				if ($hyperlink->hasAttribute('media'))
 					$alt['media'] = $hyperlink->getAttribute('media');
 				
 				if ($hyperlink->hasAttribute('hreflang'))
 					$alt['hreflang'] = $hyperlink->getAttribute('hreflang');
+				
+				$alternates[] = $alt;
 			} else {
 				foreach ($linkRels as $rel) {
 					$rels[$rel][] = $href;

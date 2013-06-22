@@ -125,7 +125,15 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testParsesRelAlternateValues() {
-		$this->markTestSkipped();
+		$input = '<a rel="alternate home" href="http://example.org" hreflang="de", media="screen"></a>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('alternates', $output);
+		$this->assertEquals('http://example.org', $output['alternates'][0]['url']);
+		$this->assertEquals('home', $output['alternates'][0]['rel']);
+		$this->assertEquals('de', $output['alternates'][0]['hreflang']);
+		$this->assertEquals('screen', $output['alternates'][0]['media']);
 	}
 
 }
