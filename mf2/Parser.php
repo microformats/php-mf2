@@ -421,6 +421,8 @@ class Parser {
 	 *
 	 * 	@param DOMElement $e The element to parse
 	 * 	@return string $e’s innerHTML
+	 * 
+	 * @todo need to mark this element as e- parsed so it doesn’t get parsed as it’s parent’s e-* too
 	 */
 	public function parseE(\DOMElement $e) {
 		$classTitle = $this->parseValueClassTitle($e);
@@ -428,10 +430,19 @@ class Parser {
 		if ($classTitle !== null)
 			return $classTitle;
 		
+		// Expand relative URLs within children of this element
+		$hyperlinkChildren = $this->xpath->query('//*[@src or @href or @data]', $e);
+		
+		foreach ($hyperlinkChildren as $child) {
+			if ($child->hasAttribute('href'))
+				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
+		}
+		
 		$return = '';
 		foreach ($e->childNodes as $node) {
 			$return .= $node->C14N();
 		}
+		
 		return $return;
 	}
 
