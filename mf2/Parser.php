@@ -436,6 +436,10 @@ class Parser {
 		foreach ($hyperlinkChildren as $child) {
 			if ($child->hasAttribute('href'))
 				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
+			if ($child->hasAttribute('src'))
+				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
+			if ($child->hasAttribute('data'))
+				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
 		}
 		
 		$return = '';
