@@ -694,7 +694,7 @@ class Parser {
 	 * will be HTML-encoded, bringing all output to the same level of encoding.
 	 * 
 	 * If a DOMElement is set as the $context, only descendants of that element will
-	 * be parsed for microrformats.
+	 * be parsed for microformats.
 	 * 
 	 * @param bool $htmlSafe whether or not to html-encode non e-* properties. Defaults to false
 	 * @param DOMElement $context optionally an element from which to parse microformats
