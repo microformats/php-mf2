@@ -64,9 +64,16 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]);
+	}
+	
+	public function testParseEResolvesRelativeLinks() {
+		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>.</p></div>';
+		$parser = new Parser($input, 'http://example.com');
+		$output = $parser->parse();
+		
+		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>.', $output['items'][0]['properties']['content'][0]);
 	}
 
 	/**
@@ -135,5 +142,4 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('de', $output['alternates'][0]['hreflang']);
 		$this->assertEquals('screen', $output['alternates'][0]['media']);
 	}
-
 }
