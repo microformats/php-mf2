@@ -69,11 +69,11 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testParseEResolvesRelativeLinks() {
-		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>.</p></div>';
+		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>. <object data="/object"></object> <img src="/img" /></p></div>';
 		$parser = new Parser($input, 'http://example.com');
 		$output = $parser->parse();
 		
-		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>.', $output['items'][0]['properties']['content'][0]);
+		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img" />', $output['items'][0]['properties']['content'][0]);
 	}
 
 	/**
