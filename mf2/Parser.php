@@ -690,7 +690,14 @@ class Parser {
 	/**
 	 * Kicks off the parsing routine
 	 * 
+	 * If `$htmlSafe` is set, any angle brackets in the results from non e-* properties
+	 * will be HTML-encoded, bringing all output to the same level of encoding.
+	 * 
+	 * If a DOMElement is set as the $context, only descendants of that element will
+	 * be parsed for microrformats.
+	 * 
 	 * @param bool $htmlSafe whether or not to html-encode non e-* properties. Defaults to false
+	 * @param DOMElement $context optionally an element from which to parse microformats
 	 * @return array An array containing all the µfs found in the current document
 	 */
 	public function parse($htmlSafe = null, DOMElement $context = null) {
