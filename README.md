@@ -57,11 +57,30 @@ Array
 )
 ```
 
-If no microformats are found, `items` will be an empty array.
+If no microformats are found, `items` will be an empty array. rels and alternates are also included.
 
 Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname is left on.
 
 A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
+
+### Advanced Usage
+
+There are several ways to selectively parse microformats from a document. If you wish to only parse microformats from an element with a particular ID, Parser::parseFromId($id, $htmlSafe=null) is the easiest way.
+
+If your needs are more complex, Parser::parse accepts an optional context DOMNode as it’s third parameter. Typically you’d use Parser::query to run XPath queries on the document to get the element you want to parse from under, then pass it to Parser::parse. Example usage:
+
+```php
+
+$doc = 'More microformats, more microformats <div id="parse-from-here"><span class="h-card">This shows up</span></div> yet more ignored content';
+$parser = new Parser($doc);
+
+$parser->parseFromId('parse-from-here'); // returns a document with only the h-card descended from div#parse-from-here
+
+$elementIWant = $parser->query('an xpath query')[0];
+
+$parser->parse(null, $elementIWant); // returns a document with only mfs under the selected element
+
+```
 
 ### Classic Microformat/Classmap Markup Support
 
@@ -97,6 +116,12 @@ $out = $parser->parse();
 ### Security
 
 **Little to no filtering of content takes place in mf2\Parser, so treat its output as you would any untrusted data from the source of the parsed document**
+
+There is an issue with the microformats2 parsing spec which can cause the parser output level of HTML-encoding to vary (e.g. some angle brackets are converted to &amp;lt; &amp;gt;, others are not) without the consumer being able to tell at what level any given string is.
+
+To solve this, if you pass true to Parser::parse (or as the third parameter of Parser::__construct), the parser will html-encode angle brackets in any non e-* properties, bringing everything up to the same level of encoding.
+
+Note that this **does not** make content from untrusted sources secure, it merely makes the parser behave in a consistent manner. If you are outputting parsed microformats you must still take security precautions such as purifying the HTML.
 
 ## Parsing Behaviour
 
@@ -135,3 +160,17 @@ There are enough tests to warrant putting them into separate suites for maintena
 * `Parse*Test.php` for `P`, `U` and `DT`. Contains tests for a particular property type.
 
 As of v0.1.6, the only property with any support for value-class is `dt-*`, so that currently contains the value-class tests. These should be moved elsewhere as value-class and value-title are abstracted and rolled out to all properties.
+
+### Changelog
+
+#### v0.1.16
+
+* Ability to parse from only an ID
+* Context DOMElement can be passed to $parse
+* Parser::query runs XPath queries on the current document
+* When parsing e-* properties, elements with @src, @data or @href have relative URLs resolved in the output
+
+#### v0.1.15
+
+* Added html-safe options
+* Added rel+rel-alternate parsing

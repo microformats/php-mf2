@@ -785,6 +785,20 @@ class Parser {
 	}
 	
 	/**
+	 * XPath Query
+	 * 
+	 * Runs an XPath query over the current document. Works in exactly the same
+	 * way as DOMXPath::query.
+	 * 
+	 * @param string $expression
+	 * @param DOMNode $context
+	 * @return DOMNodeList
+	 */
+	public function query($expression, $context = null) {
+		return $this->xpath->query($expression, $context);
+	}
+	
+	/**
 	 * Add Class Map
 	 * 
 	 * Adds a mapping of legacy classes to microformats-2 classes to replace them
