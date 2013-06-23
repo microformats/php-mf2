@@ -143,7 +143,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('screen', $output['alternates'][0]['media']);
 	}
 	
-	public function testParseIdOnlyReturnsMicroformatsWithinThatId() {
+	public function testParseFromIdOnlyReturnsMicroformatsWithinThatId() {
 		$input = <<<EOT
 <div class="h-entry"><span class="p-name">Not Included</span></div>
 
@@ -155,7 +155,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 EOT;
 		
 		$parser = new Parser($input);
-		$output = $parser->parseId('parse-here');
+		$output = $parser->parseFromId('parse-here');
 		
 		$this->assertCount(1, $output['items']);
 		$this->assertEquals('Included', $output['items'][0]['properties']['name'][0]);

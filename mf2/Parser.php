@@ -693,7 +693,7 @@ class Parser {
 	 * @param bool $htmlSafe whether or not to html-encode non e-* properties. Defaults to false
 	 * @return array An array containing all the µfs found in the current document
 	 */
-	public function parse($htmlSafe = null) {
+	public function parse($htmlSafe = null, DOMElement $context = null) {
 		$mfs = array();
 		
 		// Allow temporary overrides of htmlSafe
@@ -702,8 +702,12 @@ class Parser {
 			$this->htmlSafe = $htmlSafe;
 		}
 		
+		$mfElements = null === $context
+			? $this->xpath->query('//*[contains(concat(" ",	@class), " h-")]')
+			: $this->xpath->query('./*[contains(concat(" ",	@class), " h-")]', $context);
+		
 		// Parser microformats
-		foreach ($this->xpath->query('//*[contains(concat(" ",	@class), " h-")]') as $node) {
+		foreach ($mfElements as $node) {
 			// For each microformat
 			$result = $this->parseH($node);
 
@@ -721,6 +725,30 @@ class Parser {
 			'items' => array_values(array_filter($mfs)),
 			'rels' => $rels,
 			'alternates' => $alternates);
+	}
+	
+	/**
+	 * Parse From ID
+	 * 
+	 * Given an ID, parse all microformats which are children of the element with
+	 * that ID.
+	 * 
+	 * Note that rel values are still document-wide.
+	 * 
+	 * If an element with the ID is not found, an empty skeleton mf2 array structure 
+	 * will be returned.
+	 * 
+	 * @param string $id
+	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
+	 * @return array
+	 */
+	public function parseFromId($id, $htmlSafe = false) {
+		$matches = $this->xpath->query("//*[@id='{$id}']");
+		
+		if (empty($matches))
+			return ['items' => [], 'rels' => [], 'alternates' => []];
+		
+		return $this->parse($htmlSafe, $matches->item(0));
 	}
 
 	/**
