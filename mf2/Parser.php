@@ -473,9 +473,9 @@ class Parser {
 			// Parse
 			$result = $this->parseH($subMF);
 			
-			if (null === $result) {
-				
-			}
+			// If result was already parsed, skip it
+			if (null === $result)
+				continue;
 			
 			$result['value'] = $this->parseP($subMF);
 
