@@ -161,6 +161,9 @@ EOT;
 		$this->assertEquals('Included', $output['items'][0]['properties']['name'][0]);
 	}
 	
+	/**
+	 * Issue #21 github.com/indieweb/php-mf2/issues/21
+	 */
 	public function testDoesntAddArraysWithOnlyValueForAlreadyParsedNestedMicroformats() {
 		$input = <<<EOT
 <div class="h-entry">
