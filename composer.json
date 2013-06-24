@@ -24,5 +24,8 @@
     "config": {
     	"bin-dir": "bin/"
     },
-		"license": "MIT"
+		"license": "MIT",
+		"suggest": {
+			"barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"
+		}
 }
