@@ -473,6 +473,10 @@ class Parser {
 			// Parse
 			$result = $this->parseH($subMF);
 			
+			if (null === $result) {
+				
+			}
+			
 			$result['value'] = $this->parseP($subMF);
 
 			// Does this µf have any property names other than h-*?
@@ -711,7 +715,7 @@ class Parser {
 		
 		$mfElements = null === $context
 			? $this->xpath->query('//*[contains(concat(" ",	@class), " h-")]')
-			: $this->xpath->query('./*[contains(concat(" ",	@class), " h-")]', $context);
+			: $this->xpath->query('.//*[contains(concat(" ",	@class), " h-")]', $context);
 		
 		// Parser microformats
 		foreach ($mfElements as $node) {

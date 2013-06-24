@@ -160,4 +160,20 @@ EOT;
 		$this->assertCount(1, $output['items']);
 		$this->assertEquals('Included', $output['items'][0]['properties']['name'][0]);
 	}
+	
+	public function testDoesntAddArraysWithOnlyValueForAlreadyParsedNestedMicroformats() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="p-in-reply-to h-entry">
+		<span class="p-author h-card">Nested Author</span>
+	</div>
+	
+	<span class="p-author h-card">Real Author</span>
+</div>
+EOT;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertCount(1, $output['items'][0]['properties']['author']);
+	}
 }
