@@ -163,6 +163,11 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.17
+
+* Rewrote some PHP 5.4 array syntax which crept into 0.1.16 so php-mf2 still works on PHP 5.3
+* Fixed a bug causing weird partial microformats to be added to parent microformats if they had doubly property-nested children
+
 #### v0.1.16
 
 * Ability to parse from only an ID
