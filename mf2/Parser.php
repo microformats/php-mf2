@@ -672,7 +672,7 @@ class Parser {
 			if (in_array('alternate', $linkRels)) {
 				$alt = array(
 					'url' => $href,
-					'rel' => implode(' ', array_diff($linkRels, ['alternate']))
+					'rel' => implode(' ', array_diff($linkRels, array('alternate')))
 				);
 				if ($hyperlink->hasAttribute('media'))
 					$alt['media'] = $hyperlink->getAttribute('media');
@@ -688,7 +688,7 @@ class Parser {
 			}
 		}
 		
-		return [$rels, $alternates];
+		return array($rels, $alternates);
 	}
 	
 	/**
@@ -757,7 +757,7 @@ class Parser {
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 		
 		if (empty($matches))
-			return ['items' => [], 'rels' => [], 'alternates' => []];
+			return array('items' => array(), 'rels' => array(), 'alternates' => array());
 		
 		return $this->parse($htmlSafe, $matches->item(0));
 	}
