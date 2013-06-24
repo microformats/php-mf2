@@ -431,6 +431,7 @@ class Parser {
 			return $classTitle;
 		
 		// Expand relative URLs within children of this element
+		// TODO: as it is this is not relative to only children, make this .// and rerun tests
 		$hyperlinkChildren = $this->xpath->query('//*[@src or @href or @data]', $e);
 		
 		foreach ($hyperlinkChildren as $child) {
@@ -519,6 +520,7 @@ class Parser {
 		}
 
 		// Handle u-*
+		// TODO: is this regex correct? why not concat space before?
 		foreach ($this->xpath->query('.//*[contains(@class,"u-")]', $e) as $u) {
 			if ($this->isElementParsed($u, 'u'))
 				continue;
@@ -566,6 +568,7 @@ class Parser {
 				}
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
+			// TODO: should this not be elementPrefixParsed like the others?
 			$em->setAttribute('data-e-parsed', 'true');
 		}
 
