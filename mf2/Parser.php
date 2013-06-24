@@ -127,12 +127,12 @@ class Parser {
 	 * @return string|null
 	 */
 	public static function nestedMfPropertyNamesFromClass($class) {
-		$prefixes = array('p-', 'u-', 'dt-', 'e-');
+		$prefixes = array(' p-', ' u-', ' dt-', ' e-');
 		
 		foreach (explode(' ', $class) as $classname) {
 			foreach ($prefixes as $prefix) {
-				if (stristr($classname, $prefix))
-					return self::mfNamesFromClass($classname, $prefix);
+				if (stristr(' ' . $classname, $prefix))
+					return self::mfNamesFromClass($classname, ltrim($prefix));
 			}
 		}
 		
@@ -521,7 +521,7 @@ class Parser {
 
 		// Handle u-*
 		// TODO: is this regex correct? why not concat space before?
-		foreach ($this->xpath->query('.//*[contains(@class,"u-")]', $e) as $u) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ",  @class)," u-")]', $e) as $u) {
 			if ($this->isElementParsed($u, 'u'))
 				continue;
 
@@ -556,7 +556,7 @@ class Parser {
 
 		// Handle e-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
-			if ($this->isElementParsed($e, 'e'))
+			if ($this->isElementParsed($em, 'e'))
 				continue;
 
 			$eValue = $this->parseE($em);
@@ -568,8 +568,7 @@ class Parser {
 				}
 			}
 			// Make sure this sub-mf won’t get parsed as a top level mf
-			// TODO: should this not be elementPrefixParsed like the others?
-			$em->setAttribute('data-e-parsed', 'true');
+			$this->elementPrefixParsed($em, 'e');
 		}
 
 		// !Implied Properties
