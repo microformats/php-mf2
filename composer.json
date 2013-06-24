@@ -23,5 +23,6 @@
     },
     "config": {
     	"bin-dir": "bin/"
-    }
+    },
+		"license": "MIT"
 }
