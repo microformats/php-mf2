@@ -179,4 +179,17 @@ EOT;
 		
 		$this->assertCount(1, $output['items'][0]['properties']['author']);
 	}
+	
+	public function testParsesNestedMicroformatsWithClassnamesInAnyOrder() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="note- p-in-reply-to h-entry">
+	</div>
+</div>
+EOT;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertCount(1, $output['items'][0]['properties']['in-reply-to']);
+	}
 }
