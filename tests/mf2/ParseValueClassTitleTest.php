@@ -51,4 +51,22 @@ class ParseValueClassTitleTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
+	
+	public function testValueClassOnTanteksSiteWorks() {
+		$input = <<<EOT
+<div class="h-entry">
+	<a href="2013/178/t1/surreal-meeting-dpdpdp-trondisc"
+		rel="bookmark"
+		class="dt-published published dt-updated updated u-url u-uid">
+			<time class="value">10:17</time>
+			on <time class="value">2013-06-27</time>
+	</a>
+</div>
+EOT;
+		
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('published', $output['items'][0]['properties']);
+	}
 }
