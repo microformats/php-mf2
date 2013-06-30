@@ -6,9 +6,6 @@
 
 namespace mf2\Parser\test;
 
-// Include Parser.php
-$autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
-
 use mf2\Parser,
 	PHPUnit_Framework_TestCase,
 	DateTime;
@@ -55,5 +52,3 @@ class ParseValueClassTitleTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
 }
-
-// EOF

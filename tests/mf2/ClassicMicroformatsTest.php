@@ -6,9 +6,6 @@
 
 namespace mf2\Parser\test;
 
-// Include Parser.php
-$autoloader = require_once dirname(__DIR__) . '/../mf2/Parser.php';
-
 use mf2\Parser;
 use PHPUnit_Framework_TestCase;
 use DateTime;
