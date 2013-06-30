@@ -172,6 +172,11 @@ class Parser {
 		if (!$this->parsed->contains($e))
 			return false;
 		
+		$prefixes = $this->parsed[$e];
+		
+		if (!in_array($prefix, $prefixes))
+			return false;
+		
 		return true;
 	}
 	
@@ -315,11 +320,11 @@ class Parser {
 		// Check for value-class pattern
 		$valueClassChildren = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ")]', $dt);
 		$dtValue = false;
-
+		
 		if ($valueClassChildren->length > 0) {
 			// They’re using value-class (awkward bugger :)
 			$dateParts = array();
-
+			
 			foreach ($valueClassChildren as $e) {
 				if ($e->tagName == 'img' or $e->tagName == 'area') {
 					// Use @alt
@@ -524,25 +529,25 @@ class Parser {
 		foreach ($this->xpath->query('.//*[contains(concat(" ",  @class)," u-")]', $e) as $u) {
 			if ($this->isElementParsed($u, 'u'))
 				continue;
-
+			
 			$uValue = $this->parseU($u);
-
+			
 			// Add the value to the array for it’s property types
 			foreach (self::mfNamesFromElement($u, 'u-') as $propName) {
 				$return[$propName][] = $uValue;
 			}
-
+			
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$this->elementPrefixParsed($u, 'u');
 		}
-
+		
 		// Handle dt-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
 			if ($this->isElementParsed($dt, 'dt'))
 				continue;
-
+			
 			$dtValue = $this->parseDT($dt);
-
+			
 			if ($dtValue) {
 				// Add the value to the array for dt- properties
 				foreach (self::mfNamesFromElement($dt, 'dt-') as $propName) {

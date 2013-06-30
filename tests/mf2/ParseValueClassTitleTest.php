@@ -52,7 +52,10 @@ class ParseValueClassTitleTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
 	
-	public function testValueClassOnTanteksSiteWorks() {
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/25
+	 */
+	public function testValueClassDatetimeWorksWithUrlProperties() {
 		$input = <<<EOT
 <div class="h-entry">
 	<a href="2013/178/t1/surreal-meeting-dpdpdp-trondisc"
@@ -68,5 +71,6 @@ EOT;
 		$output = $parser->parse();
 		
 		$this->assertArrayHasKey('published', $output['items'][0]['properties']);
+		$this->assertEquals('2013-06-27T10:17', $output['items'][0]['properties']['published'][0]);
 	}
 }
