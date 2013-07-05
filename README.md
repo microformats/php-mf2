@@ -163,6 +163,11 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.18 (2013-06-05)
+
+* Fixed problems with isElementParsed, causing elements to be incorrectly parsed
+* Cleaned up some test files
+
 #### v0.1.17
 
 * Rewrote some PHP 5.4 array syntax which crept into 0.1.16 so php-mf2 still works on PHP 5.3
