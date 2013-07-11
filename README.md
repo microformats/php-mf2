@@ -163,6 +163,10 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.19 (2013-06-11)
+
+* Required stable version of webigniton/absolute-url-resolver, hopefully resolving versioning problems
+
 #### v0.1.18 (2013-06-05)
 
 * Fixed problems with isElementParsed, causing elements to be incorrectly parsed
