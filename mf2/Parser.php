@@ -318,7 +318,7 @@ class Parser {
 	 */
 	public function parseDT(\DOMElement $dt) {
 		// Check for value-class pattern
-		$valueClassChildren = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ")]', $dt);
+		$valueClassChildren = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
 		$dtValue = false;
 		
 		if ($valueClassChildren->length > 0) {
@@ -326,7 +326,12 @@ class Parser {
 			$dateParts = array();
 			
 			foreach ($valueClassChildren as $e) {
-				if ($e->tagName == 'img' or $e->tagName == 'area') {
+				if (strstr(' ' . $e->getAttribute('class') . ' ', ' value-title ')) {
+					$title = $e->getAttribute('title');
+					if (!empty($title))
+						$dateParts[] = $title;
+				}
+				elseif ($e->tagName == 'img' or $e->tagName == 'area') {
 					// Use @alt
 					$alt = $e->getAttribute('alt');
 					if (!empty($alt))
@@ -362,7 +367,7 @@ class Parser {
 			$timePart = '';
 			foreach ($dateParts as $part) {
 				// Is this part a full ISO8601 datetime?
-				if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
+				if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
 					// Break completely, we’ve got our value
 					$dtValue = $part;
 					break;

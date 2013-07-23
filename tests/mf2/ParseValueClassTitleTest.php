@@ -73,4 +73,21 @@ EOT;
 		$this->assertArrayHasKey('published', $output['items'][0]['properties']);
 		$this->assertEquals('2013-06-27T10:17', $output['items'][0]['properties']['published'][0]);
 	}
+	
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/27
+	 */
+	public function testParsesValueTitleDatetimes() {
+		$input = <<<EOT
+<div class="h-entry">
+ <h1 class="p-name">test</h1>
+ <span class="dt-published"><span class="value-title" title="2012-02-16T16:14:47+00:00"> </span>16.02.2012</span>
+</div>
+EOT;
+		
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertEquals('2012-02-16T16:14:47+00:00', $output['items'][0]['properties']['published'][0]);
+	}
 }
