@@ -37,9 +37,7 @@ class Parser {
 	public function __construct($input, $baseurl = null, $htmlSafe = false) {
 		// For the moment: assume string = string of HTML
 		if (is_string($input)) {
-			if (strtolower(mb_detect_encoding($input)) == 'utf-8') {
-				$input = mb_convert_encoding($input, 'HTML-ENTITIES', "UTF-8");
-			}
+			$input = mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
 
 			$doc = new DOMDocument();
 			@$doc->loadHTML($input);
