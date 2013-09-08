@@ -939,3 +939,8 @@ class Parser {
 	);
 
 }
+
+function resolveUrl($base, $relative) {
+	return $relative;
+}
+
