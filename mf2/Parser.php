@@ -953,10 +953,11 @@ function resolveUrl($base, $relative) {
 		return null;
 	}
 
-	// Fragment in base is not needed anymore!
-	$n = strpos($base, '#');
-	if ($n !== false) {
-		$base = substr($base, 0, $n);
+	if ($relative !== '') {
+		$n = strpos($base, '#');
+		if ($n !== false) {
+			$base = substr($base, 0, $n);
+		}
 	}
 
 	$fragment = '';
@@ -1013,8 +1014,8 @@ function resolveUrl($base, $relative) {
 
 			if ($sPos !== false) {
 				$base = substr($base, 0, $sPos);
-				break;
 			}
+
 			$i = strpos($relative, '../');
 		} while ($i === 0);
 	}
