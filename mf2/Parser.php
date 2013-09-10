@@ -940,7 +940,49 @@ class Parser {
 
 }
 
-function resolveUrl($base, $relative) {
+function resolveUrl($base, $input) {
+	# If we have no base URL, we can't do anything so return the original
+	if(trim($base) == '') return $input;
+
+	# Return $input unchanged if it's already a full URL
+	$inputURL = @parse_url($input);
+	if(array_key_exists('scheme', $inputURL)) {
+		return $input;
+	}
+
+	$trailingSlash = substr($base, -1) == '/';
+	$url = @parse_url($base);
+
+	if($url === false)
+		return $input; # Return $input in malformed base URL
+
+	# If base has no path, add a slash as the path
+	if(!array_key_exists('path', $url))
+		$url['path'] = '/';
+
+	# Add the path from $input
+	if(array_key_exists('path', $inputURL) && $inputURL['path']) {
+		if(substr($url['path'],-1) == '/') # if the base ends with a slash, ignore leading slashes on input
+			$url['path'] .= ltrim($inputURL['path'], '/');
+		else # base does not end in slash, so we need one at the beginning
+			$url['path'] .= '/' . ltrim($inputURL['path'], '/');
+	}
+
+	# Add the query string from $input
+	if(array_key_exists('query', $inputURL))
+		$url['query'] = $inputURL['query'];
+
+	# Add the fragment from $input
+	if(array_key_exists('fragment', $inputURL))
+		$url['fragment'] = $inputURL['fragment'];
+
+	# Now build up the fully resolved URL
+	$relative = $url['scheme'] . '://' . $url['host'] . $url['path'];
+	if(array_key_exists('query', $url))
+		$relative .= '?' . $url['query'];
+	if(array_key_exists('fragment', $url))
+		$relative .= '#' . $url['fragment'];
+
 	return $relative;
 }
 
