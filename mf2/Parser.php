@@ -962,26 +962,65 @@ function resolveUrl($base, $input) {
 
 	# Add the path from $input
 	if(array_key_exists('path', $inputURL) && $inputURL['path']) {
-		if(substr($url['path'],-1) == '/') # if the base ends with a slash, ignore leading slashes on input
-			$url['path'] .= ltrim($inputURL['path'], '/');
-		else # base does not end in slash, so we need one at the beginning
-			$url['path'] .= '/' . ltrim($inputURL['path'], '/');
+		if(substr($inputURL['path'], 0, 1) == '/') {
+			# if input starts with a slash, replace the entire URL with input
+			$url['path'] = $inputURL['path'];
+		} elseif(substr($url['path'],-1) == '/') {
+			# if the base ends with a slash, append the input path
+			$url['path'] .= $inputURL['path'];
+		} else { 
+			# base does not end in slash. Remove the last component of the base before appending the input
+			$parts = explode('/', $url['path']);
+			$parts = array_slice($parts, 0, -1);
+			$url['path'] = implode('/', $parts);
+			$url['path'] .= '/' . $inputURL['path'];
+		}
 	}
 
-	# Add the query string from $input
+	# Resolve "." and ".." in the resulting path
+	if(array_key_exists('path', $url)) {
+		$parts = explode('/', $url['path']);
+		# Find the locations of any ".." components
+		$dotdotKeys = array_keys($parts, '..');
+		foreach($dotdotKeys as $key) {
+			# Remove the '..' and the previous component
+			array_splice($parts, $key - 1, 2);
+		}
+		$url['path'] = implode('/', $parts);
+		# Remove './' things
+		$url['path'] = str_replace('./', '', $url['path']);
+
+		if(substr($url['path'], 0, 1) != '/')
+			$url['path'] = '/' . $url['path'];
+	}
+
+	# Ignore existing query string in base URL and add the query string from $input
+	unset($url['query']);
 	if(array_key_exists('query', $inputURL))
 		$url['query'] = $inputURL['query'];
 
-	# Add the fragment from $input
+	# Ignore existing fragment in base URL and add the fragment from $input
+	unset($url['fragment']);
 	if(array_key_exists('fragment', $inputURL))
 		$url['fragment'] = $inputURL['fragment'];
 
 	# Now build up the fully resolved URL
-	$relative = $url['scheme'] . '://' . $url['host'] . $url['path'];
+	if(array_key_exists('user', $url) || array_key_exists('pass', $url)) {
+		$relative = $url['scheme'] . '://' . 
+			(array_key_exists('user', $url) ? $url['user'] : '') . ':' . 
+			(array_key_exists('pass', $url) ? $url['pass'] : '') . '@' . 
+			$url['host'] . $url['path'];
+	} else {
+		$relative = $url['scheme'] . '://' . $url['host'] . $url['path'];
+	}
 	if(array_key_exists('query', $url))
 		$relative .= '?' . $url['query'];
 	if(array_key_exists('fragment', $url))
 		$relative .= '#' . $url['fragment'];
+
+	# For the case when the input path is just the '#', include it in the final URL
+	if($input == '#')
+		$relative .= '#';
 
 	return $relative;
 }

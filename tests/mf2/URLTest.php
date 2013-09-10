@@ -58,16 +58,67 @@ class URLTest extends PHPUnit_Framework_TestCase {
 				'http://example.com', '../thing', 'http://example.com/thing'),
 
 			array('Should resolve nested URL',
-				'http://example.com/something', 'another', 'http://example.com/something/another'),
+				'http://example.com/something', 'another', 'http://example.com/another'),
 
-			array('Should respect query strings',
+			array('Should ignore query strings in base url',
 				'http://example.com/index.php?url=http://example.org', '/thing', 'http://example.com/thing'),
 
 			array('Should resolve query strings',
 				'http://example.com/thing', '?stuff=yes', 'http://example.com/thing?stuff=yes'),
 
 			array('Should resolve dir level query strings',
-				'http://example.com', './?thing=yes', 'http://example.com/?thing=yes')
+				'http://example.com', './?thing=yes', 'http://example.com/?thing=yes'),
+
+			array('Should resolve up one level from root domain',
+				'http://example.com', 'path/to/the/../file', 'http://example.com/path/to/file'),
+
+			array('Should resolve up one level from base with path',
+				'http://example.com/path/the', 'to/the/../file', 'http://example.com/path/to/file'),
+
+			// Tests from webignition library
+
+			array('relative add host from base',
+				'http://www.example.com', 'server.php', 'http://www.example.com/server.php'),
+
+			array('relative add scheme host user from base',
+				'http://user:@www.example.com', 'server.php', 'http://user:@www.example.com/server.php'),
+
+			array('relative add scheme host pass from base',
+				'http://:pass@www.example.com', 'server.php', 'http://:pass@www.example.com/server.php'),
+
+			array('relative add scheme host user pass from base',
+				'http://user:pass@www.example.com', 'server.php', 'http://user:pass@www.example.com/server.php'),
+
+			array('relative base has file path',
+				'http://example.com/index.html', 'example.html', 'http://example.com/example.html'),
+
+			array('input has absolute path',
+				'http://www.example.com/pathOne/pathTwo/pathThree', '/server.php?param1=value1', 'http://www.example.com/server.php?param1=value1'),
+
+			array('test absolute url with path',
+				'http://www.example.com/', 'http://www.example.com/pathOne', 'http://www.example.com/pathOne'),
+
+			array('testRelativePathIsTransformedIntoCorrectAbsoluteUrl',
+				'http://www.example.com/pathOne/pathTwo/pathThree', 'server.php?param1=value1', 'http://www.example.com/pathOne/pathTwo/server.php?param1=value1'),
+
+			array('testAbsolutePathHasDotDotDirecoryAndSourceHasFileName',
+				'http://www.example.com/pathOne/index.php', '../jquery.js', 'http://www.example.com/jquery.js'),
+
+			array('testAbsolutePathHasDotDotDirecoryAndSourceHasDirectoryWithTrailingSlash',
+				'http://www.example.com/pathOne/', '../jquery.js', 'http://www.example.com/jquery.js'),
+
+			array('testAbsolutePathHasDotDotDirecoryAndSourceHasDirectoryWithoutTrailingSlash',
+				'http://www.example.com/pathOne', '../jquery.js', 'http://www.example.com/jquery.js'),
+
+			array('testAbsolutePathHasDotDirecoryAndSourceHasFilename',
+				'http://www.example.com/pathOne/index.php', './jquery.js', 'http://www.example.com/pathOne/jquery.js'),
+
+			array('testAbsolutePathHasDotDirecoryAndSourceHasDirectoryWithTrailingSlash',
+				'http://www.example.com/pathOne/', './jquery.js', 'http://www.example.com/pathOne/jquery.js'),
+
+			array('testAbsolutePathHasDotDirecoryAndSourceHasDirectoryWithoutTrailingSlash',
+				'http://www.example.com/pathOne', './jquery.js', 'http://www.example.com/jquery.js')
+
 		);
 	}
 }
