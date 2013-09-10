@@ -941,6 +941,92 @@ class Parser {
 }
 
 function resolveUrl($base, $relative) {
-	return $relative;
+	if ($relative === null || $base === null) {
+		return null;
+	}
+
+	if (strpos($relative, 'http://') === 0 || strpos($relative, 'https://') === 0) {
+		return $relative;
+	}
+
+	if ($base === '') {
+		return null;
+	}
+
+	// Fragment in base is not needed anymore!
+	$n = strpos($base, '#');
+	if ($n !== false) {
+		$base = substr($base, 0, $n);
+	}
+
+	$fragment = '';
+	$fPos = strpos($relative, '#');
+	if ($fPos !== false) {
+		$fragment = substr($relative, $fPos);
+		$relative = substr($relative, 0, $fPos);
+	}
+
+	$query = '';
+	$qPos = strpos($relative, '?');
+	if ($qPos !== false) {
+		$query = substr($relative, $qPos);
+		$relative = substr($relative, 0, $qPos);
+	}
+
+	$sPos = strpos($base, '://');
+	$scheme = substr($base, 0, $sPos + 3);
+	$base = substr($base, $sPos + 3);
+
+	$host = $base;
+	$sPos = strpos($host, '/');
+	if ($sPos !== false) {
+		$host = substr($host, 0, $sPos);
+	}
+
+	if (strpos($relative, '/') === 0) {
+		$relative = substr($relative, 1);
+		$sPos = strpos($base, '/');
+		if ($sPos !== false) {
+			$base = substr($base, 0, $sPos);
+		}
+	}
+
+	if (strpos($relative, './') === 0) {
+		$relative = substr($relative, 2);
+		$sPos = strrpos($base, '/');
+		if ($sPos !== false) {
+			$base = substr($base, 0, $sPos);
+		}
+	}
+
+	$i = strpos($relative, '../');
+	if ($i === 0) {
+		$sPos = strrpos($base, '/');
+
+		if ($sPos !== false) {
+			$base = substr($base, 0, $sPos);
+		}
+
+		do {
+			$relative = substr($relative, 3);
+			$sPos = strrpos($base, '/');
+
+			if ($sPos !== false) {
+				$base = substr($base, 0, $sPos);
+				break;
+			}
+			$i = strpos($relative, '../');
+		} while ($i === 0);
+	}
+	$sPos = strrpos($base, '/');
+	if ($sPos === strlen($base) - 1) {
+		$base = substr($base, 0, $sPos);
+	}
+
+	if ($relative !== '' || $base === $host) {
+		$relative = '/' . $relative;
+	}
+
+	return $scheme . $base . $relative . $query . $fragment;
 }
 
