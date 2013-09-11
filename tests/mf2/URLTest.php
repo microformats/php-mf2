@@ -29,7 +29,7 @@ class URLTest extends PHPUnit_Framework_TestCase {
 	public function testData() {
 		// seriously, please update to PHP 5.4 so I can use nice array syntax ;)
 		// fail message, base, url, expected
-		return array(
+		$cases = array(
 			array('Should return absolute URL unchanged',
 				'http://example.com', 'http://example.com', 'http://example.com'),
 
@@ -120,5 +120,42 @@ class URLTest extends PHPUnit_Framework_TestCase {
 				'http://www.example.com/pathOne', './jquery.js', 'http://www.example.com/jquery.js')
 
 		);
+
+		// Test cases from RFC
+		// http://tools.ietf.org/html/rfc3986#section-5.4
+
+		$rfcTests = array(
+			array("g:h", "g:h"),
+			array("g", "http://a/b/c/g"),
+			array("./g", "http://a/b/c/g"),
+			array("g/", "http://a/b/c/g/"),
+			array("/g", "http://a/g"),
+			array("//g", "http://g"),
+			array("?y", "http://a/b/c/d;p?y"),
+			array("g?y", "http://a/b/c/g?y"),
+			array("#s", "http://a/b/c/d;p?q#s"),
+			array("g#s", "http://a/b/c/g#s"),
+			array("g?y#s", "http://a/b/c/g?y#s"),
+			array(";x", "http://a/b/c/;x"),
+			array("g;x", "http://a/b/c/g;x"),
+			array("g;x?y#s", "http://a/b/c/g;x?y#s"),
+			array("", "http://a/b/c/d;p?q"),
+			array(".", "http://a/b/c/"),
+			array("./", "http://a/b/c/"),
+			array("..", "http://a/b/"),
+			array("../", "http://a/b/"),
+			array("../g", "http://a/b/g"),
+			array("../..", "http://a/"),
+			array("../../", "http://a/"),
+			array("../../g", "http://a/g")
+		);
+
+		foreach($rfcTests as $i=>$test) {
+			$cases[] = array(
+				'test rfc ' . $i, 'http://a/b/c/d;p?q', $test[0], $test[1]
+			);
+		}
+	
+		return $cases;
 	}
 }
