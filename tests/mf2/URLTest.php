@@ -13,9 +13,121 @@ use mf2\Parser,
 
 class URLTest extends PHPUnit_Framework_TestCase {
 
-  public function setUp() {
-    date_default_timezone_set('Europe/London');
-  }
+	public function setUp() {
+		date_default_timezone_set('Europe/London');
+	}
+
+	public function testRemoveLeadingDotSlash() {
+		$input = '../one/two';
+		mf2\removeLeadingDotSlash($input);
+		$this->assertEquals('one/two', $input);
+
+		$input = './one/two';
+		mf2\removeLeadingDotSlash($input);
+		$this->assertEquals('one/two', $input);
+	}
+
+	public function testRemoveLeadingSlashDot() {
+		$input = '/./one/two';
+		mf2\removeLeadingSlashDot($input);
+		$this->assertEquals('/one/two', $input);
+
+		$input = '/.';
+		mf2\removeLeadingSlashDot($input);
+		$this->assertEquals('/', $input);
+
+		$input = '/./../';
+		mf2\removeLeadingSlashDot($input);
+		$this->assertEquals('/../', $input);
+
+		$input = '/./../../g';
+		mf2\removeLeadingSlashDot($input);
+		$this->assertEquals('/../../g', $input);
+	}
+
+	public function testRemoveOneDirLevel() {
+		$input = '/../../g';
+		$output = '/a/b/c';
+		mf2\removeOneDirLevel($input, $output);
+		$this->assertEquals('/../g', $input);
+		$this->assertEquals('/a/b', $output);
+
+		$input = '/..';
+		$output = '/a/b/c';
+		mf2\removeOneDirLevel($input, $output);
+		$this->assertEquals('/', $input);
+		$this->assertEquals('/a/b', $output);
+	}
+
+	public function testRemoveLoneDotDot() {
+		$input = '.';
+		mf2\removeLoneDotDot($input);
+		$this->assertEquals('', $input);
+
+		$input = '..';
+		mf2\removeLoneDotDot($input);
+		$this->assertEquals('', $input);
+	}
+
+	public function testMoveOneSegmentFromInput() {
+		$input = '/a/b/c/./../../g';
+		$output = '';
+		mf2\moveOneSegmentFromInput($input, $output);
+		$this->assertEquals('/b/c/./../../g', $input);
+		$this->assertEquals('/a', $output);
+
+		$input = '/b/c/./../../g';
+		$output = '/a';
+		mf2\moveOneSegmentFromInput($input, $output);
+		$this->assertEquals('/c/./../../g', $input);
+		$this->assertEquals('/a/b', $output);
+
+		$input = '/c/./../../g';
+		$output = '/a/b';
+		mf2\moveOneSegmentFromInput($input, $output);
+		$this->assertEquals('/./../../g', $input);
+		$this->assertEquals('/a/b/c', $output);
+
+		$input = '/g';
+		$output = '/a';
+		mf2\moveOneSegmentFromInput($input, $output);
+		$this->assertEquals('', $input);
+		$this->assertEquals('/a/g', $output);
+	}
+
+	/**
+	 * @dataProvider removeDotSegmentsData
+	 */
+	public function testRemoveDotSegments($assert, $path, $expected) {
+		$actual = mf2\removeDotSegments($path);
+		$this->assertEquals($expected, $actual, $assert);
+	}
+	
+	public function removeDotSegmentsData() {
+		return array(
+			array('Should remove .. and .',
+				'/a/b/c/./../../g', '/a/g'),
+			array('Should remove ../..',
+				'/a/b/c/d/../../../g', '/a/g'),
+			array('Should not add leading slash',
+				'a/b/c', 'a/b/c'),
+
+		);
+	}
+
+	public function testManual() {
+		$expected = 'http://a/b/c/g';
+		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', './g');
+		$this->assertEquals($expected, $actual, 'works');
+
+		$expected = 'http://a/b/c/g/';
+		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', './g/');
+		$this->assertEquals($expected, $actual, 'works');
+
+		$expected = 'http://a/b/';
+		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', '..');
+		$this->assertEquals($expected, $actual, 'works');
+	}
 
 	/**
 	 * @dataProvider testData
@@ -25,7 +137,7 @@ class URLTest extends PHPUnit_Framework_TestCase {
 
     $this->assertEquals($expected, $actual, $assert);
   }
-	
+
 	public function testData() {
 		// seriously, please update to PHP 5.4 so I can use nice array syntax ;)
 		// fail message, base, url, expected

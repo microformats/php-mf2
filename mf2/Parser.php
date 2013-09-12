@@ -940,88 +940,224 @@ class Parser {
 
 }
 
-function resolveUrl($base, $input) {
-	# If we have no base URL, we can't do anything so return the original
-	if(trim($base) == '') return $input;
+function parseUriToComponents($uri) {
+	$result = array(
+		'scheme' => null,
+		'authority' => null,
+		'path' => null,
+		'query' => null,
+		'fragment' => null
+	);
 
-	# Return $input unchanged if it's already a full URL
-	$inputURL = @parse_url($input);
-	if(array_key_exists('scheme', $inputURL)) {
-		return $input;
-	}
+	$u = @parse_url($uri);
+	if(array_key_exists('scheme', $u))
+		$result['scheme'] = $u['scheme'];
+	if(array_key_exists('host', $u))
+		$result['authority'] = $u['host'];
+	if(array_key_exists('path', $u))
+		$result['path'] = $u['path'];
+	if(array_key_exists('fragment', $u))
+		$result['fragment'] = $u['fragment'];
 
-	$trailingSlash = substr($base, -1) == '/';
-	$url = @parse_url($base);
+	return $result;
+}
 
-	if($url === false)
-		return $input; # Return $input in malformed base URL
+function resolveUrl($baseURI, $referenceURI) {
+	$target = array(
+		'scheme' => null,
+		'authority' => null,
+		'path' => null,
+		'query' => null,
+		'fragment' => null
+	);
 
-	# If base has no path, add a slash as the path
-	if(!array_key_exists('path', $url))
-		$url['path'] = '/';
+	# 5.2.1 Pre-parse the Base URI
+	# The base URI (Base) is established according to the procedure of
+  # Section 5.1 and parsed into the five main components described in
+  # Section 3
+	$base = parseUriToComponents($baseURI);
 
-	# Add the path from $input
-	if(array_key_exists('path', $inputURL) && $inputURL['path']) {
-		if(substr($inputURL['path'], 0, 1) == '/') {
-			# if input starts with a slash, replace the entire URL with input
-			$url['path'] = $inputURL['path'];
-		} elseif(substr($url['path'],-1) == '/') {
-			# if the base ends with a slash, append the input path
-			$url['path'] .= $inputURL['path'];
-		} else { 
-			# base does not end in slash. Remove the last component of the base before appending the input
-			$parts = explode('/', $url['path']);
-			$parts = array_slice($parts, 0, -1);
-			$url['path'] = implode('/', $parts);
-			$url['path'] .= '/' . $inputURL['path'];
-		}
-	}
+	# 5.2.2. Transform References
 
-	# Resolve "." and ".." in the resulting path
-	if(array_key_exists('path', $url)) {
-		$parts = explode('/', $url['path']);
-		# Find the locations of any ".." components
-		$dotdotKeys = array_keys($parts, '..');
-		foreach($dotdotKeys as $key) {
-			# Remove the '..' and the previous component
-			array_splice($parts, $key - 1, 2);
-		}
-		$url['path'] = implode('/', $parts);
-		# Remove './' things
-		$url['path'] = str_replace('./', '', $url['path']);
+	# The URI reference is parsed into the five URI components
+	# (R.scheme, R.authority, R.path, R.query, R.fragment) = parse(R);
+	$reference = parseUriToComponents($referenceURI);
 
-		if(substr($url['path'], 0, 1) != '/')
-			$url['path'] = '/' . $url['path'];
-	}
+	# A non-strict parser may ignore a scheme in the reference
+	# if it is identical to the base URI's scheme.
+	# TODO
 
-	# Ignore existing query string in base URL and add the query string from $input
-	unset($url['query']);
-	if(array_key_exists('query', $inputURL))
-		$url['query'] = $inputURL['query'];
-
-	# Ignore existing fragment in base URL and add the fragment from $input
-	unset($url['fragment']);
-	if(array_key_exists('fragment', $inputURL))
-		$url['fragment'] = $inputURL['fragment'];
-
-	# Now build up the fully resolved URL
-	if(array_key_exists('user', $url) || array_key_exists('pass', $url)) {
-		$relative = $url['scheme'] . '://' . 
-			(array_key_exists('user', $url) ? $url['user'] : '') . ':' . 
-			(array_key_exists('pass', $url) ? $url['pass'] : '') . '@' . 
-			$url['host'] . $url['path'];
+	if($reference['scheme']) {
+		$target['scheme'] = $reference['scheme'];
+		$target['authority'] = $reference['authority'];
+		$target['path'] = removeDotSegments($reference['path']);
+		$target['query'] = $reference['query'];
 	} else {
-		$relative = $url['scheme'] . '://' . $url['host'] . $url['path'];
+		if($reference['authority']) {
+			$target['authority'] = $reference['authority'];
+			$target['path'] = removeDotSegments($reference['path']);
+			$target['query'] = $reference['query'];
+		} else {
+			if($reference['path'] == '') {
+				$target['path'] = $base['path'];
+				if($reference['query']) {
+					$target['query'] = $reference['query'];
+				} else {
+					$target['query'] = $base['query'];
+				}
+			} else {
+				if(substr($reference['path'], 0, 1) == '/') {
+					$target['path'] = removeDotSegments($reference['path']);
+				} else {
+					$target['path'] = mergePaths($base, $reference);
+					$target['path'] = removeDotSegments($target['path']);
+				}
+				$target['query'] = $reference['query'];
+			}
+			$target['authority'] = $base['authority'];
+		}
+		$target['scheme'] = $base['scheme'];
 	}
-	if(array_key_exists('query', $url))
-		$relative .= '?' . $url['query'];
-	if(array_key_exists('fragment', $url))
-		$relative .= '#' . $url['fragment'];
+	$target['fragment'] = $reference['fragment'];
 
-	# For the case when the input path is just the '#', include it in the final URL
-	if($input == '#')
-		$relative .= '#';
+	# 5.3 Component Recomposition
+	$result = '';
+	if($target['scheme']) {
+		$result .= $target['scheme'] . ':';
+	}
+	if($target['authority']) {
+		$result .= '//' . $target['authority'];
+	}
+	$result .= $target['path'];
+	if($target['query']) {
+		$result .= '?' . $target['query'];
+	}
+	if($target['fragment']) {
+		$result .= '#' . $target['fragment'];
+	}
+	return $result;
+}
 
-	return $relative;
+# 5.2.3 Merge Paths
+function mergePaths($base, $reference) {
+	# If the base URI has a defined authority component and an empty
+	#    path, 
+	if($base['authority'] && $base['path'] == null) {
+		# then return a string consisting of "/" concatenated with the
+		# reference's path; otherwise,
+		$merged = '/' . $reference['path'];
+	} else {
+		if(($pos=strrpos($base['path'], '/')) !== false) {
+			# return a string consisting of the reference's path component
+			#    appended to all but the last segment of the base URI's path (i.e.,
+			#    excluding any characters after the right-most "/" in the base URI
+			#    path,
+			$merged = substr($base['path'], 0, $pos + 1) . $reference['path'];
+		} else {
+			#    or excluding the entire base URI path if it does not contain
+			#    any "/" characters).
+			$merged = $base['path'];
+		}
+	}
+	return $merged;
+}
+
+# 5.2.4.A Remove leading ../ or ./
+function removeLeadingDotSlash(&$input) {
+	if(substr($input, 0, 3) == '../') {
+		$input = substr($input, 3);
+	} elseif(substr($input, 0, 2) == './') {
+		$input = substr($input, 2);
+	}
+}
+
+# 5.2.4.B Replace leading /. with /
+function removeLeadingSlashDot(&$input) {
+	if(substr($input, 0, 3) == '/./') {
+		$input = '/' . substr($input, 3);
+	} else {
+		$input = '/' . substr($input, 2);
+	}
+}
+
+# 5.2.4.C Given leading /../ remove component from output buffer
+function removeOneDirLevel(&$input, &$output) {
+	if(substr($input, 0, 4) == '/../') {
+		$input = '/' . substr($input, 4);
+	} else {
+		$input = '/' . substr($input, 3);
+	}
+	$output = substr($output, 0, strrpos($output, '/'));
+}
+
+# 5.2.4.D Remove . and .. if it's the only thing in the input
+function removeLoneDotDot(&$input) {
+	if($input == '.') {
+		$input = substr($input, 1);
+	} else {
+		$input = substr($input, 2);
+	}
+}
+
+# 5.2.4.E Move one segment from input to output
+function moveOneSegmentFromInput(&$input, &$output) {
+	if(substr($input, 0, 1) != '/') {
+		$pos = strpos($input, '/');
+	} else {
+		$pos = strpos($input, '/', 1);
+	}
+
+	if($pos === false) {
+		$output .= $input;
+		$input = '';
+	} else {
+		$output .= substr($input, 0, $pos);
+		$input = substr($input, $pos);
+	}
+}
+
+# 5.2.4 Remove Dot Segments
+function removeDotSegments($path) {
+	# 1.  The input buffer is initialized with the now-appended path
+	#     components and the output buffer is initialized to the empty
+	#     string.
+	$input = $path;
+	$output = '';
+
+	$step = 0;
+
+	# 2.  While the input buffer is not empty, loop as follows:
+	while($input) {
+		$step++;
+
+		if(substr($input, 0, 3) == '../' || substr($input, 0, 2) == './') {
+			#     A.  If the input buffer begins with a prefix of "../" or "./",
+			#         then remove that prefix from the input buffer; otherwise,
+			removeLeadingDotSlash($input);
+		} elseif(substr($input, 0, 3) == '/./' || $input == '/.') {
+			#     B.  if the input buffer begins with a prefix of "/./" or "/.",
+			#         where "." is a complete path segment, then replace that
+			#         prefix with "/" in the input buffer; otherwise,
+			removeLeadingSlashDot($input);
+		} elseif(substr($input, 0, 4) == '/../' || $input == '/..') {
+			#     C.  if the input buffer begins with a prefix of "/../" or "/..",
+			#          where ".." is a complete path segment, then replace that
+			#          prefix with "/" in the input buffer and remove the last
+			#          segment and its preceding "/" (if any) from the output
+			#          buffer; otherwise,
+			removeOneDirLevel($input, $output);
+		} elseif($input == '.' || $input == '..') {
+			#     D.  if the input buffer consists only of "." or "..", then remove
+			#         that from the input buffer; otherwise,
+			removeLoneDotDot($input);
+		} else {
+			#     E.  move the first path segment in the input buffer to the end of
+			#         the output buffer and any subsequent characters up to, but not including,
+			#         the next "/" character or the end of the input buffer
+			moveOneSegmentFromInput($input, $output);
+		}
+	}
+
+	return $output;
 }
 
