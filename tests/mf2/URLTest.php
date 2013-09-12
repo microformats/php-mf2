@@ -115,18 +115,29 @@ class URLTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testManual() {
+	public function testNoPathOnBase() {
+		$actual = mf2\resolveUrl('http://example.com', '');
+		$this->assertEquals('http://example.com/', $actual);
+
+		$actual = mf2\resolveUrl('http://example.com', '#');
+		$this->assertEquals('http://example.com/#', $actual);
+
+		$actual = mf2\resolveUrl('http://example.com', '#thing');
+		$this->assertEquals('http://example.com/#thing', $actual);
+	}
+
+	public function testMisc() {
 		$expected = 'http://a/b/c/g';
 		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', './g');
-		$this->assertEquals($expected, $actual, 'works');
+		$this->assertEquals($expected, $actual);
 
 		$expected = 'http://a/b/c/g/';
 		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', './g/');
-		$this->assertEquals($expected, $actual, 'works');
+		$this->assertEquals($expected, $actual);
 
 		$expected = 'http://a/b/';
 		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', '..');
-		$this->assertEquals($expected, $actual, 'works');
+		$this->assertEquals($expected, $actual);
 	}
 
 	/**

@@ -979,6 +979,11 @@ function resolveUrl($baseURI, $referenceURI) {
   # Section 3
 	$base = parseUriToComponents($baseURI);
 
+	# If base path is blank (http://example.com) then set it to /
+	# (I can't tell if this is actually in the RFC or not, but seems like it makes sense)
+	if($base['path'] == null)
+		$base['path'] = '/';
+
 	# 5.2.2. Transform References
 
 	# The URI reference is parsed into the five URI components
@@ -1036,6 +1041,8 @@ function resolveUrl($baseURI, $referenceURI) {
 	}
 	if($target['fragment']) {
 		$result .= '#' . $target['fragment'];
+	} elseif($referenceURI == '#') {
+		$result .= '#';
 	}
 	return $result;
 }
