@@ -937,3 +937,246 @@ class Parser {
 	);
 
 }
+
+function parseUriToComponents($uri) {
+	$result = array(
+		'scheme' => null,
+		'authority' => null,
+		'path' => null,
+		'query' => null,
+		'fragment' => null
+	);
+
+	$u = @parse_url($uri);
+
+	if(array_key_exists('scheme', $u))
+		$result['scheme'] = $u['scheme'];
+
+	if(array_key_exists('host', $u)) {
+		if(array_key_exists('user', $u))
+			$result['authority'] = $u['user'];
+		if(array_key_exists('pass', $u))
+			$result['authority'] .= ':' . $u['pass'];
+		if(array_key_exists('user', $u) || array_key_exists('pass', $u))
+			$result['authority'] .= '@';
+		$result['authority'] .= $u['host'];
+	}
+
+	if(array_key_exists('path', $u))
+		$result['path'] = $u['path'];
+
+	if(array_key_exists('query', $u))
+		$result['query'] = $u['query'];
+
+	if(array_key_exists('fragment', $u))
+		$result['fragment'] = $u['fragment'];
+
+	return $result;
+}
+
+function resolveUrl($baseURI, $referenceURI) {
+	$target = array(
+		'scheme' => null,
+		'authority' => null,
+		'path' => null,
+		'query' => null,
+		'fragment' => null
+	);
+
+	# 5.2.1 Pre-parse the Base URI
+	# The base URI (Base) is established according to the procedure of
+  # Section 5.1 and parsed into the five main components described in
+  # Section 3
+	$base = parseUriToComponents($baseURI);
+
+	# If base path is blank (http://example.com) then set it to /
+	# (I can't tell if this is actually in the RFC or not, but seems like it makes sense)
+	if($base['path'] == null)
+		$base['path'] = '/';
+
+	# 5.2.2. Transform References
+
+	# The URI reference is parsed into the five URI components
+	# (R.scheme, R.authority, R.path, R.query, R.fragment) = parse(R);
+	$reference = parseUriToComponents($referenceURI);
+
+	# A non-strict parser may ignore a scheme in the reference
+	# if it is identical to the base URI's scheme.
+	# TODO
+
+	if($reference['scheme']) {
+		$target['scheme'] = $reference['scheme'];
+		$target['authority'] = $reference['authority'];
+		$target['path'] = removeDotSegments($reference['path']);
+		$target['query'] = $reference['query'];
+	} else {
+		if($reference['authority']) {
+			$target['authority'] = $reference['authority'];
+			$target['path'] = removeDotSegments($reference['path']);
+			$target['query'] = $reference['query'];
+		} else {
+			if($reference['path'] == '') {
+				$target['path'] = $base['path'];
+				if($reference['query']) {
+					$target['query'] = $reference['query'];
+				} else {
+					$target['query'] = $base['query'];
+				}
+			} else {
+				if(substr($reference['path'], 0, 1) == '/') {
+					$target['path'] = removeDotSegments($reference['path']);
+				} else {
+					$target['path'] = mergePaths($base, $reference);
+					$target['path'] = removeDotSegments($target['path']);
+				}
+				$target['query'] = $reference['query'];
+			}
+			$target['authority'] = $base['authority'];
+		}
+		$target['scheme'] = $base['scheme'];
+	}
+	$target['fragment'] = $reference['fragment'];
+
+	# 5.3 Component Recomposition
+	$result = '';
+	if($target['scheme']) {
+		$result .= $target['scheme'] . ':';
+	}
+	if($target['authority']) {
+		$result .= '//' . $target['authority'];
+	}
+	$result .= $target['path'];
+	if($target['query']) {
+		$result .= '?' . $target['query'];
+	}
+	if($target['fragment']) {
+		$result .= '#' . $target['fragment'];
+	} elseif($referenceURI == '#') {
+		$result .= '#';
+	}
+	return $result;
+}
+
+# 5.2.3 Merge Paths
+function mergePaths($base, $reference) {
+	# If the base URI has a defined authority component and an empty
+	#    path, 
+	if($base['authority'] && $base['path'] == null) {
+		# then return a string consisting of "/" concatenated with the
+		# reference's path; otherwise,
+		$merged = '/' . $reference['path'];
+	} else {
+		if(($pos=strrpos($base['path'], '/')) !== false) {
+			# return a string consisting of the reference's path component
+			#    appended to all but the last segment of the base URI's path (i.e.,
+			#    excluding any characters after the right-most "/" in the base URI
+			#    path,
+			$merged = substr($base['path'], 0, $pos + 1) . $reference['path'];
+		} else {
+			#    or excluding the entire base URI path if it does not contain
+			#    any "/" characters).
+			$merged = $base['path'];
+		}
+	}
+	return $merged;
+}
+
+# 5.2.4.A Remove leading ../ or ./
+function removeLeadingDotSlash(&$input) {
+	if(substr($input, 0, 3) == '../') {
+		$input = substr($input, 3);
+	} elseif(substr($input, 0, 2) == './') {
+		$input = substr($input, 2);
+	}
+}
+
+# 5.2.4.B Replace leading /. with /
+function removeLeadingSlashDot(&$input) {
+	if(substr($input, 0, 3) == '/./') {
+		$input = '/' . substr($input, 3);
+	} else {
+		$input = '/' . substr($input, 2);
+	}
+}
+
+# 5.2.4.C Given leading /../ remove component from output buffer
+function removeOneDirLevel(&$input, &$output) {
+	if(substr($input, 0, 4) == '/../') {
+		$input = '/' . substr($input, 4);
+	} else {
+		$input = '/' . substr($input, 3);
+	}
+	$output = substr($output, 0, strrpos($output, '/'));
+}
+
+# 5.2.4.D Remove . and .. if it's the only thing in the input
+function removeLoneDotDot(&$input) {
+	if($input == '.') {
+		$input = substr($input, 1);
+	} else {
+		$input = substr($input, 2);
+	}
+}
+
+# 5.2.4.E Move one segment from input to output
+function moveOneSegmentFromInput(&$input, &$output) {
+	if(substr($input, 0, 1) != '/') {
+		$pos = strpos($input, '/');
+	} else {
+		$pos = strpos($input, '/', 1);
+	}
+
+	if($pos === false) {
+		$output .= $input;
+		$input = '';
+	} else {
+		$output .= substr($input, 0, $pos);
+		$input = substr($input, $pos);
+	}
+}
+
+# 5.2.4 Remove Dot Segments
+function removeDotSegments($path) {
+	# 1.  The input buffer is initialized with the now-appended path
+	#     components and the output buffer is initialized to the empty
+	#     string.
+	$input = $path;
+	$output = '';
+
+	$step = 0;
+
+	# 2.  While the input buffer is not empty, loop as follows:
+	while($input) {
+		$step++;
+
+		if(substr($input, 0, 3) == '../' || substr($input, 0, 2) == './') {
+			#     A.  If the input buffer begins with a prefix of "../" or "./",
+			#         then remove that prefix from the input buffer; otherwise,
+			removeLeadingDotSlash($input);
+		} elseif(substr($input, 0, 3) == '/./' || $input == '/.') {
+			#     B.  if the input buffer begins with a prefix of "/./" or "/.",
+			#         where "." is a complete path segment, then replace that
+			#         prefix with "/" in the input buffer; otherwise,
+			removeLeadingSlashDot($input);
+		} elseif(substr($input, 0, 4) == '/../' || $input == '/..') {
+			#     C.  if the input buffer begins with a prefix of "/../" or "/..",
+			#          where ".." is a complete path segment, then replace that
+			#          prefix with "/" in the input buffer and remove the last
+			#          segment and its preceding "/" (if any) from the output
+			#          buffer; otherwise,
+			removeOneDirLevel($input, $output);
+		} elseif($input == '.' || $input == '..') {
+			#     D.  if the input buffer consists only of "." or "..", then remove
+			#         that from the input buffer; otherwise,
+			removeLoneDotDot($input);
+		} else {
+			#     E.  move the first path segment in the input buffer to the end of
+			#         the output buffer and any subsequent characters up to, but not including,
+			#         the next "/" character or the end of the input buffer
+			moveOneSegmentFromInput($input, $output);
+		}
+	}
+
+	return $output;
+}
+
