@@ -9,7 +9,6 @@ use DOMDocument,
 	DOMNodeList,
 	DateTime,
 	Exception;
-use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
 
 class Parser {
 	/** @var string The baseurl (if any) to use for this parse */
@@ -61,8 +60,7 @@ class Parser {
 				 *
 				 * Perhaps the author was high? */
 				
-				$deriver = new AbsoluteUrlDeriver($baseElementUrl, $baseurl);
-				$baseurl = (string) $deriver->getAbsoluteUrl(); 
+				$baseurl = resolveUrl($baseurl, $baseElementUrl);
 			} else {
 				$baseurl = $baseElementUrl;
 			}
@@ -187,8 +185,7 @@ class Parser {
 		$scheme = parse_url($url, PHP_URL_SCHEME);
 		
 		if (empty($scheme) and !empty($this->baseurl)) {
-			$deriver = new AbsoluteUrlDeriver($url, $this->baseurl);
-			return (string) $deriver->getAbsoluteUrl();
+			return resolveUrl($this->baseurl, $url);
 		} else {
 			return $url;
 		}
