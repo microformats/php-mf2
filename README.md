@@ -163,6 +163,15 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.21
+
+* Removed webignition dependency, also removing ext-intl dependency. php-mf2 is now a standalone, single file library again
+* Replaced webignition URL resolving with custom code passing almost all tests, courtesy of <a class="h-card" href="http://aaronparecki.com">Aaron Parecki</a>
+
+#### v0.1.20
+
+* Added in almost-perfect custom URL resolving code
+
 #### v0.1.19 (2013-06-11)
 
 * Required stable version of webigniton/absolute-url-resolver, hopefully resolving versioning problems
