@@ -950,14 +950,26 @@ function parseUriToComponents($uri) {
 	);
 
 	$u = @parse_url($uri);
+
 	if(array_key_exists('scheme', $u))
 		$result['scheme'] = $u['scheme'];
-	if(array_key_exists('host', $u))
-		$result['authority'] = $u['host'];
+
+	if(array_key_exists('host', $u)) {
+		if(array_key_exists('user', $u))
+			$result['authority'] = $u['user'];
+		if(array_key_exists('pass', $u))
+			$result['authority'] .= ':' . $u['pass'];
+		if(array_key_exists('user', $u) || array_key_exists('pass', $u))
+			$result['authority'] .= '@';
+		$result['authority'] .= $u['host'];
+	}
+
 	if(array_key_exists('path', $u))
 		$result['path'] = $u['path'];
+
 	if(array_key_exists('query', $u))
 		$result['query'] = $u['query'];
+
 	if(array_key_exists('fragment', $u))
 		$result['fragment'] = $u['fragment'];
 
