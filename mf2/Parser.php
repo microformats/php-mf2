@@ -956,6 +956,8 @@ function parseUriToComponents($uri) {
 		$result['authority'] = $u['host'];
 	if(array_key_exists('path', $u))
 		$result['path'] = $u['path'];
+	if(array_key_exists('query', $u))
+		$result['query'] = $u['query'];
 	if(array_key_exists('fragment', $u))
 		$result['fragment'] = $u['fragment'];
 
