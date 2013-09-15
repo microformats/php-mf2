@@ -129,7 +129,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
  <img alt="Tantek Çelik" src="http://ttk.me/logo.jpg"/>
 </a>';
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
 	"items": [{
 		"type": ["h-card"],

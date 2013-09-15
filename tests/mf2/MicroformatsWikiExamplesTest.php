@@ -29,7 +29,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testHandlesEmptyStringsCorrectly() {
 		$input = '';
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
 	"items": []
 }';
@@ -43,7 +43,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testHandlesNullCorrectly() {
 		$input = Null;
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
 	"items": []
 }';
@@ -60,7 +60,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testSimplePersonReference() {
 		$input = '<span class="h-card">Frances Berriman</span>';
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
@@ -81,7 +81,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function testSimpleHyperlinkedPersonReference() {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
@@ -104,7 +104,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
 		// Added root items key
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],	
 	"items": [{ 
   "type": ["h-card"],
@@ -129,7 +129,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 </a>';
 		// Added root items key
 		$expected = '{
-	"rels": [],
+	"rels": {},
 	"alternates": [],
 	"items": [{ 
   "type": ["h-card"],
@@ -167,7 +167,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 </div>';
 
 		$expected = '{
-  "rels": [],
+  "rels": {},
 	"alternates": [],
 	"items": [{ 
 	"type": ["h-card"],

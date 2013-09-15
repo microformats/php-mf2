@@ -695,6 +695,9 @@ class Parser {
 			}
 		}
 		
+		if (count($rels) === 0)
+			$rels = new \stdclass;
+		
 		return array($rels, $alternates);
 	}
 	
