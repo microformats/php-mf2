@@ -742,10 +742,15 @@ class Parser {
 		if (!empty($oldHtmlSafe))
 			$this->htmlSafe = $oldHtmlSafe;
 		
-		return array(
+		$top = array(
 			'items' => array_values(array_filter($mfs)),
-			'rels' => $rels,
-			'alternates' => $alternates);
+			'rels' => $rels
+		);
+		
+		if (count($alternates))
+			$top['alternates'] = $alternates;
+		
+		return $top;
 	}
 	
 	/**

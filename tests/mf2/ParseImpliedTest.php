@@ -130,7 +130,6 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 </a>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
 	"items": [{
 		"type": ["h-card"],
 		"properties": {

@@ -41,7 +41,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-event"],
 	"properties": {
@@ -84,7 +83,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -116,7 +114,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -155,7 +152,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -194,7 +190,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {

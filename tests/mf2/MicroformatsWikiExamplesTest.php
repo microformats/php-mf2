@@ -30,7 +30,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
 	"items": []
 }';
 		
@@ -44,7 +43,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = Null;
 		$expected = '{
 	"rels": {},
-	"alternates": [],
 	"items": []
 }';
 		
@@ -61,7 +59,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '<span class="h-card">Frances Berriman</span>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -82,7 +79,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
 		$expected = '{
 	"rels": {},
-	"alternates": [],
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -105,7 +101,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		// Added root items key
 		$expected = '{
 	"rels": {},
-	"alternates": [],	
 	"items": [{ 
   "type": ["h-card"],
   "properties": {
@@ -130,7 +125,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		// Added root items key
 		$expected = '{
 	"rels": {},
-	"alternates": [],
 	"items": [{ 
   "type": ["h-card"],
   "properties": {
@@ -168,7 +162,6 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 
 		$expected = '{
   "rels": {},
-	"alternates": [],
 	"items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -192,5 +185,4 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
-
 }
