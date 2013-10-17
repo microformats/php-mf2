@@ -163,6 +163,10 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.22
+
+* Converts classic microformats by default
+
 #### v0.1.21
 
 * Removed webignition dependency, also removing ext-intl dependency. php-mf2 is now a standalone, single file library again
