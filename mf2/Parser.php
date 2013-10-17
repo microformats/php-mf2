@@ -71,7 +71,7 @@ class Parser {
 		$this->htmlSafe = $htmlSafe;
 		
 		$this->doc = $doc;
-
+		
 		$this->parsed = new \SplObjectStorage();
 	}
 	
@@ -714,8 +714,12 @@ class Parser {
 	 * @param DOMElement $context optionally an element from which to parse microformats
 	 * @return array An array containing all the µfs found in the current document
 	 */
-	public function parse($htmlSafe = null, DOMElement $context = null) {
+	public function parse($htmlSafe = null, DOMElement $context = null, $convertClassic=true) {
 		$mfs = array();
+		
+		if ($convertClassic) {
+			$this->convertLegacy();
+		}
 		
 		// Allow temporary overrides of htmlSafe
 		if (null !== $htmlSafe) {
@@ -768,13 +772,13 @@ class Parser {
 	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
 	 * @return array
 	 */
-	public function parseFromId($id, $htmlSafe = false) {
+	public function parseFromId($id, $htmlSafe = false, $convertClassic=true) {
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 		
 		if (empty($matches))
 			return array('items' => array(), 'rels' => array(), 'alternates' => array());
 		
-		return $this->parse($htmlSafe, $matches->item(0));
+		return $this->parse($htmlSafe, $matches->item(0), $convertClassic);
 	}
 
 	/**
