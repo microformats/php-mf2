@@ -33,7 +33,7 @@ class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$input = <<<EOT
 <div class="h-entry">
 	<p class="author">Not Me</p>
-	<p clas="p-author h-card">I wrote this</p>
+	<p class="p-author h-card">I wrote this</p>
 </div>
 EOT;
 		$parser = new Parser($input);

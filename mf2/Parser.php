@@ -791,16 +791,22 @@ class Parser {
 	 * @return Parser $this
 	 */
 	public function convertLegacy() {
-		$map = $this->classicMap;
-		
 		$doc = $this->doc;
-		
 		$xp = new DOMXPath($doc);
 		
-		foreach ($map as $old => $new) {
-			// Find all elements with .old but not .new
+		// replace all roots
+		foreach ($this->classicRootMap as $old => $new) {
 			foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
 				$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+			}
+		}
+		
+		foreach ($this->classicPropertyMap as $oldRoot => $properties) {
+			$newRoot = $this->classicRootMap[$oldRoot];
+			foreach ($properties as $old => $new) {
+				foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $oldRoot . ' ") and not(contains(concat(" ", @class, " "), " ' . $newRoot . ' "))]//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $newRoot . ' "))]') as $el) {
+					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+				}
 			}
 		}
 		
