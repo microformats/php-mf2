@@ -8,6 +8,7 @@ use DOMXPath;
 use DOMNode;
 use DOMNodeList;
 use Exception;
+use SplObjectStorage;
 
 /**
  * Parse Microformats2
@@ -53,6 +54,96 @@ function unicodeToHtmlEntities($input) {
 	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
 }
 
+/**
+ * Collapse Whitespace
+ * 
+ * Collapses any sequences of whitespace within a string into a single space
+ * character.
+ * 
+ * @param string $str
+ * @return string
+ */
+function collapseWhitespace($str) {
+	return preg_replace('/[\s|\n]+/', ' ', $str);
+}
+
+
+/**
+ * Microformat Name From Class string
+ * 
+ * Given the value of @class, get the relevant mf classnames (e.g. h-card, 
+ * p-name).
+ * 
+ * @param string $class A space delimited list of classnames
+ * @param string $prefix The prefix to look for
+ * @return string|array The prefixed name of the first microfomats class found or false
+ */
+function mfNamesFromClass($class, $prefix = 'h-') {
+	$classes = explode(' ', $class);
+	$matches = array();
+
+	foreach ($classes as $classname) {
+		if (stristr(' ' . $classname, ' ' . $prefix) !== false) {
+			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
+		}
+	}
+
+	return $matches;
+}
+
+/**
+ * Get Nested µf Property Name From Class
+ * 
+ * Returns all the p-, u-, dt- or e- prefixed classnames it finds in a 
+ * space-separated string.
+ * 
+ * @param string $class
+ * @return string|null
+ */
+function nestedMfPropertyNamesFromClass($class) {
+	$prefixes = array(' p-', ' u-', ' dt-', ' e-');
+
+	foreach (explode(' ', $class) as $classname) {
+		foreach ($prefixes as $prefix) {
+			if (stristr(' ' . $classname, $prefix))
+				return mfNamesFromClass($classname, ltrim($prefix));
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Wraps mfNamesFromClass to handle an element as input (common)
+ * 
+ * @param DOMElement $e The element to get the classname for
+ * @param string $prefix The prefix to look for
+ * @return mixed See return value of mf2\Parser::mfNameFromClass()
+ */
+function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
+	$class = $e->getAttribute('class');
+	return mfNamesFromClass($class, $prefix);
+}
+
+/**
+ * Wraps nestedMfPropertyNamesFromClass to handle an element as input
+ */
+function nestedMfPropertyNamesFromElement(\DOMElement $e) {
+	$class = $e->getAttribute('class');
+	return nestedMfPropertyNamesFromClass($class);
+}
+
+/**
+ * Microformats2 Parser
+ * 
+ * A class which holds state for parsing microformats2 from HTML.
+ * 
+ * Example usage:
+ * 
+ *     use Mf2;
+ *     $parser = new Mf2\Parser('<p class="h-card">Barnaby Walters</p>');
+ *     $output = $parser->parse();
+ */
 class Parser {
 	/** @var string The baseurl (if any) to use for this parse */
 	public $baseurl;
@@ -70,8 +161,9 @@ class Parser {
 	 * Constructor
 	 * 
 	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
+	 * @param string $url The URL of the parsed document, for relative URL resolution
 	 */
-	public function __construct($input, $baseurl = null) {
+	public function __construct($input, $url = null) {
 		if (is_string($input)) {
 			$doc = new DOMDocument();
 			@$doc->loadHTML(unicodeToHtmlEntities($input));
@@ -84,6 +176,7 @@ class Parser {
 		
 		$this->xpath = new DOMXPath($doc);
 		
+		$baseurl = $url;
 		foreach ($this->xpath->query('//base[@href]') as $base) {
 			$baseElementUrl = $base->getAttribute('href');
 			
@@ -94,7 +187,7 @@ class Parser {
 				 *
 				 * Perhaps the author was high? */
 				
-				$baseurl = resolveUrl($baseurl, $baseElementUrl);
+				$baseurl = resolveUrl($url, $baseElementUrl);
 			} else {
 				$baseurl = $baseElementUrl;
 			}
@@ -103,87 +196,7 @@ class Parser {
 		
 		$this->baseurl = $baseurl;
 		$this->doc = $doc;
-		$this->parsed = new \SplObjectStorage();
-	}
-	
-	// !Utility Functions
-	
-	/**
-	 * Collapse Whitespace
-	 * 
-	 * Collapses any sequences of whitespace within a string into a single space
-	 * character.
-	 * 
-	 * @param string $str
-	 * @return string
-	 */
-	public static function collapseWhitespace($str) {
-		return preg_replace('/[\s|\n]+/', ' ', $str);
-	}
-
-	/**
-	 * Microformat Name From Class string
-	 * 
-	 * Given the value of @class, get the relevant mf classnames (e.g. h-card, 
-	 * p-name).
-	 * 
-	 * @param string $class A space delimited list of classnames
-	 * @param string $prefix The prefix to look for
-	 * @return string|array The prefixed name of the first microfomats class found or false
-	 */
-	public static function mfNamesFromClass($class, $prefix = 'h-') {
-		$classes = explode(' ', $class);
-		$matches = array();
-		
-		foreach ($classes as $classname) {
-			if (stristr(' ' . $classname, ' ' . $prefix) !== false) {
-				$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
-			}
-		}
-
-		return $matches;
-	}
-	
-	/**
-	 * Get Nested µf Property Name From Class
-	 * 
-	 * Returns all the p-, u-, dt- or e- prefixed classnames it finds in a 
-	 * space-separated string.
-	 * 
-	 * @param string $class
-	 * @return string|null
-	 */
-	public static function nestedMfPropertyNamesFromClass($class) {
-		$prefixes = array(' p-', ' u-', ' dt-', ' e-');
-		
-		foreach (explode(' ', $class) as $classname) {
-			foreach ($prefixes as $prefix) {
-				if (stristr(' ' . $classname, $prefix))
-					return self::mfNamesFromClass($classname, ltrim($prefix));
-			}
-		}
-		
-		return null;
-	}
-
-	/**
-	 * Wraps mfNamesFromClass to handle an element as input (common)
-	 * 
-	 * @param DOMElement $e The element to get the classname for
-	 * @param string $prefix The prefix to look for
-	 * @return mixed See return value of mf2\Parser::mfNameFromClass()
-	 */
-	public static function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
-		$class = $e->getAttribute('class');
-		return Parser::mfNamesFromClass($class, $prefix);
-	}
-	
-	/**
-	 * Wraps nestedMfPropertyNamesFromClass to handle an element as input
-	 */
-	public static function nestedMfPropertyNamesFromElement(\DOMElement $e) {
-		$class = $e->getAttribute('class');
-		return self::nestedMfPropertyNamesFromClass($class);
+		$this->parsed = new SplObjectStorage();
 	}
 	
 	private function elementPrefixParsed(\DOMElement $e, $prefix) {
@@ -207,6 +220,7 @@ class Parser {
 		return true;
 	}
 	
+	// TODO: figure out if this has problems with sms: and geo: URLs
 	private function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this 
 		// parser to try to do anything with it.
@@ -274,10 +288,7 @@ class Parser {
 		if ($classTitle !== null)
 			return $classTitle;
 		
-		// TODO: remove this parsing, it’s no longer in the spec I think
-		if (in_array($p->tagName, array('br', 'hr')))
-			return '';
-		elseif ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
+		if ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
 			$pValue = $p->getAttribute('alt');
 		} elseif ($p->tagName == 'area' and $p->getAttribute('alt') !== '') {
 			$pValue = $p->getAttribute('alt');
@@ -286,11 +297,10 @@ class Parser {
 		} elseif ($p->tagName == 'data' and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
-			// Use innertext
 			$pValue = trim($p->textContent);
 		}
 		
-		$pValue = self::collapseWhitespace($pValue);
+		$pValue = collapseWhitespace($pValue);
 		
 		return $pValue;
 	}
@@ -340,7 +350,7 @@ class Parser {
 		$dtValue = false;
 		
 		if ($valueClassChildren->length > 0) {
-			// They’re using value-class (awkward bugger :)
+			// They’re using value-class
 			$dateParts = array();
 			
 			foreach ($valueClassChildren as $e) {
@@ -374,7 +384,6 @@ class Parser {
 						$dateParts[] = $dtAttr;
 				}
 				else {
-					// Use innertext
 					if (!empty($e->nodeValue))
 						$dateParts[] = trim($e->nodeValue);
 				}
@@ -434,7 +443,6 @@ class Parser {
 				else
 					$dtValue = $dt->nodeValue;
 			} else {
-				// Use innertext
 				$dtValue = $dt->nodeValue;
 			}
 		}
@@ -492,7 +500,7 @@ class Parser {
 			return null;
 
 		// Get current µf name
-		$mfTypes = self::mfNamesFromElement($e, 'h-');
+		$mfTypes = mfNamesFromElement($e, 'h-');
 
 		// Initalise var to store the representation in
 		$return = array();
@@ -510,7 +518,7 @@ class Parser {
 			$result['value'] = $this->parseP($subMF);
 
 			// Does this µf have any property names other than h-*?
-			$properties = self::nestedMfPropertyNamesFromElement($subMF);
+			$properties = nestedMfPropertyNamesFromElement($subMF);
 			
 			if (!empty($properties)) {
 				// Yes! It’s a nested property µf
@@ -539,7 +547,7 @@ class Parser {
 			$pValue = $this->parseP($p);
 			
 			// Add the value to the array for it’s p- properties
-			foreach (self::mfNamesFromElement($p, 'p-') as $propName) {
+			foreach (mfNamesFromElement($p, 'p-') as $propName) {
 				if (!empty($propName))
 					$return[$propName][] = $pValue;
 			}
@@ -549,7 +557,6 @@ class Parser {
 		}
 
 		// Handle u-*
-		// TODO: is this regex correct? why not concat space before?
 		foreach ($this->xpath->query('.//*[contains(concat(" ",  @class)," u-")]', $e) as $u) {
 			if ($this->isElementParsed($u, 'u'))
 				continue;
@@ -557,7 +564,7 @@ class Parser {
 			$uValue = $this->parseU($u);
 			
 			// Add the value to the array for it’s property types
-			foreach (self::mfNamesFromElement($u, 'u-') as $propName) {
+			foreach (mfNamesFromElement($u, 'u-') as $propName) {
 				$return[$propName][] = $uValue;
 			}
 			
@@ -574,7 +581,7 @@ class Parser {
 			
 			if ($dtValue) {
 				// Add the value to the array for dt- properties
-				foreach (self::mfNamesFromElement($dt, 'dt-') as $propName) {
+				foreach (mfNamesFromElement($dt, 'dt-') as $propName) {
 					$return[$propName][] = $dtValue;
 				}
 			}
@@ -592,7 +599,7 @@ class Parser {
 
 			if ($eValue) {
 				// Add the value to the array for e- properties
-				foreach (self::mfNamesFromElement($em, 'e-') as $propName) {
+				foreach (mfNamesFromElement($em, 'e-') as $propName) {
 					$return[$propName][] = $eValue;
 				}
 			}
@@ -600,7 +607,7 @@ class Parser {
 			$this->elementPrefixParsed($em, 'e');
 		}
 
-		// !Implied Properties
+		// Implied Properties
 		// Check for p-name
 		if (!array_key_exists('name', $return)) {
 			try {
@@ -654,7 +661,7 @@ class Parser {
 			// Look for img @src
 			if ($e->tagName == 'a')
 				$url = $e->getAttribute('href');
-
+			
 			// Look for nested img @src
 			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
 				$url = $em->getAttribute('href');
