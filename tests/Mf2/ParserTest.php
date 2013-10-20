@@ -3,6 +3,7 @@
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
+use Mf2;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -50,8 +51,8 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	
 	public function testParseE() {
 		$input = '<div class="h-entry"><div class="e-content">Here is a load of <strong>embedded markup</strong></div></div>';
-		$parser = new Parser($input);
-		$output = $parser->parse();
+		//$parser = new Parser($input);
+		$output = Mf2\parse($input);
 
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]['html']);

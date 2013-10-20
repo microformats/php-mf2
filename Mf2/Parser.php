@@ -2,13 +2,12 @@
 
 namespace Mf2;
 
-use DOMDocument,
-	DOMElement,
-	DOMXPath,
-	DOMNode,
-	DOMNodeList,
-	DateTime,
-	Exception;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
+use DOMNode;
+use DOMNodeList;
+use Exception;
 
 function createDomDocument($input) {
 	$input = mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
@@ -17,7 +16,7 @@ function createDomDocument($input) {
 	return $doc;
 }
 
-function parse($input, $baseUrl, $convertClassic = true) {
+function parse($input, $baseUrl = null, $convertClassic = true) {
 	$parser = new Parser($input, $baseUrl);
 	return $parser->parse($convertClassic);
 }
@@ -703,7 +702,7 @@ class Parser {
 	 * @param DOMElement $context optionally an element from which to parse microformats
 	 * @return array An array containing all the µfs found in the current document
 	 */
-	public function parse(DOMElement $context = null, $convertClassic=true) {
+	public function parse($convertClassic = true, DOMElement $context = null) {
 		$mfs = array();
 		
 		if ($convertClassic) {
@@ -758,7 +757,7 @@ class Parser {
 		if (empty($matches))
 			return array('items' => array(), 'rels' => array(), 'alternates' => array());
 		
-		return $this->parse($matches->item(0), $convertClassic);
+		return $this->parse($convertClassic, $matches->item(0));
 	}
 
 	/**
