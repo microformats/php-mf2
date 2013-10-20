@@ -4,14 +4,12 @@
  * Tests of the URL resolver within mf2\Parser
  */
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser,
-  mf2,
-  PHPUnit_Framework_TestCase,
-  DateTime;
+use Mf2;
+use PHPUnit_Framework_TestCase;
 
-class URLTest extends PHPUnit_Framework_TestCase {
+class UrlTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp() {
 		date_default_timezone_set('Europe/London');

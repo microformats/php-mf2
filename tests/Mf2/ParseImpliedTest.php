@@ -3,11 +3,10 @@
  * Tests of the parsing methods within mf2\Parser
  */
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser;
+use Mf2\Parser;
 use PHPUnit_Framework_TestCase;
-use DateTime;
 
 /**
  * @todo some of these can be made into single tests with dataProviders

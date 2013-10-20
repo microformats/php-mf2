@@ -1,8 +1,8 @@
 {
     "name": "mf2/mf2",
     "type": "library",
-    "description": "A pure (generic) microformats-2 parser",
-    "keywords": ["microformats", "microformats 2", "parser", "semantic"],
+    "description": "A pure, generic microformats2 parser — makes HTML as easy to consume as a JSON API",
+    "keywords": ["microformats", "microformats 2", "parser", "semantic", "html"],
     "authors" : [
     	{
     		"name": "Barnaby Walters",
@@ -16,9 +16,7 @@
       "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
-    	"psr-0": {
-    		"mf2\\Parser": ""
-    	}
+    	"files": ["Mf2/Parser.php"]
     },
     "config": {
     	"bin-dir": "bin/"

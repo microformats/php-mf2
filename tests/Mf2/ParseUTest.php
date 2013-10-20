@@ -3,11 +3,10 @@
  * Tests of the parsing methods within mf2\Parser
  */
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use Mf2\Parser;
+use PHPUnit_Framework_TestCase;
 
 class ParseUTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
@@ -130,5 +129,3 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 }
-
-// EOF

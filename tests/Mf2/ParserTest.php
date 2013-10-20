@@ -1,14 +1,9 @@
 <?php
 
-/**
- * Tests of the parsing methods within mf2\Parser
- */
+namespace Mf2\Parser\Test;
 
-namespace mf2\Parser\test;
-
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use Mf2\Parser;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Parser Test
@@ -53,16 +48,14 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($actual, $expected);
 	}
 	
-	/**
-	 * @group parseE
-	 */
 	public function testParseE() {
 		$input = '<div class="h-entry"><div class="e-content">Here is a load of <strong>embedded markup</strong></div></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
-		$this->assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]);
+		$this->assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('Here is a load of embedded markup', $output['items'][0]['properties']['content'][0]['value']);
 	}
 	
 	public function testParseEResolvesRelativeLinks() {
@@ -70,7 +63,8 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input, 'http://example.com');
 		$output = $parser->parse();
 		
-		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img"></img>', $output['items'][0]['properties']['content'][0]);
+		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img"></img>', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('Blah blah thing.', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	/**
@@ -100,22 +94,21 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 			</div>';
 		
 		$parser = new Parser($input);
-		$output = $parser->parse(true);
+		$output = $parser->parse();
 		
-		$this->assertEquals('&lt;p&gt;', $output['items'][0]['properties']['name'][0]);
-		$this->assertEquals('&lt;dt&gt;', $output['items'][0]['properties']['published'][0]);
-		$this->assertEquals('&lt;u&gt;', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('<p>', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('<dt>', $output['items'][0]['properties']['published'][0]);
+		$this->assertEquals('<u>', $output['items'][0]['properties']['url'][0]);
 	}
 	
 	public function testHtmlEncodesImpliedProperties() {
 		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" />&lt;name&gt;</a>';
 		$parser = new Parser($input);
+		$output = $parser->parse();
 		
-		$output = $parser->parse(true);
-		
-		$this->assertEquals('&lt;name&gt;', $output['items'][0]['properties']['name'][0]);
-		$this->assertEquals('&lt;url&gt;', $output['items'][0]['properties']['url'][0]);
-		$this->assertEquals('&lt;img&gt;', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('<name>', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('<url>', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('<img>', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	public function testParsesRelValues() {

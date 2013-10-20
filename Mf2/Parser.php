@@ -1,6 +1,6 @@
 <?php
 
-namespace mf2;
+namespace Mf2;
 
 use DOMDocument,
 	DOMElement,
@@ -10,40 +10,43 @@ use DOMDocument,
 	DateTime,
 	Exception;
 
+function createDomDocument($input) {
+	$input = mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
+	$doc = new DOMDocument();
+	@$doc->loadHTML($input);
+	return $doc;
+}
+
+function parse($input, $baseUrl, $convertClassic = true) {
+	$parser = new Parser($input, $baseUrl);
+	return $parser->parse($convertClassic);
+}
+
 class Parser {
 	/** @var string The baseurl (if any) to use for this parse */
 	public $baseurl;
 
 	/** @var DOMXPath object which can be used to query over any fragment*/
-	protected $xpath;
+	public $xpath;
 	
-	/** @var bool Whether or not to output datetimes as strings */
-	public $stringDateTimes = false;
+	/** @var DOMDocument */
+	public $doc;
 	
 	/** @var SplObjectStorage */
 	protected $parsed;
-	
-	/** @var DOMDocument */
-	protected $doc;
-	
-	protected $htmlSafe;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param DOMDocument|string $input The data to parse. A string of DOM or a DOMDocument
 	 */
-	public function __construct($input, $baseurl = null, $htmlSafe = false) {
+	public function __construct($input, $baseurl = null) {
 		// For the moment: assume string = string of HTML
 		if (is_string($input)) {
-			$input = mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
-
-			$doc = new DOMDocument();
-			@$doc->loadHTML($input);
+			$doc = createDomDocument($input);
 		} elseif (is_a($input, 'DOMDocument')) {
 			$doc = $input;
 		} else {
-			// TODO: should we throw an exception here?
 			$doc = new DOMDocument();
 			@$doc->loadHTML('');
 		}
@@ -68,7 +71,6 @@ class Parser {
 		}
 		
 		$this->baseurl = $baseurl;
-		$this->htmlSafe = $htmlSafe;
 		
 		$this->doc = $doc;
 		
@@ -191,7 +193,7 @@ class Parser {
 		}
 	}
 	
-	// !Parsing Functions
+	// Parsing Functions
 	
 	/**
 	 * Parse value-class/value-title on an element, joining with $separator if 
@@ -241,9 +243,7 @@ class Parser {
 		$classTitle = $this->parseValueClassTitle($p, ' ');
 		
 		if ($classTitle !== null)
-			return $this->htmlSafe
-				? htmlspecialchars($classTitle, ENT_NOQUOTES)
-				: $classTitle;
+			return $classTitle;
 		
 		// TODO: remove this parsing, it’s no longer in the spec I think
 		if (in_array($p->tagName, array('br', 'hr')))
@@ -263,9 +263,7 @@ class Parser {
 		
 		$pValue = self::collapseWhitespace($pValue);
 		
-		return $this->htmlSafe
-			? htmlspecialchars($pValue)
-			: $pValue;
+		return $pValue;
 	}
 
 	/**
@@ -279,9 +277,7 @@ class Parser {
 		$classTitle = $this->parseValueClassTitle($u);
 		
 		if ($classTitle !== null)
-			return $this->htmlSafe
-				? htmlspecialchars($classTitle, ENT_NOQUOTES)
-				: $classTitle;
+			return $classTitle;
 		
 		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->getAttribute('href') !== null) {
 			$uValue = $u->getAttribute('href');
@@ -300,9 +296,7 @@ class Parser {
 		
 		$uValue = $this->resolveUrl($uValue);
 		
-		return $this->htmlSafe
-			? htmlspecialchars($uValue, ENT_NOQUOTES)
-			: $uValue;
+		return $uValue;
 	}
 
 	/**
@@ -416,9 +410,7 @@ class Parser {
 			}
 		}
 
-		return $this->htmlSafe
-			? htmlspecialchars($dtValue, ENT_NOQUOTES)
-			: $dtValue;
+		return $dtValue;
 	}
 
 	/**
@@ -448,12 +440,15 @@ class Parser {
 				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
 		}
 		
-		$return = '';
+		$html = '';
 		foreach ($e->childNodes as $node) {
-			$return .= $node->C14N();
+			$html .= $node->C14N();
 		}
 		
-		return $return;
+		return array(
+			'html' => $html,
+			'value' => trim($e->textContent)
+		);
 	}
 
 	/**
@@ -598,9 +593,7 @@ class Parser {
 
 				throw new Exception(trim($e->nodeValue));
 			} catch (Exception $exc) {
-				$return['name'][] = $this->htmlSafe
-					? htmlspecialchars($exc->getMessage(), ENT_NOQUOTES)
-					: $exc->getMessage();
+				$return['name'][] = $exc->getMessage();
 			}
 		}
 
@@ -623,9 +616,7 @@ class Parser {
 						throw new Exception($em->getAttribute('src'));
 				}
 			} catch (Exception $exc) {
-				$return['photo'][] = $this->htmlSafe
-					? htmlspecialchars($this->resolveUrl($exc->getMessage()), ENT_NOQUOTES)
-					: $this->resolveUrl($exc->getMessage());
+				$return['photo'][] = $this->resolveUrl($exc->getMessage());
 			}
 		}
 
@@ -642,9 +633,7 @@ class Parser {
 			}
 			
 			if (!empty($url))
-				$return['url'][] = $this->htmlSafe
-					? htmlspecialchars($this->resolveUrl($url), ENT_NOQUOTES)
-					: $this->resolveUrl($url);
+				$return['url'][] = $this->resolveUrl($url);
 		}
 
 		// Make sure things are in alphabetical order
@@ -714,17 +703,11 @@ class Parser {
 	 * @param DOMElement $context optionally an element from which to parse microformats
 	 * @return array An array containing all the µfs found in the current document
 	 */
-	public function parse($htmlSafe = null, DOMElement $context = null, $convertClassic=true) {
+	public function parse(DOMElement $context = null, $convertClassic=true) {
 		$mfs = array();
 		
 		if ($convertClassic) {
 			$this->convertLegacy();
-		}
-		
-		// Allow temporary overrides of htmlSafe
-		if (null !== $htmlSafe) {
-			$oldHtmlSafe = $this->htmlSafe;
-			$this->htmlSafe = $htmlSafe;
 		}
 		
 		$mfElements = null === $context
@@ -742,9 +725,6 @@ class Parser {
 		
 		// Parse rels
 		list($rels, $alternates) = $this->parseRelsAndAlternates();
-		
-		if (!empty($oldHtmlSafe))
-			$this->htmlSafe = $oldHtmlSafe;
 		
 		$top = array(
 			'items' => array_values(array_filter($mfs)),
@@ -772,13 +752,13 @@ class Parser {
 	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
 	 * @return array
 	 */
-	public function parseFromId($id, $htmlSafe = false, $convertClassic=true) {
+	public function parseFromId($id, $convertClassic=true) {
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 		
 		if (empty($matches))
 			return array('items' => array(), 'rels' => array(), 'alternates' => array());
 		
-		return $this->parse($htmlSafe, $matches->item(0), $convertClassic);
+		return $this->parse($matches->item(0), $convertClassic);
 	}
 
 	/**
@@ -825,37 +805,6 @@ class Parser {
 	 */
 	public function query($expression, $context = null) {
 		return $this->xpath->query($expression, $context);
-	}
-	
-	/**
-	 * (DEPRECATED) Add Class Map
-	 * 
-	 * Adds a mapping of legacy classes to microformats-2 classes to replace them
-	 * with. These are converted when <code>convertLegacy()</code> is called.
-	 * 
-	 * @param array $map
-	 * @return \mf2\Parser
-	 * @deprecated since v0.1.23
-	 */
-	public function addClassMap(array $map) {
-		//$this->classicMap = array_merge($this->classicMap, $map);
-		return $this;
-	}
-	
-	/**
-	 * (DEPRECATED) Add Twitter Class Map
-	 * 
-	 * Use http://github.com/indieweb/php-mf2-shim instead
-	 * 
-	 * Adds a mapping of twitter.com classnames -> microformats 2 classnames.
-	 * Converted when <code>convertLegacy()</code> is called.
-	 * 
-	 * @return \mf2\Parser
-	 * @deprecated since v0.1.23
-	 */
-	public function addTwitterClassMap() {
-		//$this->addClassMap($this->twitterMap);
-		return $this;
 	}
 	
 	/**

@@ -1,10 +1,9 @@
 <?php
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use Mf2\Parser;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Combined Microformats Test

@@ -4,11 +4,11 @@
  * Tests of the parsing methods within mf2\Parser
  */
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use Mf2\Parser;
+use PHPUnit_Framework_TestCase;
+
 
 class ParsePTest extends PHPUnit_Framework_TestCase {
 
@@ -80,5 +80,3 @@ class ParsePTest extends PHPUnit_Framework_TestCase {
 	}
 
 }
-
-// EOF tests/mf2/testParser.php

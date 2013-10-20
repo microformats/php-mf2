@@ -4,11 +4,10 @@
  * Tests of the parsing methods within mf2\Parser
  */
 
-namespace mf2\Parser\test;
+namespace Mf2\Parser\Test;
 
-use mf2\Parser,
-	PHPUnit_Framework_TestCase,
-	DateTime;
+use Mf2\Parser;
+use PHPUnit_Framework_TestCase;
 
 class ParseDTTest extends PHPUnit_Framework_TestCase {
 
@@ -157,5 +156,3 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
 	}
 }
-
-// EOF
