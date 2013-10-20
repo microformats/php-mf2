@@ -9,16 +9,48 @@ use DOMNode;
 use DOMNodeList;
 use Exception;
 
-function createDomDocument($input) {
-	$input = mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
-	$doc = new DOMDocument();
-	@$doc->loadHTML($input);
-	return $doc;
+/**
+ * Parse Microformats2
+ * 
+ * Functional shortcut for the commonest cases of parsing microformats2 from HTML.
+ * 
+ * Example usage:
+ * 
+ *     use Mf2;
+ *     $output = Mf2\parse('<span class="h-card">Barnaby Walters</span>');
+ *     echo json_encode($output, JSON_PRETTY_PRINT);
+ * 
+ * Produces:
+ * 
+ *     {
+ *      "items": [
+ *       {
+ *        "type": ["h-card"],
+ *        "properties": {
+ *         "name": ["Barnaby Walters"]
+ *        }
+ *       }
+ *      ],
+ *      "rels": {}
+ *     }
+ * 
+ * @param string|DOMDocument $input The HTML string or DOMDocument object to parse
+ * @param string $url The URL the input document was found at, for relative URL resolution
+ * @param bool $convertClassic whether or not to convert classic microformats
+ * @return array Canonical MF2 array structure
+ */
+function parse($input, $url = null, $convertClassic = true) {
+	$parser = new Parser($input, $url);
+	return $parser->parse($convertClassic);
 }
 
-function parse($input, $baseUrl = null, $convertClassic = true) {
-	$parser = new Parser($input, $baseUrl);
-	return $parser->parse($convertClassic);
+/**
+ * Unicode to HTML Entities
+ * @param string $input String containing characters to convert into HTML entities
+ * @return string 
+ */
+function unicodeToHtmlEntities($input) {
+	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
 }
 
 class Parser {
@@ -37,12 +69,12 @@ class Parser {
 	/**
 	 * Constructor
 	 * 
-	 * @param DOMDocument|string $input The data to parse. A string of DOM or a DOMDocument
+	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
 	 */
 	public function __construct($input, $baseurl = null) {
-		// For the moment: assume string = string of HTML
 		if (is_string($input)) {
-			$doc = createDomDocument($input);
+			$doc = new DOMDocument();
+			@$doc->loadHTML(unicodeToHtmlEntities($input));
 		} elseif (is_a($input, 'DOMDocument')) {
 			$doc = $input;
 		} else {
@@ -70,9 +102,7 @@ class Parser {
 		}
 		
 		$this->baseurl = $baseurl;
-		
 		$this->doc = $doc;
-		
 		$this->parsed = new \SplObjectStorage();
 	}
 	
@@ -763,9 +793,8 @@ class Parser {
 	/**
 	 * Convert Legacy Classnames
 	 * 
-	 * Adds microformats-2 classnames into a document containing only legacy
-	 * semantic classnames. By default performs classic microformat conversion,
-	 * but other builtin/arbitrary classmaps can be added.
+	 * Adds microformats2 classnames into a document containing only legacy
+	 * semantic classnames.
 	 * 
 	 * @return Parser $this
 	 */
