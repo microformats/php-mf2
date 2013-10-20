@@ -30,6 +30,24 @@ class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function testIgnoresClassicClassnamesUnderMf2Root() {
+		$input = <<<EOT
+<div class="h-entry">
+	<p class="author">Not Me</p>
+	<p clas="p-author h-card">I wrote this</p>
+</div>
+EOT;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+		$this->assertEquals('I wrote this', $result['items'][0]['properties']['author'][0]['properties']['name'][0]);
 		
+	}
+	
+	public function testIgnoresClassicPropertyClassnamesOutsideClassicRoots() {
+		$input = <<<EOT
+<p class="author">Mr. Invisible</p>
+EOT;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+		$this->assertCount(0, $result['items']);
 	}
 }
