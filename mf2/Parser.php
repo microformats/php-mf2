@@ -822,129 +822,142 @@ class Parser {
 	}
 	
 	/**
-	 * Add Class Map
+	 * (DEPRECATED) Add Class Map
 	 * 
 	 * Adds a mapping of legacy classes to microformats-2 classes to replace them
 	 * with. These are converted when <code>convertLegacy()</code> is called.
 	 * 
 	 * @param array $map
 	 * @return \mf2\Parser
+	 * @deprecated since v0.1.23
 	 */
 	public function addClassMap(array $map) {
-		$this->classicMap = array_merge($this->classicMap, $map);
+		//$this->classicMap = array_merge($this->classicMap, $map);
 		return $this;
 	}
 	
 	/**
-	 * Add Twitter Class Map
+	 * (DEPRECATED) Add Twitter Class Map
+	 * 
+	 * Use http://github.com/indieweb/php-mf2-shim instead
 	 * 
 	 * Adds a mapping of twitter.com classnames -> microformats 2 classnames.
 	 * Converted when <code>convertLegacy()</code> is called.
 	 * 
 	 * @return \mf2\Parser
+	 * @deprecated since v0.1.23
 	 */
 	public function addTwitterClassMap() {
-		$this->addClassMap($this->twitterMap);
+		//$this->addClassMap($this->twitterMap);
 		return $this;
 	}
-	
-	/**
-	 * A mapping of classnames found on twitter.com to their microformats-2 
-	 * equivalents.
-	 * 
-	 * @var array
-	 */
-	public $twitterMap = array(
-		// Tweet Page
-		'stream-uncapped' => 'h-feed',
-		'tweet' => 'h-entry',
-		'js-tweet-text' => 'p-content',
-		'twitter-atreply' => 'h-x-username',
-		'account-group' => 'h-card p-author',
-		'avatar' => 'u-photo',
-		'fullname' => 'p-name',
-		'username' => 'p-nickname',
-		'js-permalink' => 'u-url',
-		'replies-to' => 'h-feed h-x-replies',
-		'js-user-profile-link' => 'u-url',
-		// User Page
-		'profile-card' => 'h-card',
-		'bio' => 'p-note',
-		'location' => 'p-location h-adr',
-	);
 	
 	/**
 	 * Classic Microformats Map
 	 * 
 	 * Maps classic classnames to their µf2 equivalents
 	 */
-	public $classicMap = array(
-		// hCard (inc. h-adr and h-geo)
+	public $classicRootMap = array(
 		'vcard' => 'h-card',
-		'fn' => 'p-name',
-		'url' => 'u-url',
-		'honorific-prefix' => 'p-honorific-prefix',
-		'given-name' => 'p-given-name',
-		'additional-name' => 'p-additional-name',
-		'family-name' => 'p-family-name',
-		'honorific-suffix' => 'p-honorific-suffix',
-		'nickname' => 'p-nickname',
-		'email' => 'u-email',
-		'logo' => 'u-logo',
-		'photo' => 'u-photo',
-		'url' => 'u-url',
-		'uid' => 'u-uid',
-		'category' => 'p-category',
-		'adr' => 'p-adr h-adr',
-		'extended-address' => 'p-extended-address',
-		'street-address' => 'p-street-address',
-		'locality' => 'p-locality',
-		'region' => 'p-region',
-		'postal-code' => 'p-postal-code',
-		'country-name' => 'p-country-name',
-		'label' => 'p-label',
-		'geo' => 'p-geo h-geo',
-		'latitude' => 'p-latitude',
-		'longitude' => 'p-longitude',
-		'tel' => 'p-tel',
-		'note' => 'p-note',
-		'bday' => 'dt-bday',
-		'key' => 'u-key',
-		'org' => 'p-org',
-		'organization-name' => 'p-organization-name',
-		'organization-unit' => 'p-organization-unit',
-		// hAtom
 		'hfeed' => 'h-feed',
 		'hentry' => 'h-entry',
-		'entry-title' => 'p-name',
-		'entry-summary' => 'p-summary',
-		'entry-content' => 'e-content',
-		'published' => 'dt-published',
-		'updated' => 'dt-updated',
-		'author' => 'p-author h-card',
-		'category' => 'p-category',
-		'geo' => 'p-geo h-geo',
-		'latitude' => 'p-latitude',
-		'longitude' => 'p-longitude',
-		// hRecipe
-		'ingredient' => 'p-ingredient',
-		'yield' => 'p-yield',
-		'instructions' => 'e-instructions',
-		'duration' => 'dt-duration',
-		'nutrition' => 'p-nutrition',
-		// hResume
-		'contact' => 'h-card p-contact',
-		'education' => 'h-event p-education',
-		'experience' => 'h-event p-experience',
-		'skill' => 'p-skill',
-		'affiliation' => 'p-affiliation h-card',
-		// hEvent
-		'dtstart' => 'dt-start',
-		'dtend' => 'dt-end',
-		'duration' => 'dt-duration',
-		'description' => 'p-description'
+		'hrecipe' => 'h-recipe',
+		'hresume' => 'h-resume',
+		'hevent' => 'h-event',
+		'hreview' => 'h-review'
 	);
-
+	
+	public $classicPropertyMap = array(
+		'vcard' => array(
+			'fn' => 'p-name',
+			'url' => 'u-url',
+			'honorific-prefix' => 'p-honorific-prefix',
+			'given-name' => 'p-given-name',
+			'additional-name' => 'p-additional-name',
+			'family-name' => 'p-family-name',
+			'honorific-suffix' => 'p-honorific-suffix',
+			'nickname' => 'p-nickname',
+			'email' => 'u-email',
+			'logo' => 'u-logo',
+			'photo' => 'u-photo',
+			'url' => 'u-url',
+			'uid' => 'u-uid',
+			'category' => 'p-category',
+			'adr' => 'p-adr h-adr',
+			'extended-address' => 'p-extended-address',
+			'street-address' => 'p-street-address',
+			'locality' => 'p-locality',
+			'region' => 'p-region',
+			'postal-code' => 'p-postal-code',
+			'country-name' => 'p-country-name',
+			'label' => 'p-label',
+			'geo' => 'p-geo h-geo',
+			'latitude' => 'p-latitude',
+			'longitude' => 'p-longitude',
+			'tel' => 'p-tel',
+			'note' => 'p-note',
+			'bday' => 'dt-bday',
+			'key' => 'u-key',
+			'org' => 'p-org',
+			'organization-name' => 'p-organization-name',
+			'organization-unit' => 'p-organization-unit',
+		),
+		'hentry' => array(
+			'entry-title' => 'p-name',
+			'entry-summary' => 'p-summary',
+			'entry-content' => 'e-content',
+			'published' => 'dt-published',
+			'updated' => 'dt-updated',
+			'author' => 'p-author h-card',
+			'category' => 'p-category',
+			'geo' => 'p-geo h-geo',
+			'latitude' => 'p-latitude',
+			'longitude' => 'p-longitude',
+		),
+		'hrecipe' => array(
+			'fn' => 'p-name',
+			'ingredient' => 'p-ingredient',
+			'yield' => 'p-yield',
+			'instructions' => 'e-instructions',
+			'duration' => 'dt-duration',
+			'nutrition' => 'p-nutrition',
+			'photo' => 'u-photo',
+			'summary' => 'p-summary',
+			'author' => 'p-author h-card'
+		),
+		'hresume' => array(
+			'summary' => 'p-summary',
+			'contact' => 'h-card p-contact',
+			'education' => 'h-event p-education',
+			'experience' => 'h-event p-experience',
+			'skill' => 'p-skill',
+			'affiliation' => 'p-affiliation h-card',
+		),
+		'hevent' => array(
+			'dtstart' => 'dt-start',
+			'dtend' => 'dt-end',
+			'duration' => 'dt-duration',
+			'description' => 'p-description',
+			'summary' => 'p-summary',
+			'description' => 'p-description',
+			'url' => 'u-url',
+			'category' => 'p-category',
+			'location' => 'h-card',
+			'geo' => 'p-location h-geo'
+		),
+		'hreview' => array(
+			'summary' => 'p-name',
+			'fn' => 'p-item h-item p-name', // doesn’t work properly, see spec
+			'photo' => 'u-photo', // of the item being reviewed (p-item h-item u-photo)
+			'url' => 'u-url', // of the item being reviewed (p-item h-item u-url)
+			'reviewer' => 'p-reviewer p-author h-card',
+			'dtreviewed' => 'dt-reviewed',
+			'rating' => 'p-rating',
+			'best' => 'p-best',
+			'worst' => 'p-worst',
+			'description' => 'p-description'
+		)
+	);
 }
 
 function parseUriToComponents($uri) {
