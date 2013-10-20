@@ -34,7 +34,7 @@ use Mf2;
 $output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 ```
 
-`$output` is an array structure 
+`$output` is a canonical microformats2 array structure like:
 
 ```json
 {

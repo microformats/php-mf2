@@ -35,14 +35,14 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testMicroformatStripsPrefixFromPropertyClassname() {
-		$expected = ['name'];
+		$expected = array('name');
 		$actual = Mf2\mfNamesFromClass('someclass p-name someotherclass', 'p-');
 
 		$this->assertEquals($actual, $expected);
 	}
 
 	public function testNestedMicroformatPropertyNameWorks() {
-		$expected = ['location'];
+		$expected = array('location');
 		$test = 'someclass p-location someotherclass';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
 		
