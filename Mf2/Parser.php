@@ -843,9 +843,7 @@ class Parser {
 	}
 	
 	/**
-	 * Classic Microformats Map
-	 * 
-	 * Maps classic classnames to their µf2 equivalents
+	 * Classic Root Classname map
 	 */
 	public $classicRootMap = array(
 		'vcard' => 'h-card',
@@ -1191,4 +1189,3 @@ function removeDotSegments($path) {
 
 	return $output;
 }
-

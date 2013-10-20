@@ -1,140 +1,169 @@
 php-mf2
 =======
 
-php-mf2 is a generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It doesn’t have a hard-coded list of all the different microformats, just a set of procedures to handle different property types (e.g. `p-` for plaintext, `u-` for URL, etc). This allows for a very small and maintainable parser.
+php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
+
+Instead of having a hard-coded list of all the different microformats, it follows a set of procedures to handle different property types (e.g. `p-` for plaintext, `u-` for URL, etc). This allows for a very small and maintainable parser.
 
 ## Installation
 
-Install with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.1.*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
+Install php-mf2 with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.2.*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
+
+You could install it by just downloading `/Mf2/Parser.php` and including that, but please use Composer. Seriously, it’s amazing.
 
 ## Usage
 
 mf2 is PSR-0 autoloadable, so all you have to do to load it is:
 
 1. Include Composer’s auto-generated autoload file (`/vendor/autoload.php`)
-1. Declare `mf2\Parser` in your `use` statement
-1. Make a `new Parser($input)` where `$input` can either be a string of HTML or a DOMDocument
+1. Call `Mf2\parse()` with the HTML (or a DOMDocument), and optionally the URL to resolve relative URLs against.
 
-### Example Code
+## Examples
+
+### Parsing implied microformats2
 
 ```php
 <?php
 
-include '/vendor/autoload.php';
+namespace YourApp;
 
-use mf2\Parser;
+require '/vendor/autoload.php';
 
-$parser = new Parser('<div class="h-card"><p class="p-name">Barnaby Walters</p></div>');
-$output = $parser->parse();
+use Mf2;
 
-print_r($output);
-
-// EOF
+$output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 ```
 
-Parser::parse() should return an array structure mirroring the canonical JSON serialisation introduced with µf2. `print_r`ed, it looks something like this:
+`$output` is an array structure 
 
-```
-Array
-(
-    [items] => Array
-        (
-            [0] => Array
-                (
-                    [type] => Array
-                        (
-                            [0] => h-card
-                        )
-                    [properties] => Array
-                    	(
-                    		[name] => Barnaby Walters
-                    	)
-
-                )
-
-        )
-
-)
+```json
+{
+	"items": [{
+		"type": ["h-card"],
+		"properties": {
+			"name": ["Barnaby Walters"]
+		}
+	}],
+	"rels": {}
+}
 ```
 
-If no microformats are found, `items` will be an empty array. rels and alternates are also included.
+If no microformats are found, `items` will be an empty array.
 
-Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname is left on.
+Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname(s) in the "type" array are left on.
 
-A baseurl can be provided as the second parameter of `mf2\Parser::__construct()` — it’s prepended to any `u-` properties which are relative URLs.
+### Parsing a document with relative URLs
 
-### Advanced Usage
+Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.com/`:
 
-There are several ways to selectively parse microformats from a document. If you wish to only parse microformats from an element with a particular ID, Parser::parseFromId($id, $htmlSafe=null) is the easiest way.
+```html
+<div class="h-card">
+	<h1 class="p-name">Mr. Example</h1>
+	<img class="u-photo" alt="" src="photo.png" />
+</div>
+```
 
-If your needs are more complex, Parser::parse accepts an optional context DOMNode as it’s third parameter. Typically you’d use Parser::query to run XPath queries on the document to get the element you want to parse from under, then pass it to Parser::parse. Example usage:
+Parsing like this:
 
 ```php
+$output = Mf2\parse($html, 'http://example.org');
+```
 
+will result in the following output, with relative URLs made absolute:
+
+```json
+{
+	"items": [{
+		"type": ["h-card"],
+		"properties": {
+			"photo": ["http://example.org/photo.png"]
+		}
+	}],
+	"rels": {}
+}
+```
+
+php-mf2 correctly handles relative URL resolution according to the URI and HTML specs, including correct use of the `<base>` element.
+
+### Parsing `rel` and `rel=alternate` values
+
+php-mf2 also parses any link relations in the document, placing them into two top-level arrays — one for `rel=alternate` and another for all other rel values, e.g. when parsing:
+
+```html
+<a rel="me" href="https://twitter.com/barnabywalters">Me on twitter</a>
+<link rel="alternate etc" href="http://example.com/notes.atom" />
+```
+
+parsing will result in the following keys:
+
+```json
+{
+	"items": [],
+	"rels": {
+		"me": ["https://twitter.com/barnabywalters"]
+	},
+	"alternates": [{
+		"url": "http://example.com/notes.atom",
+		"rel": "etc"
+	}]
+}
+```
+
+Protip: if you’re not bothered about the microformats2 data and just want rels and alternates, you can improve performance by creating a `Mf2\Parser` object (see below) and calling `->parseRelsAndAlternates()` instead of `->parse()`, e.g.
+
+```php
+<?php
+
+use Mf2;
+
+$parser = new Mf2\Parser('<link rel="…');
+$relsAndAlternates = $parser->parseRelsAndAlternates();
+```
+
+### Getting more control by creating a Parser object
+
+The `Mf2\parse()` function covers the most common usage patterns by internally creating an instance of `Mf2\Parser` and returning the output all in one step. For some advanced usage you can also create an instance of `Mf2\Parser` yourself.
+
+The constructor takes two arguments, the input HTML (or a DOMDocument) and the URL to use as a base URL. Once you have a parser, there are a few other things you can do:
+
+### Selectively parsing a document
+
+There are several ways to selectively parse microformats from a document. If you wish to only parse microformats from an element with a particular ID, `Parser::parseFromId($id) ` is the easiest way.
+
+If your needs are more complex, `Parser::parse` accepts an optional context DOMNode as its second parameter. Typically you’d use `Parser::query` to run XPath queries on the document to get the element you want to parse from under, then pass it to `Parser::parse`. Example usage:
+
+```php
 $doc = 'More microformats, more microformats <div id="parse-from-here"><span class="h-card">This shows up</span></div> yet more ignored content';
-$parser = new Parser($doc);
+$parser = new Mf2\Parser($doc);
 
 $parser->parseFromId('parse-from-here'); // returns a document with only the h-card descended from div#parse-from-here
 
 $elementIWant = $parser->query('an xpath query')[0];
 
-$parser->parse(null, $elementIWant); // returns a document with only mfs under the selected element
+$parser->parse(true, $elementIWant); // returns a document with only mfs under the selected element
 
 ```
 
-### Classic Microformat/Classmap Markup Support
+### Classic Microformats Markup
 
-php-mf2 has limited support for classic microformats — it doesn’t actually parse
-them but can convert legacy classnames into µf2 classnames (e.g. `vcard` =>
-`h-card`, `fn` => `p-name`, etc.).
+php-mf2 has some support for parsing classic microformats markup. It’s enabled by default, but can be turned off by calling `Mf2\parse($html, $url, false);` or `$parser->parse(false);` if you’re instanciating a parser yourself.
 
-```php
-// Once your parser has been initialised:
-$parser->convertLegacy(); // Converts classic microformats by default
-$out = $parser->parse();
-```
+In previous versions of php-mf2 you could also add your own class mappings — officially this is no longer supported.
 
-You can also define your own custom class mappings, to provide some support for
-popular sites which don’t use mf2 but do use use semantic classnames. An experimental
-set for twitter.com is provided.
+* If the built in mappings don’t successfully parse some classic microformats markup then raise an issue and we’ll fix it.
+* If you want to screen-scrape websites which don’t use mf2 into mf2 data structures, consider contributing to [php-mf2-shim](https://github.com/indieweb/php-mf2-shim)
+* If you *really* need to make one-off changes to the default mappings… It is possible. But you have to figure it out for yourself ;)
 
-```php
-// Once your have $parser
-$parser->convertTwitter(); // Adds twitter mapping
+## Security
 
-// Or, add your own mapping:
-$parser->addClassMap([
-    'oldclassname' => 'p-new-class-name'
-]);
+**No filtering of content takes place in mf2\Parser, so treat its output as you would any untrusted data from the source of the parsed document.**
 
-$parser->convertLegacy();
+Some tips:
 
-// Then parse
-$out = $parser->parse();
-```
+* All content apart from the 'html' key in dictionaries produced by parsing an `e-*` property is not HTML-escaped. For example, `<span class="p-name">&lt;code&gt;</span>` will result in `"name": ["<code>"]`. At the very least, HTML-escape all properties before echoing them out in HTML
+* If you’re using the raw HTML content under the 'html' key of dictionaries produced by parsing `e-*` properties, you SHOULD purify the HTML before displaying it to prevent injection of arbitrary code. For PHP I recommend using [HTML Purifier](http://htmlpurifier.org)
 
-### Security
-
-**Little to no filtering of content takes place in mf2\Parser, so treat its output as you would any untrusted data from the source of the parsed document**
-
-There is an issue with the microformats2 parsing spec which can cause the parser output level of HTML-encoding to vary (e.g. some angle brackets are converted to &amp;lt; &amp;gt;, others are not) without the consumer being able to tell at what level any given string is.
-
-To solve this, if you pass true to Parser::parse (or as the third parameter of Parser::__construct), the parser will html-encode angle brackets in any non e-* properties, bringing everything up to the same level of encoding.
-
-Note that this **does not** make content from untrusted sources secure, it merely makes the parser behave in a consistent manner. If you are outputting parsed microformats you must still take security precautions such as purifying the HTML.
-
-## Parsing Behaviour
-
-php-mf2 follows the various µf2 parsing guidelines on the microformats wiki. Useful reference:
-
-* [µf2 prefix parsing guidelines](http://microformats.org/wiki/microformats-2-prefixes)
-* [µf2 parsing process](http://microformats.org/wiki/microformats2-parsing)
-
-php-mf2 includes support for implied `p-name`, `u-url` and `u-photo` as per the µf2 parsing process, with the result that **every** microformat **will** have a `name` property whether or not it is explicitly declared. More info on what this is any why it exists in the [µf2 FAQ](http://microformats.org/wiki/microformats-2-faq).
-
-It also includes an approximate implementation of the [Value-Class Pattern](http://microformats.org/wiki/value-class-pattern), currently acting only on `dt-*` properties but soon to be rolled out to all property types
-
-When a DOMElement with a classname of e-\* is found, the DOMNode::C14N() stringvalue of each of it’s children are concatenated and returned
+TODO: move this section to a security/consumption best practises page on the wiki
 
 ## Contributing
 
@@ -148,20 +177,27 @@ Issues/bug reports welcome. If you know how to write tests then please do so as 
 
 ## Testing
 
-**Currently php-mf2 is tested fairly thoroughly, but the code itself is not hugely testable (lots of repetition and redundancy). This is something I’m working on changing**
-Tests are written in phpunit and are contained within `/tests/`. Running <kbd>phpunit .</kbd> from the root dir will run them all.
+Tests are written in phpunit and are contained within `/tests/`. Running <kbd>bin/phpunit</kbd> from the root dir will run them all.
 
-There are enough tests to warrant putting them into separate suites for maintenance. The different suits are:
+There are enough tests to warrant putting them into separate suites for maintenance. They should be fairly self-explanatory.
 
-* `ParserTest.php`: Tests for internal, `e-*` parsing and sanity checks.
-* `ParseImpliedTest.php`: Tests of the implied property patterns
-* `CombinedMicroformatsTest.php`: Tests of nested microformats
-* `MicroformatsWikiExamplesTest.php`: Tests taken directly from the wiki pages about µf2
-* `Parse*Test.php` for `P`, `U` and `DT`. Contains tests for a particular property type.
-
-As of v0.1.6, the only property with any support for value-class is `dt-*`, so that currently contains the value-class tests. These should be moved elsewhere as value-class and value-title are abstracted and rolled out to all properties.
+php-mf2 can also be hooked up to the official, cross-platform [microformats2 test suite](https://github.com/microformats/tests). TODO: write a guide on how to do this, make a public endpoint for people to look at the results
 
 ### Changelog
+
+#### v0.2.0 (BREAKING CHANGES)
+
+* Namespace change from mf2 to Mf2, for PSR-0 compatibility
+* `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
+* Updated e-* property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like ```json
+{
+	"html": "<b>The Content</b>",
+	"value: "The Content"
+}
+```
+* Removed `htmlSafe` options as new e-* parsing rules make them redundant
+* Moved a whole load of static functions out of the class and into standalone functions
+* Changed autoloading to always include Parser.php instead of using classmap
 
 #### v0.1.23
 
