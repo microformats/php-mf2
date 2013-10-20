@@ -163,6 +163,11 @@ As of v0.1.6, the only property with any support for value-class is `dt-*`, so t
 
 ### Changelog
 
+#### v0.1.23
+
+* Made some changes to the way back-compatibility with classic microformats are handled, ignoring classic property classnames inside mf2 roots and outside classic roots
+* Deprecated ability to add new classmaps, removed twitter classmap. Use [php-mf2-shim](http://github.com/indieweb/php-mf2-shim) instead, it’s better
+
 #### v0.1.22
 
 * Converts classic microformats by default
