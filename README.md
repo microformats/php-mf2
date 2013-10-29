@@ -185,6 +185,10 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.1
+
+* Fixed bug causing classic microformats property classnames to not be parsed correctly
+
 #### v0.2.0 (BREAKING CHANGES)
 
 * Namespace change from mf2 to Mf2, for PSR-0 compatibility
