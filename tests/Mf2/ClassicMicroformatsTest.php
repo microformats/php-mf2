@@ -30,7 +30,7 @@ class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 	
 	public function testParsesClassicHEntry() {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
-		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is"]}}], "rels": {}}';
+		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}}';
 		$parser = new Parser($input);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
@@ -99,6 +99,7 @@ EOT;
 EOT;
 		$parser = new Parser($input);
 		$result = $parser->parse();
-		print_r($result);
+		$e = $result['items'][0];
+		$this->assertContains('h-entry', $e['type']);
 	}
 }
