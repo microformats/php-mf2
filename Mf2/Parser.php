@@ -221,7 +221,7 @@ class Parser {
 	}
 	
 	// TODO: figure out if this has problems with sms: and geo: URLs
-	private function resolveUrl($url) {
+	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this 
 		// parser to try to do anything with it.
 		if (parse_url($url) === false)
