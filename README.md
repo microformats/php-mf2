@@ -185,6 +185,10 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.2
+
+* Made resolveUrl method public, allowing advanced parsers and subclasses to make use of it
+
 #### v0.2.1
 
 * Fixed bug causing classic microformats property classnames to not be parsed correctly
