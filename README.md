@@ -188,6 +188,7 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 #### v0.2.2
 
 * Made resolveUrl method public, allowing advanced parsers and subclasses to make use of it
+* Fixed bug causing multiple duplicate property values to appear
 
 #### v0.2.1
 
