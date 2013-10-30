@@ -9,6 +9,7 @@
     		"homepage": "http://waterpigs.co.uk"
     	}
     ],
+    "bin": ["bin/fetch-mf2", "bin/parse-mf2"],
     "require": {
         "php": ">=5.3.0"
     },
