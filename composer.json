@@ -18,9 +18,6 @@
     "autoload": {
     	"files": ["Mf2/Parser.php"]
     },
-    "config": {
-    	"bin-dir": "bin/"
-    },
 		"license": "MIT",
 		"suggest": {
 			"barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"

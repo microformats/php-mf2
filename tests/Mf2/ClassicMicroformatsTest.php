@@ -7,6 +7,7 @@
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
+use Mf2;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -101,5 +102,13 @@ EOT;
 		$result = $parser->parse();
 		$e = $result['items'][0];
 		$this->assertContains('h-entry', $e['type']);
+	}
+	
+	public function testParsesSnarfedOrgArticleCorrectly() {
+		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
+		/*$parser = new Parser($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
+		$result = $parser->parse();/**/
+		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
+		print_r($result);
 	}
 }
