@@ -1,4 +1,4 @@
-#!/usr/bin/env/php
+#!/usr/bin/env php
 <?php
 
 $files = array(
@@ -19,6 +19,10 @@ if (!defined('COMPOSER_INSTALL_LOCATION')) {
 }
 
 $url = $argv[1];
+
+if (empty($url)) {
+	die("Please provide a URL to fetch+parse, e.g. bin/fetch-mf2 waterpigs.co.uk/notes");
+}
 
 if (!file_exists($url)) {
 	if (!preg_match('|https?://|', $url)) {
