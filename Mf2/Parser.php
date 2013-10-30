@@ -820,7 +820,7 @@ class Parser {
 			$newRoot = $this->classicRootMap[$oldRoot];
 			foreach ($properties as $old => $new) {
 				foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
-					$el->setAttribute('class', str_replace(' ' . $old . ' ', ' ', ' ' . $el->getAttribute('class') . ' ' . $new . ' '));
+					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
 				}
 			}
 		}
