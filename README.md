@@ -185,6 +185,17 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.3
+
+* Made p-* parsing consistent with implied name parsing
+* Stopped collapsing whitespace in p-* properties
+* Implemented unicodeTrim which removes &nbsp; characters as well as regex \s
+* Added support for implied name via abbr[title]
+* Prevented excessively nested value-class elements from being parsed incorrectly, removed incorrect separator which was getting added in some cases
+* Updated u-* parsing to be spec-compliant, matching [href] before value-class and only attempting URL resolution for URL attributes
+* Added support for input[value] parsing
+* Tests for all the above
+
 #### v0.2.2
 
 * Made resolveUrl method public, allowing advanced parsers and subclasses to make use of it
