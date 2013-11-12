@@ -618,7 +618,10 @@ class Parser {
 				// Look for img @alt
 				if ($e->tagName == 'img' and $e->getAttribute('alt') != '')
 					throw new Exception($e->getAttribute('alt'));
-
+				
+				if ($e->tagName == 'abbr' and $e->hasAttribute('title'))
+					throw new Exception($e->getAttribute('title'));
+				
 				// Look for nested img @alt
 				foreach ($this->xpath->query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
 					if ($em->getAttribute('alt') != '')

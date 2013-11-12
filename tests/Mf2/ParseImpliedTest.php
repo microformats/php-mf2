@@ -167,11 +167,19 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	/** as per https://github.com/indieweb/php-mf2/issues/37 */
-	public function testImpliedNameConsistentWithPName() {
+	public function testParsesImpliedNameConsistentWithPName() {
 		$inner = "Name	\nand more";
 		$test = '<span class="h-card"> ' . $inner .' </span><span class="h-card"><span class="p-name"> ' . $inner . ' </span></span>';
 		$result = Mf2\parse($test);
 		$this->assertEquals($inner, $result['items'][0]['properties']['name'][0]);
 		$this->assertEquals($inner, $result['items'][1]['properties']['name'][0]);
+	}
+	
+	
+	/** @see https://github.com/indieweb/php-mf2/issues/6 */
+	public function testParsesImpliedNameFromAbbrTitle() {
+		$input = '<abbr class="h-card" title="Barnaby Walters">BJW</abbr>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('Barnaby Walters', $result['items'][0]['properties']['name'][0]);
 	}
 }
