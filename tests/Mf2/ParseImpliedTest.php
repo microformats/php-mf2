@@ -5,6 +5,7 @@
 
 namespace Mf2\Parser\Test;
 
+use Mf2;
 use Mf2\Parser;
 use PHPUnit_Framework_TestCase;
 
@@ -163,5 +164,14 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 		
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
+	
+	/** as per https://github.com/indieweb/php-mf2/issues/37 */
+	public function testImpliedNameConsistentWithPName() {
+		$inner = "Name	\nand more";
+		$test = '<span class="h-card"> ' . $inner .' </span><span class="h-card"><span class="p-name"> ' . $inner . ' </span></span>';
+		$result = Mf2\parse($test);
+		$this->assertEquals($inner, $result['items'][0]['properties']['name'][0]);
+		$this->assertEquals($inner, $result['items'][1]['properties']['name'][0]);
 	}
 }

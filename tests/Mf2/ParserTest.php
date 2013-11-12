@@ -19,7 +19,13 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
-
+	
+	public function testUnicodeTrim() {
+		$this->assertEquals('thing', Mf2\unicodeTrim('  thing  '));
+		$this->assertEquals('thing', Mf2\unicodeTrim('			thing			'));
+		$this->assertEquals('thing', Mf2\unicodeTrim(mb_convert_encoding(' &nbsp; thing &nbsp; ', 'UTF-8', 'HTML-ENTITIES') ));
+	}
+	
 	public function testMicroformatNameFromClassReturnsFullRootName() {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass', 'h-');

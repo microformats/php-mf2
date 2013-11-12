@@ -60,6 +60,7 @@ function unicodeToHtmlEntities($input) {
  * Collapses any sequences of whitespace within a string into a single space
  * character.
  * 
+ * @deprecated since v0.2.3
  * @param string $str
  * @return string
  */
@@ -67,6 +68,11 @@ function collapseWhitespace($str) {
 	return preg_replace('/[\s|\n]+/', ' ', $str);
 }
 
+function unicodeTrim($str) {
+	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), '', $str);
+	$str = preg_replace('/^\s+/', '', $str);
+	return preg_replace('/\s+$/', '', $str);
+}
 
 /**
  * Microformat Name From Class string
@@ -256,7 +262,7 @@ class Parser {
 				$val .= $el->textContent . $separator;
 			}
 			
-			return trim($val);
+			return unicodeTrim($val);
 		}
 		
 		$valueTitleElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value-title ")]', $e);
@@ -268,7 +274,7 @@ class Parser {
 				$val .= $el->getAttribute('title') . $separator;
 			}
 			
-			return trim($val);
+			return unicodeTrim($val);
 		}
 		
 		// No value-title or -class in this element
@@ -297,10 +303,8 @@ class Parser {
 		} elseif ($p->tagName == 'data' and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
-			$pValue = trim($p->textContent);
+			$pValue = unicodeTrim($p->textContent);
 		}
-		
-		$pValue = collapseWhitespace($pValue);
 		
 		return $pValue;
 	}
@@ -330,7 +334,7 @@ class Parser {
 			$uValue = $u->getAttribute('value');
 		} else {
 			// TODO: Check for element contents == a valid URL
-			$uValue = trim($u->textContent);
+			$uValue = unicodeTrim($u->textContent);
 		}
 		
 		$uValue = $this->resolveUrl($uValue);
@@ -367,25 +371,25 @@ class Parser {
 				}
 				elseif ($e->tagName == 'data') {
 					// Use @value, otherwise innertext
-					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : trim($e->nodeValue);
+					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->nodeValue);
 					if (!empty($value))
 						$dateParts[] = $value;
 				}
 				elseif ($e->tagName == 'abbr') {
 					// Use @title, otherwise innertext
-					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : trim($e->nodeValue);
+					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->nodeValue);
 					if (!empty($title))
 						$dateParts[] = $title;
 				}
 				elseif ($e->tagName == 'del' or $e->tagName == 'ins' or $e->tagName == 'time') {
 					// Use @datetime if available, otherwise innertext
-					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : trim($e->nodeValue);
+					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->nodeValue);
 					if (!empty($dtAttr))
 						$dateParts[] = $dtAttr;
 				}
 				else {
 					if (!empty($e->nodeValue))
-						$dateParts[] = trim($e->nodeValue);
+						$dateParts[] = unicodeTrim($e->nodeValue);
 				}
 			}
 
@@ -407,7 +411,7 @@ class Parser {
 						$datePart = $part;
 					}
 					
-					$dtValue = rtrim($datePart, 'T') . 'T' . trim($timePart, 'T');
+					$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
 				}
 			}
 		} else {
@@ -484,7 +488,7 @@ class Parser {
 		
 		return array(
 			'html' => $html,
-			'value' => trim($e->textContent)
+			'value' => unicodeTrim($e->textContent)
 		);
 	}
 
@@ -627,9 +631,9 @@ class Parser {
 						throw new Exception($em->getAttribute('alt'));
 				}
 
-				throw new Exception(trim($e->nodeValue));
+				throw new Exception($e->nodeValue);
 			} catch (Exception $exc) {
-				$return['name'][] = $exc->getMessage();
+				$return['name'][] = unicodeTrim($exc->getMessage());
 			}
 		}
 
