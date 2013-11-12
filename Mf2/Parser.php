@@ -300,7 +300,7 @@ class Parser {
 			$pValue = $p->getAttribute('alt');
 		} elseif ($p->tagName == 'abbr' and $p->getAttribute('title') !== '') {
 			$pValue = $p->getAttribute('title');
-		} elseif ($p->tagName == 'data' and $p->getAttribute('value') !== '') {
+		} elseif (in_array($p->tagName, array('data', 'input')) and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
 			$pValue = unicodeTrim($p->textContent);
@@ -317,29 +317,29 @@ class Parser {
 	 * @todo make this adhere to value-class
 	 */
 	public function parseU(\DOMElement $u) {
-		$classTitle = $this->parseValueClassTitle($u);
-		
-		if ($classTitle !== null)
-			return $classTitle;
-		
 		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->getAttribute('href') !== null) {
 			$uValue = $u->getAttribute('href');
 		} elseif ($u->tagName == 'img' and $u->getAttribute('src') !== null) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'object' and $u->getAttribute('data') !== null) {
 			$uValue = $u->getAttribute('data');
-		} elseif ($u->tagName == 'abbr' and $u->getAttribute('title') !== null) {
-			$uValue = $u->getAttribute('title');
-		} elseif ($u->tagName == 'data' and $u->getAttribute('value') !== null) {
-			$uValue = $u->getAttribute('value');
-		} else {
-			// TODO: Check for element contents == a valid URL
-			$uValue = unicodeTrim($u->textContent);
 		}
 		
-		$uValue = $this->resolveUrl($uValue);
+		if (isset($uValue)) {
+			return $this->resolveUrl($uValue);
+		}
 		
-		return $uValue;
+		$classTitle = $this->parseValueClassTitle($u);
+		
+		if ($classTitle !== null) {
+			return $classTitle;
+		} elseif ($u->tagName == 'abbr' and $u->getAttribute('title') !== null) {
+			return $u->getAttribute('title');
+		} elseif (in_array($u->tagName, array('data', 'input')) and $u->getAttribute('value') !== null) {
+			return $u->getAttribute('value');
+		} else {
+			return unicodeTrim($u->textContent);
+		}
 	}
 
 	/**
@@ -422,7 +422,7 @@ class Parser {
 				$alt = $dt->getAttribute('alt');
 				if (!empty($alt))
 					$dtValue = $alt;
-			} elseif ($dt->tagName == 'data') {
+			} elseif (in_array($dt->tagName, array('data'))) {
 				// Use @value, otherwise innertext
 				// Is it an entire dt?
 				$value = $dt->getAttribute('value');

@@ -5,6 +5,7 @@
 
 namespace Mf2\Parser\Test;
 
+use Mf2;
 use Mf2\Parser;
 use PHPUnit_Framework_TestCase;
 
@@ -127,5 +128,12 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 		
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
+	}
+	
+	/** @see https://github.com/indieweb/php-mf2/issues/33 */
+	public function testParsesHrefBeforeValueClass() {
+		$input = '<span class="h-card"><a class="u-url" href="http://example.com/right"><span class="value">WRONG</span></a></span>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('http://example.com/right', $result['items'][0]['properties']['url'][0]);
 	}
 }

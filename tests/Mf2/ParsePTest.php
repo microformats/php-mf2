@@ -6,6 +6,7 @@
 
 namespace Mf2\Parser\Test;
 
+use Mf2;
 use Mf2\Parser;
 use PHPUnit_Framework_TestCase;
 
@@ -77,6 +78,12 @@ class ParsePTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
+	}
+	
+	public function testParsesInputValue() {
+		$input = '<span class="h-card"><input class="u-url" value="http://example.com" /></span>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('http://example.com', $result['items'][0]['properties']['url'][0]);
 	}
 
 }
