@@ -253,25 +253,25 @@ class Parser {
 	 * @return string|null the parsed value or null if value-class or -title aren’t in use
 	 */
 	public function parseValueClassTitle(\DOMElement $e, $separator = '') {
-		$valueClassElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ")]', $e);
+		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ")]', $e);
 		
 		if ($valueClassElements->length !== 0) {
 			// Process value-class stuff
 			$val = '';
 			foreach ($valueClassElements as $el) {
-				$val .= $el->textContent . $separator;
+				$val .= $el->textContent;
 			}
 			
 			return unicodeTrim($val);
 		}
 		
-		$valueTitleElements = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value-title ")]', $e);
+		$valueTitleElements = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value-title ")]', $e);
 		
 		if ($valueTitleElements->length !== 0) {
 			// Process value-title stuff
 			$val = '';
 			foreach ($valueTitleElements as $el) {
-				$val .= $el->getAttribute('title') . $separator;
+				$val .= $el->getAttribute('title');
 			}
 			
 			return unicodeTrim($val);
@@ -350,7 +350,7 @@ class Parser {
 	 */
 	public function parseDT(\DOMElement $dt) {
 		// Check for value-class pattern
-		$valueClassChildren = $this->xpath->query('.//*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
+		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
 		$dtValue = false;
 		
 		if ($valueClassChildren->length > 0) {
