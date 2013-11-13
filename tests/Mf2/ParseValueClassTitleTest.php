@@ -98,4 +98,11 @@ EOT;
 		$this->assertEquals('1234', $result['items'][0]['properties']['tel'][0]);
 		$this->assertEquals('5678', $result['items'][0]['children'][0]['properties']['tel'][0]);
 	}
+	
+	/** @see https://github.com/indieweb/php-mf2/issues/38 */
+	public function testValueClassDtMatchesSingleDigitTimeComponent() {
+		$test = '<div class="h-entry"><span class="dt-published"><time class="value">6:01</time>, <time class="value">2013-02-01</time></span></div>';
+		$result = Mf2\parse($test);
+		$this->assertEquals('2013-02-01T6:01', $result['items'][0]['properties']['published'][0]);
+	}
 }

@@ -405,7 +405,7 @@ class Parser {
 					break;
 				} else {
 					// Is the current part a valid time(+TZ?) AND no other time reprentation has been found?
-					if ((preg_match('/\d{2}:\d{2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart)) {
+					if ((preg_match('/\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart)) {
 						$timePart = $part;
 					} elseif (preg_match('/\d{4}-\d{2}-\d{2}/', $part) and empty($datePart)) {
 						// Is the current part a valid date AND no other date reprentation has been found?
