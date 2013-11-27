@@ -171,6 +171,7 @@ class Parser {
 	 * @param string $url The URL of the parsed document, for relative URL resolution
 	 */
 	public function __construct($input, $url = null) {
+		libxml_use_internal_errors(true);
 		if (is_string($input)) {
 			$doc = new DOMDocument();
 			@$doc->loadHTML(unicodeToHtmlEntities($input));
