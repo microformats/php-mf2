@@ -185,6 +185,12 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.5
+
+* Removed conditional replacing empty rel list with stdclass. Original purpose was to make JSON-encoding the output from the parser correct but it also caused Fatal Errors due to trying to treat stdclass as array.
+
+#### v0.2.4
+
 #### v0.2.3
 
 * Made p-* parsing consistent with implied name parsing
