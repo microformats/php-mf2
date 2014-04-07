@@ -3,6 +3,7 @@
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
+use Mf2;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -199,7 +200,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 			},
 			"value": "Mozilla Foundation"
 		}]
-  }]
+	}]
 }';
 
 		$parser = new Parser($input, '', true);
@@ -207,5 +208,18 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
-
+	
+	/**
+	 * Regression test for https://github.com/indieweb/php-mf2/issues/42
+	 * 
+	 * This was occurring because mfPropertyNamesFromClass was only ever returning the first property name
+	 * rather than all of them.
+	 */
+	public function testNestedMicroformatUnderMultipleProperties() {
+		$input = '<article class="h-entry"><div class="p-like-of p-in-reply-to h-cite"></div></article>';
+		$mf = Mf2\parse($input);
+		
+		$this->assertCount(1, $mf['items'][0]['properties']['like-of']);
+		$this->assertCount(1, $mf['items'][0]['properties']['in-reply-to']);
+	}
 }

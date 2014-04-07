@@ -48,8 +48,8 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testNestedMicroformatPropertyNameWorks() {
-		$expected = array('location');
-		$test = 'someclass p-location someotherclass';
+		$expected = array('location', 'author');
+		$test = 'someclass p-location someotherclass u-author';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
 		
 		$this->assertEquals($actual, $expected);

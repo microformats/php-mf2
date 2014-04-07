@@ -106,19 +106,21 @@ function mfNamesFromClass($class, $prefix = 'h-') {
  * space-separated string.
  * 
  * @param string $class
- * @return string|null
+ * @return array
  */
 function nestedMfPropertyNamesFromClass($class) {
 	$prefixes = array(' p-', ' u-', ' dt-', ' e-');
-
+	$propertyNames = array();
+	
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
-			if (stristr(' ' . $classname, $prefix))
-				return mfNamesFromClass($classname, ltrim($prefix));
+			if (stristr(' ' . $classname, $prefix)) {
+				$propertyNames = array_merge($propertyNames, mfNamesFromClass($classname, ltrim($prefix)));
+			}
 		}
 	}
 
-	return null;
+	return $propertyNames;
 }
 
 /**
