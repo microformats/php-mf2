@@ -144,6 +144,17 @@ $parser->parse(true, $elementIWant); // returns a document with only mfs under t
 
 ```
 
+### Generating output for JSON serialization with JSON-mode
+
+Due to a quirk with the way PHP arrays work, there is an edge case ([reported](https://github.com/indieweb/php-mf2/issues/29) by Tom Morris) in which a document with no rel values, when serialised as JSON, results in an empty object as the rels value rather than an empty array. Replacing this in code with a stdClass breaks PHP iteration over the values.
+
+As of version 0.2.6, the default behaviour is back to being PHP-friendly, so if you want to produce results specifically for serialisation as JSON (for example if you run a HTML -> JSON service, or want to run tests against JSON fixtures), enable JSON mode:
+
+```php
+// …by passing true as the third constructor:
+$jsonParser = new Mf2\Parser($html, $url, true);
+```
+
 ### Classic Microformats Markup
 
 php-mf2 has some support for parsing classic microformats markup. It’s enabled by default, but can be turned off by calling `Mf2\parse($html, $url, false);` or `$parser->parse(false);` if you’re instanciating a parser yourself.
@@ -184,6 +195,11 @@ There are enough tests to warrant putting them into separate suites for maintena
 php-mf2 can also be hooked up to the official, cross-platform [microformats2 test suite](https://github.com/microformats/tests). TODO: write a guide on how to do this, make a public endpoint for people to look at the results
 
 ### Changelog
+
+#### v0.2.6
+
+* Added JSON mode as long-term fix for #29
+* Fixed bug causing microformats nested under multiple property names to be parsed only once
 
 #### v0.2.5
 
