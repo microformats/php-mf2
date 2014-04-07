@@ -9,6 +9,7 @@ use DOMNode;
 use DOMNodeList;
 use Exception;
 use SplObjectStorage;
+use stdClass;
 
 /**
  * Parse Microformats2
@@ -163,14 +164,17 @@ class Parser {
 	
 	/** @var SplObjectStorage */
 	protected $parsed;
+	
+	public $jsonMode;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
 	 * @param string $url The URL of the parsed document, for relative URL resolution
+	 * @param boolean $jsonMode Whether or not to use a stdClass instance for an empty `rels` dictionary. This breaks PHP looping over rels, but allows the output to be correctly serialized as JSON.
 	 */
-	public function __construct($input, $url = null) {
+	public function __construct($input, $url = null, $jsonMode = false) {
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
 			$doc = new DOMDocument();
@@ -205,6 +209,7 @@ class Parser {
 		$this->baseurl = $baseurl;
 		$this->doc = $doc;
 		$this->parsed = new SplObjectStorage();
+		$this->jsonMode = $jsonMode;
 	}
 	
 	private function elementPrefixParsed(\DOMElement $e, $prefix) {
@@ -694,6 +699,14 @@ class Parser {
 		return $parsed;
 	}
 	
+	/**
+	 * Parse Rels and Alternatives
+	 * 
+	 * Returns [$rels, $alternatives]. If the $rels value is to be empty, i.e. there are no links on the page 
+	 * with a rel value *not* containing `alternate`, then the type of $rels depends on $this->jsonMode. If set
+	 * to true, it will be a stdClass instance, optimising for JSON serialisation. Otherwise (the default case),
+	 * it will be an empty array.
+	 */
 	public function parseRelsAndAlternates() {
 		$rels = array();
 		$alternates = array();
@@ -727,6 +740,10 @@ class Parser {
 					$rels[$rel][] = $href;
 				}
 			}
+		}
+		
+		if (empty($rels) and $this->jsonMode) {
+			$rels = new stdClass();
 		}
 		
 		return array($rels, $alternates);

@@ -25,14 +25,14 @@ class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 	public function testParsesClassicHcard() {
 		$input = '<div class="vcard"><span class="fn n">Barnaby Walters</span> is a person.</div>';
 		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}}';
-		$parser = new Parser($input);
+		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
 	
 	public function testParsesClassicHEntry() {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
 		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}}';
-		$parser = new Parser($input);
+		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
 	
@@ -106,8 +106,6 @@ EOT;
 	
 	public function testParsesSnarfedOrgArticleCorrectly() {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
-		/*$parser = new Parser($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
-		$result = $parser->parse();/**/
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
 		print_r($result);
 	}
