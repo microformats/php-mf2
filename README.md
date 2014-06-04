@@ -178,13 +178,21 @@ TODO: move this section to a security/consumption best practises page on the wik
 
 ## Contributing
 
+Issues and bug reports are very welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
+
 Pull requests very welcome, please try to maintain stylistic, structural and naming consistency with the existing codebase, and don’t be too upset if I make naming changes :)
 
-Please add tests which cover changes you plan to make or have made. I use PHPUnit, which is the de-facto standard for modern PHP development.
+### How to make a Pull Request
 
-At the very least, run the test suite before and after making your changes to make sure you haven’t broken anything.
-
-Issues/bug reports welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
+1. Fork the repo to your github account
+2. Clone a copy to your computer (simply installing php-mf2 using composer only works for using it, not developing it)
+3. Install the dev dependencies with `./composer.phar install`
+4. Run PHPUnit with `./vendor/bin/phpunit`
+5. Make your changes
+6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
+7. Make sure your tests pass (`./vendor/bin/phpunit`)
+8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
+9. Bask in the warm feeling of having contributed to a piece of free software
 
 ## Testing
 
