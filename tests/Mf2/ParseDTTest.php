@@ -155,4 +155,20 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/pull/46
+	 * @group parseDT
+	 * @group valueClass
+	 */
+	public function testImpliedDTEndUsingNonValueClassDTStart() {
+		$input = '<div class="h-event"> <time class="dt-start">2014-06-05T18:31</time> until <span class="dt-end">19:31</span></span> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
+		$this->assertEquals('2014-06-05T18:31', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-06-05T19:31', $output['items'][0]['properties']['end'][0]);
+	}
 }
