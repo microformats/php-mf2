@@ -135,7 +135,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 	 * @group valueClass
 	 */
 	public function testAbbrYYYY_MM_DD__HH_MM() {
-		$input = '<div class="h-event"><span class="dt-start"><abbr class="value" title="2012-10-07">some day</a> at <span class="value">21:18</span></span></div>';
+		$input = '<div class="h-event"><span class="dt-start"><abbr class="value" title="2012-10-07">some day</abbr> at <span class="value">21:18</span></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
