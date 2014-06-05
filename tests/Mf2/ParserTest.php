@@ -189,4 +189,16 @@ EOT;
 		$this->assertCount(1, $output['items'][0]['properties']['in-reply-to']);
 		$this->assertEquals('Name', $output['items'][0]['properties']['in-reply-to'][0]['properties']['name'][0]);
 	}
+
+	/**
+	 * @group network
+	 */
+	public function testFetchMicroformats() {
+		$mf = Mf2\fetch('http://waterpigs.co.uk/');
+		$this->assertArrayHasKey('items', $mf);
+
+		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
+		$this->assertNull($mf);
+		$this->assertContains('jpeg', $curlInfo['content_type']);
+	}
 }

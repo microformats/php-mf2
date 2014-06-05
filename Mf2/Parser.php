@@ -47,6 +47,42 @@ function parse($input, $url = null, $convertClassic = true) {
 }
 
 /**
+ * Fetch microformats2
+ *
+ * Given a URL, fetches it (following up to 5 redirects) and, if the content-type appears to be HTML, returns the parsed
+ * microformats2 array structure.
+ *
+ * Not that even if the response code was a 4XX or 5XX error, if the content-type is HTML-like then it will be parsed
+ * all the same, as there are legitimate cases where error pages might contain useful microformats (for example a deleted
+ * h-entry resulting in a 410 Gone page with a stub h-entry explaining the reason for deletion). Look in $curlInfo['http_code']
+ * for the actual value.
+ *
+ * @param string $url The URL to fetch
+ * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
+ * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @return array|null canonical microformats2 array structure on success, null on failure
+ */
+function fetch($url, $convertClassic = true, &$curlInfo=null) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+	$response = curl_exec($ch);
+	$info = $curlInfo = curl_getinfo($ch);
+	curl_close($ch);
+
+	if (strpos(strtolower($info['content_type']), 'html') === false) {
+		// The content was not delivered as HTML, do not attempt to parse it.
+		return null;
+	}
+
+	$html = mb_substr($response, $info['header_size']);
+	return parse($html, $url, $convertClassic);
+}
+
+/**
  * Unicode to HTML Entities
  * @param string $input String containing characters to convert into HTML entities
  * @return string 
