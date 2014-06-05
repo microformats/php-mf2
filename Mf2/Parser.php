@@ -144,6 +144,54 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
 }
 
 /**
+ * Converts various time formats to HH:MM
+ * @param string $time The time to convert
+ * @return string
+ */
+function convertTimeFormat($time) {
+	$hh = $mm = $ss = '';
+	preg_match('/(\d{1,2}):?(\d{2})?(:\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
+
+	// if no am/pm specified
+	if ( empty($matches[4]) ) {
+		return $time;
+	}
+	// else am/pm specified
+	else {
+		$meridiem = strtolower(str_replace('.', '', $matches[4]));
+
+		// hours
+		$hh = $matches[1];
+
+		// add 12 to the pm hours
+		if ( $meridiem == 'pm' && ($hh < 12) )
+		{
+			$hh += 12;
+		}
+
+		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
+
+		// minutes
+		$mm = ( empty($matches[2]) ) ? '00' : $matches[2];
+
+		// seconds, only if supplied
+		if ( !empty($matches[3]) )
+		{
+			$ss = $matches[3];
+		}
+
+		if ( empty($ss) ) {
+			return sprintf('%s:%s', $hh, $mm);
+		}
+		else {
+			return sprintf('%s:%s:%s', $hh, $mm, $ss);
+		}
+
+	}
+
+}
+
+/**
  * Microformats2 Parser
  * 
  * A class which holds state for parsing microformats2 from HTML.
@@ -429,6 +477,7 @@ class Parser {
 
 					// if date part, but no time part
 					if ( empty($datePart) && !empty($timePart) ) {
+						$timePart = convertTimeFormat($timePart);
 						$dtValue = unicodeTrim($timePart, 'T');
 					}
 					// if no date part, but time part
@@ -437,6 +486,7 @@ class Parser {
 					}
 					// else date and time parts
 					else {
+						$timePart = convertTimeFormat($timePart);
 						$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
 					}
 				}
@@ -483,6 +533,7 @@ class Parser {
 		 * form the full date-time using the most recnetly parsed dt- value
 		 */
 		if ( (preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates) ) {
+			$dtValue = convertTimeFormat($dtValue);
 			$dtValue = end($dates) . 'T' . unicodeTrim($dtValue, 'T');
 		}
 

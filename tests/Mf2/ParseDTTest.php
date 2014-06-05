@@ -157,6 +157,32 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @group parseDT
+	 * @group valueClass
+	 */
+	public function testYYYY_MM_DD__HH_MMpm() {
+		$input = '<div class="h-event"><span class="dt-start"><span class="value">2012-10-07</span> at <span class="value">9:00pm</span></span></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
+	 * @group parseDT
+	 * @group valueClass
+	 */
+	public function testYYYY_MM_DD__HH_MM_SSpm() {
+		$input = '<div class="h-event"><span class="dt-start"><span class="value">2012-10-07</span> at <span class="value">9:00:00pm</span></span></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
 	 * This test name refers to the value-class used within the dt-end.
 	 * @group parseDT
 	 * @group valueClass
