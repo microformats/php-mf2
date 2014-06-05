@@ -180,6 +180,54 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
 }
 
 /**
+ * Converts various time formats to HH:MM
+ * @param string $time The time to convert
+ * @return string
+ */
+function convertTimeFormat($time) {
+	$hh = $mm = $ss = '';
+	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
+
+	// if no am/pm specified
+	if ( empty($matches[4]) ) {
+		return $time;
+	}
+	// else am/pm specified
+	else {
+		$meridiem = strtolower(str_replace('.', '', $matches[4]));
+
+		// hours
+		$hh = $matches[1];
+
+		// add 12 to the pm hours
+		if ( $meridiem == 'pm' && ($hh < 12) )
+		{
+			$hh += 12;
+		}
+
+		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
+
+		// minutes
+		$mm = ( empty($matches[2]) ) ? '00' : $matches[2];
+
+		// seconds, only if supplied
+		if ( !empty($matches[3]) )
+		{
+			$ss = $matches[3];
+		}
+
+		if ( empty($ss) ) {
+			return sprintf('%s:%s', $hh, $mm);
+		}
+		else {
+			return sprintf('%s:%s:%s', $hh, $mm, $ss);
+		}
+
+	}
+
+}
+
+/**
  * Microformats2 Parser
  * 
  * A class which holds state for parsing microformats2 from HTML.
@@ -391,9 +439,10 @@ class Parser {
 	 * Given an element with class="dt-*", get the value of the datetime as a php date object
 	 * 
 	 * @param DOMElement $dt The element to parse
+	 * @param array $dates Array of dates processed so far
 	 * @return string The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt) {
+	public function parseDT(\DOMElement $dt, &$dates = array()) {
 		// Check for value-class pattern
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
 		$dtValue = false;
@@ -455,8 +504,24 @@ class Parser {
 						// Is the current part a valid date AND no other date representation has been found?
 						$datePart = $part;
 					}
-					
-					$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
+
+					if ( !empty($datePart) && !in_array($datePart, $dates) ) {
+						$dates[] = $datePart;
+					}
+
+					$dtValue = '';
+
+					if ( empty($datePart) && !empty($timePart) ) {
+						$timePart = convertTimeFormat($timePart);
+						$dtValue = unicodeTrim($timePart, 'T');
+					}
+					else if ( !empty($datePart) && empty($timePart) ) {
+						$dtValue = rtrim($datePart, 'T');
+					}
+					else {
+						$timePart = convertTimeFormat($timePart);
+						$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
+					}
 				}
 			}
 		} else {
@@ -494,6 +559,19 @@ class Parser {
 			} else {
 				$dtValue = $dt->nodeValue;
 			}
+
+			if ( preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches) ) {
+				$dates[] = $matches[0];
+			}
+		}
+
+		/**
+		 * if $dtValue is only a time and there are recently parsed dates, 
+		 * form the full date-time using the most recnetly parsed dt- value
+		 */
+		if ( (preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates) ) {
+			$dtValue = convertTimeFormat($dtValue);
+			$dtValue = end($dates) . 'T' . unicodeTrim($dtValue, 'T');
 		}
 
 		return $dtValue;
@@ -554,6 +632,7 @@ class Parser {
 		// Initalise var to store the representation in
 		$return = array();
 		$children = array();
+		$dates = array();
 
 		// Handle nested microformats (h-*)
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF) {
@@ -626,7 +705,7 @@ class Parser {
 			if ($this->isElementParsed($dt, 'dt'))
 				continue;
 			
-			$dtValue = $this->parseDT($dt);
+			$dtValue = $this->parseDT($dt, $dates);
 			
 			if ($dtValue) {
 				// Add the value to the array for dt- properties
