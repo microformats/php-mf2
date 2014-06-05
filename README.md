@@ -13,14 +13,15 @@ You could install it by just downloading `/Mf2/Parser.php` and including that, b
 
 ## Usage
 
-mf2 is PSR-0 autoloadable, so all you have to do to load it is:
+php-mf2 is PSR-0 autoloadable, so all you have to do to load it is:
 
 1. Include Composer’s auto-generated autoload file (`/vendor/autoload.php`)
-1. Call `Mf2\parse()` with the HTML (or a DOMDocument), and optionally the URL to resolve relative URLs against.
+1. To fetch microformats from a URL, call `Mf2\fetch($url)`
+1. To parse microformats from HTML, call `Mf2\parse($html)`, optionally with a URL as a second parameter to resolve relative URLs against.
 
 ## Examples
 
-### Parsing implied microformats2
+### Fetching microformats from a page
 
 ```php
 <?php
@@ -30,6 +31,21 @@ namespace YourApp;
 require '/vendor/autoload.php';
 
 use Mf2;
+
+// (Above code (or equivalent) assumed in future examples)
+
+$mf = Mf2\fetch('http://microformats.org');
+
+foreach ($mf['items'] as $microformat) {
+	echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+}
+
+```
+
+### Parsing implied microformats2
+
+```php
+<?php
 
 $output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 ```
@@ -114,11 +130,28 @@ Protip: if you’re not bothered about the microformats2 data and just want rels
 ```php
 <?php
 
-use Mf2;
-
 $parser = new Mf2\Parser('<link rel="…');
 $relsAndAlternates = $parser->parseRelsAndAlternates();
 ```
+
+### Debugging Mf2\fetch
+
+`Mf2\fetch()` will attempt to parse any response served with “HTML” in the content-type, regardless of what the status code is. If it receives a non-HTML response it will return null.
+
+To learn what the HTTP status code for any request was, or learn more about the request, pass a variable name as the third parameter to `Mf2\fetch()` — this will be filled with the contents of `curl_getinfo()`, e.g:
+
+```php
+
+<?php
+
+$mf = Mf2\fetch('http://waterpigs.co.uk/this-page-doesnt-exist', true, $curlInfo);
+if ($curlInfo['http_code'] == '404') {
+	// This page doesn’t exist.
+}
+
+```
+
+If it was HTML then it is still parsed, as there are cases where error pages contain microformats — for example a deleted h-entry resulting in a 410 Gone response containing a stub h-entry with amn explanation for the deletion.
 
 ### Getting more control by creating a Parser object
 
