@@ -186,7 +186,7 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
  */
 function convertTimeFormat($time) {
 	$hh = $mm = $ss = '';
-	preg_match('/(\d{1,2}):?(\d{2})?(:\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
+	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// if no am/pm specified
 	if ( empty($matches[4]) ) {
@@ -511,16 +511,13 @@ class Parser {
 
 					$dtValue = '';
 
-					// if date part, but no time part
 					if ( empty($datePart) && !empty($timePart) ) {
 						$timePart = convertTimeFormat($timePart);
 						$dtValue = unicodeTrim($timePart, 'T');
 					}
-					// if no date part, but time part
 					else if ( !empty($datePart) && empty($timePart) ) {
 						$dtValue = rtrim($datePart, 'T');
 					}
-					// else date and time parts
 					else {
 						$timePart = convertTimeFormat($timePart);
 						$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');

@@ -179,7 +179,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07T21:00:00', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
