@@ -107,6 +107,5 @@ EOT;
 	public function testParsesSnarfedOrgArticleCorrectly() {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
-		print_r($result);
 	}
 }

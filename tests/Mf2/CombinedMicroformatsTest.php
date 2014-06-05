@@ -167,8 +167,6 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
-
-		print_r($output);
 		
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
