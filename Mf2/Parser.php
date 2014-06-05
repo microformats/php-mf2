@@ -355,9 +355,10 @@ class Parser {
 	 * Given an element with class="dt-*", get the value of the datetime as a php date object
 	 * 
 	 * @param DOMElement $dt The element to parse
+	 * @param array $dates Array of dates processed so far
 	 * @return string The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt) {
+	public function parseDT(\DOMElement $dt, &$dates = array()) {
 		// Check for value-class pattern
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
 		$dtValue = false;
@@ -419,8 +420,25 @@ class Parser {
 						// Is the current part a valid date AND no other date reprentation has been found?
 						$datePart = $part;
 					}
-					
-					$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
+
+					if ( !empty($datePart) && !in_array($datePart, $dates) ) {
+						$dates[] = $datePart;
+					}
+
+					$dtValue = '';
+
+					// if date part, but no time part
+					if ( empty($datePart) && !empty($timePart) ) {
+						$dtValue = unicodeTrim($timePart, 'T');
+					}
+					// if no date part, but time part
+					else if ( !empty($datePart) && empty($timePart) ) {
+						$dtValue = rtrim($datePart, 'T');
+					}
+					// else date and time parts
+					else {
+						$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
+					}
 				}
 			}
 		} else {
@@ -458,6 +476,14 @@ class Parser {
 			} else {
 				$dtValue = $dt->nodeValue;
 			}
+		}
+
+		/**
+		 * if $dtValue is only a time and there are recently parsed dates, 
+		 * form the full date-time using the most recnetly parsed dt- value
+		 */
+		if ( (preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates) ) {
+			$dtValue = end($dates) . 'T' . unicodeTrim($dtValue, 'T');
 		}
 
 		return $dtValue;
@@ -518,6 +544,7 @@ class Parser {
 		// Initalise var to store the representation in
 		$return = array();
 		$children = array();
+		$dates = array();
 
 		// Handle nested microformats (h-*)
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF) {
@@ -590,7 +617,7 @@ class Parser {
 			if ($this->isElementParsed($dt, 'dt'))
 				continue;
 			
-			$dtValue = $this->parseDT($dt);
+			$dtValue = $this->parseDT($dt, $dates);
 			
 			if ($dtValue) {
 				// Add the value to the array for dt- properties
