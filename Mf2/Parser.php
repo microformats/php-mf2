@@ -408,15 +408,15 @@ class Parser {
 			foreach ($dateParts as $part) {
 				// Is this part a full ISO8601 datetime?
 				if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
-					// Break completely, we’ve got our value
+					// Break completely, we’ve got our value.
 					$dtValue = $part;
 					break;
 				} else {
-					// Is the current part a valid time(+TZ?) AND no other time reprentation has been found?
+					// Is the current part a valid time(+TZ?) AND no other time representation has been found?
 					if ((preg_match('/\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart)) {
 						$timePart = $part;
 					} elseif (preg_match('/\d{4}-\d{2}-\d{2}/', $part) and empty($datePart)) {
-						// Is the current part a valid date AND no other date reprentation has been found?
+						// Is the current part a valid date AND no other date representation has been found?
 						$datePart = $part;
 					}
 					
