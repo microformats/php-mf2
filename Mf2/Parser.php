@@ -995,6 +995,8 @@ function parseUriToComponents($uri) {
 		if(array_key_exists('user', $u) || array_key_exists('pass', $u))
 			$result['authority'] .= '@';
 		$result['authority'] .= $u['host'];
+		if(array_key_exists('port', $u))
+			$result['authority'] .= ':' . $u['port'];
 	}
 
 	if(array_key_exists('path', $u))

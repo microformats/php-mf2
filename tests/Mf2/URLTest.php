@@ -249,7 +249,10 @@ class UrlTest extends PHPUnit_Framework_TestCase {
 				'http://www.example.com/pathOne/', './jquery.js', 'http://www.example.com/pathOne/jquery.js'),
 
 			array('testAbsolutePathHasDotDirecoryAndSourceHasDirectoryWithoutTrailingSlash',
-				'http://www.example.com/pathOne', './jquery.js', 'http://www.example.com/jquery.js')
+				'http://www.example.com/pathOne', './jquery.js', 'http://www.example.com/jquery.js'),
+
+			array('testAbsolutePathIncludesPortNumber',
+				'http://example.com:8080/index.html', '/photo.jpg', 'http://example.com:8080/photo.jpg')
 
 		);
 
