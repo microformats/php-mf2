@@ -13,14 +13,15 @@ You could install it by just downloading `/Mf2/Parser.php` and including that, b
 
 ## Usage
 
-mf2 is PSR-0 autoloadable, so all you have to do to load it is:
+php-mf2 is PSR-0 autoloadable, so all you have to do to load it is:
 
 1. Include Composer’s auto-generated autoload file (`/vendor/autoload.php`)
-1. Call `Mf2\parse()` with the HTML (or a DOMDocument), and optionally the URL to resolve relative URLs against.
+1. To fetch microformats from a URL, call `Mf2\fetch($url)`
+1. To parse microformats from HTML, call `Mf2\parse($html)`, optionally with a URL as a second parameter to resolve relative URLs against.
 
 ## Examples
 
-### Parsing implied microformats2
+### Fetching microformats from a page
 
 ```php
 <?php
@@ -30,6 +31,21 @@ namespace YourApp;
 require '/vendor/autoload.php';
 
 use Mf2;
+
+// (Above code (or equivalent) assumed in future examples)
+
+$mf = Mf2\fetch('http://microformats.org');
+
+foreach ($mf['items'] as $microformat) {
+	echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+}
+
+```
+
+### Parsing implied microformats2
+
+```php
+<?php
 
 $output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 ```
@@ -114,11 +130,28 @@ Protip: if you’re not bothered about the microformats2 data and just want rels
 ```php
 <?php
 
-use Mf2;
-
 $parser = new Mf2\Parser('<link rel="…');
 $relsAndAlternates = $parser->parseRelsAndAlternates();
 ```
+
+### Debugging Mf2\fetch
+
+`Mf2\fetch()` will attempt to parse any response served with “HTML” in the content-type, regardless of what the status code is. If it receives a non-HTML response it will return null.
+
+To learn what the HTTP status code for any request was, or learn more about the request, pass a variable name as the third parameter to `Mf2\fetch()` — this will be filled with the contents of `curl_getinfo()`, e.g:
+
+```php
+
+<?php
+
+$mf = Mf2\fetch('http://waterpigs.co.uk/this-page-doesnt-exist', true, $curlInfo);
+if ($curlInfo['http_code'] == '404') {
+	// This page doesn’t exist.
+}
+
+```
+
+If it was HTML then it is still parsed, as there are cases where error pages contain microformats — for example a deleted h-entry resulting in a 410 Gone response containing a stub h-entry with amn explanation for the deletion.
 
 ### Getting more control by creating a Parser object
 
@@ -178,13 +211,21 @@ TODO: move this section to a security/consumption best practises page on the wik
 
 ## Contributing
 
+Issues and bug reports are very welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
+
 Pull requests very welcome, please try to maintain stylistic, structural and naming consistency with the existing codebase, and don’t be too upset if I make naming changes :)
 
-Please add tests which cover changes you plan to make or have made. I use PHPUnit, which is the de-facto standard for modern PHP development.
+### How to make a Pull Request
 
-At the very least, run the test suite before and after making your changes to make sure you haven’t broken anything.
-
-Issues/bug reports welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
+1. Fork the repo to your github account
+2. Clone a copy to your computer (simply installing php-mf2 using composer only works for using it, not developing it)
+3. Install the dev dependencies with `./composer.phar install`
+4. Run PHPUnit with `./vendor/bin/phpunit`
+5. Make your changes
+6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
+7. Make sure your tests pass (`./vendor/bin/phpunit`)
+8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
+9. Bask in the warm feeling of having contributed to a piece of free software
 
 ## Testing
 
