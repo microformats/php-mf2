@@ -122,12 +122,13 @@ function unicodeTrim($str) {
  * @param string $prefix The prefix to look for
  * @return string|array The prefixed name of the first microfomats class found or false
  */
-function mfNamesFromClass($class, $prefix = 'h-') {
+function mfNamesFromClass($class, $prefix='h-') {
+	$class = str_replace([' ', '	', "\n"], ' ', $class);
 	$classes = explode(' ', $class);
 	$matches = array();
 
 	foreach ($classes as $classname) {
-		if (stristr(' ' . $classname, ' ' . $prefix) !== false) {
+		if (strpos($classname, $prefix) === 0 && $classname !== $prefix) {
 			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 		}
 	}
@@ -145,12 +146,13 @@ function mfNamesFromClass($class, $prefix = 'h-') {
  * @return array
  */
 function nestedMfPropertyNamesFromClass($class) {
-	$prefixes = array(' p-', ' u-', ' dt-', ' e-');
+	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
-	
+
+	$class = str_replace([' ', '	', "\n"], ' ', $class);
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
-			if (stristr(' ' . $classname, $prefix)) {
+			if (strpos($classname, $prefix) === 0 and $classname !== $prefix) {
 				$propertyNames = array_merge($propertyNames, mfNamesFromClass($classname, ltrim($prefix)));
 			}
 		}

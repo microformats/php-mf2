@@ -30,21 +30,21 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass', 'h-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testMicroformatNameFromClassHandlesMultipleHNames() {
 		$expected = array('h-card', 'h-person');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testMicroformatStripsPrefixFromPropertyClassname() {
 		$expected = array('name');
 		$actual = Mf2\mfNamesFromClass('someclass p-name someotherclass', 'p-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testNestedMicroformatPropertyNameWorks() {
@@ -52,7 +52,29 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$test = 'someclass p-location someotherclass u-author';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
 		
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassIgnoresPrefixesWithoutNames() {
+		$expected = array();
+		$actual = Mf2\mfNamesFromClass('someclass h- someotherclass', 'h-');
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassHandlesExcessiveWhitespace() {
+		$expected = array('h-card');
+		$actual = Mf2\mfNamesFromClass('  someclass
+			 	h-card 	 someotherclass		   	 ', 'h-');
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassIgnoresUppercaseClassnames() {
+		$expected = array();
+		$actual = Mf2\mfNamesFromClass('H-ENTRY', 'h-');
+
+		$this->assertEquals($expected, $actual);
 	}
 	
 	public function testParseE() {
@@ -200,5 +222,16 @@ EOT;
 		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
 		$this->assertNull($mf);
 		$this->assertContains('jpeg', $curlInfo['content_type']);
+	}
+
+	/**
+	* @see https://github.com/indieweb/php-mf2/issues/48
+	*/
+	public function testIgnoreClassesEndingInHyphen() {
+		$input = '<span class="h-entry"> <span class="e-">foo</span> </span>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayNotHasKey('0', $output['items'][0]['properties']);
 	}
 }
