@@ -237,6 +237,15 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.7
+
+2014-06-18
+
+* Added `Mf2\fetch()` which fetches content from a URL and returns parsed microformats
+* Added implied `dt-end` discovery (thanks @gRegorLove)
+* Fixed issue causing classnames like `blah e- blah` to produce properties with numeric keys (thanks @aaronpk and @gRegorLove)
+* Fixed issue causing resolved URLs to not include port numbers (thanks @aaronpk)
+
 #### v0.2.6
 
 * Added JSON mode as long-term fix for #29
