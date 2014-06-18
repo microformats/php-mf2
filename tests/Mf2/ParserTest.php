@@ -201,4 +201,17 @@ EOT;
 		$this->assertNull($mf);
 		$this->assertContains('jpeg', $curlInfo['content_type']);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/48
+	 */
+	public function testIgnoreClassesEndingInHyphen() {
+		$input = '<span class="h-entry"> <span class="e-">foo</span> </span>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		// print_r($output);
+
+		$this->assertArrayNotHasKey('0', $output['items'][0]['properties']);
+	}
+
 }

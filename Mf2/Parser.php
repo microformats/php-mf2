@@ -127,7 +127,9 @@ function mfNamesFromClass($class, $prefix = 'h-') {
 	$matches = array();
 
 	foreach ($classes as $classname) {
-		if (stristr(' ' . $classname, ' ' . $prefix) !== false) {
+		$compare_classname = strtolower(' ' . $classname);
+		$compare_prefix = strtolower(' ' . $prefix);
+		if (stristr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
 			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 		}
 	}
@@ -150,7 +152,8 @@ function nestedMfPropertyNamesFromClass($class) {
 	
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
-			if (stristr(' ' . $classname, $prefix)) {
+			$compare_classname = strtolower(' ' . $classname);
+			if (stristr($compare_classname, $prefix) && ($compare_classname != $prefix)) {
 				$propertyNames = array_merge($propertyNames, mfNamesFromClass($classname, ltrim($prefix)));
 			}
 		}
