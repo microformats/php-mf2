@@ -123,7 +123,7 @@ function unicodeTrim($str) {
  * @return string|array The prefixed name of the first microfomats class found or false
  */
 function mfNamesFromClass($class, $prefix='h-') {
-	$class = str_replace([' ', '	', "\n"], ' ', $class);
+	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
 	$matches = array();
 
@@ -149,7 +149,7 @@ function nestedMfPropertyNamesFromClass($class) {
 	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
 
-	$class = str_replace([' ', '	', "\n"], ' ', $class);
+	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
 			if (strpos($classname, $prefix) === 0 and $classname !== $prefix) {

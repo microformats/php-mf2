@@ -4,3 +4,4 @@ composer.phar
 /vendor/
 /tmp
 .idea/
+/bin/test
