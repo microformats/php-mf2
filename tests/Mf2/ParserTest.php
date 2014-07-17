@@ -234,4 +234,13 @@ EOT;
 
 		$this->assertArrayNotHasKey('0', $output['items'][0]['properties']);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/52
+	 * @see https://github.com/tommorris/mf2py/commit/92740deb7e19b8f1e7fbf6bec001cf52f2b07e99
+	 */
+	public function testIgnoresTemplateElements() {
+		$result = Mf2\parse('<template class="h-card"><span class="p-name">Tom Morris</span></template>');
+		$this->assertCount(0, $result['items']);
+	}
 }
