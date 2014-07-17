@@ -321,7 +321,33 @@ class Parser {
 		
 		return true;
 	}
-	
+
+	private function resolveChildUrls(DOMElement $el) {
+		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
+
+		foreach ($hyperlinkChildren as $child) {
+			if ($child->hasAttribute('href'))
+				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
+			if ($child->hasAttribute('src'))
+				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
+			if ($child->hasAttribute('data'))
+				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
+		}
+	}
+
+	public function textContent(DOMElement $el) {
+		$this->resolveChildUrls($el);
+
+		$clonedEl = $el->cloneNode(true);
+
+		foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
+			$newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
+			$imgEl->parentNode->replaceChild($newNode, $imgEl);
+		}
+
+		return $clonedEl->textContent;
+	}
+
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this 
@@ -355,7 +381,7 @@ class Parser {
 			// Process value-class stuff
 			$val = '';
 			foreach ($valueClassElements as $el) {
-				$val .= $el->textContent;
+				$val .= $this->textContent($el);
 			}
 			
 			return unicodeTrim($val);
@@ -399,7 +425,7 @@ class Parser {
 		} elseif (in_array($p->tagName, array('data', 'input')) and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
-			$pValue = unicodeTrim($p->textContent);
+			$pValue = unicodeTrim($this->textContent($p));
 		}
 		
 		return $pValue;
@@ -434,7 +460,7 @@ class Parser {
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->getAttribute('value') !== null) {
 			return $u->getAttribute('value');
 		} else {
-			return unicodeTrim($u->textContent);
+			return unicodeTrim($this->textContent($u));
 		}
 	}
 
@@ -596,17 +622,8 @@ class Parser {
 		
 		// Expand relative URLs within children of this element
 		// TODO: as it is this is not relative to only children, make this .// and rerun tests
-		$hyperlinkChildren = $this->xpath->query('//*[@src or @href or @data]', $e);
-		
-		foreach ($hyperlinkChildren as $child) {
-			if ($child->hasAttribute('href'))
-				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
-			if ($child->hasAttribute('src'))
-				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
-			if ($child->hasAttribute('data'))
-				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
-		}
-		
+		$this->resolveChildUrls($e);
+
 		$html = '';
 		foreach ($e->childNodes as $node) {
 			$html .= $node->C14N();
@@ -614,7 +631,7 @@ class Parser {
 		
 		return array(
 			'html' => $html,
-			'value' => unicodeTrim($e->textContent)
+			'value' => unicodeTrim($this->textContent($e))
 		);
 	}
 

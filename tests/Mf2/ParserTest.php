@@ -93,7 +93,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 		
 		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img"></img>', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertEquals('Blah blah thing.', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertEquals('Blah blah thing.  http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	/**

@@ -94,12 +94,12 @@ class ParsePTest extends PHPUnit_Framework_TestCase {
 		$input = <<<EOT
 <div class="h-entry">
 	<p class="p-name">The day I saw a <img alt="five legged elephant" src="/photos/five-legged-elephant.jpg" /></p>
-	<p class="p-summary">Blah blah <img alt="" src="/photos/five-legged-elephant.jpg" /></p>
+	<p class="p-summary">Blah blah <img src="/photos/five-legged-elephant.jpg" /></p>
 </div>
 EOT;
 		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
 		$this->assertEquals('The day I saw a five legged elephant', $result['items'][0]['properties']['name'][0]);
-		$this->assertEquals('Blah blah blah http://waterpigs.co.uk/photos/five-legged-elephant.jpg', $result['items'][0]['properties']['summary'][0]);
+		$this->assertEquals('Blah blah http://waterpigs.co.uk/photos/five-legged-elephant.jpg', $result['items'][0]['properties']['summary'][0]);
 	}
 
 }
