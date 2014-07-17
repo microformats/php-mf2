@@ -237,6 +237,14 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.8
+
+2014-07-17
+
+* Fixed issue #51 causing php-mf2 to not work with PHP 5.3
+* Fixed issue #52 correctly handling the `<template>` element by ignoring it
+* Fixed issue #53 improving the plaintext parsing of `<img>` elements
+
 #### v0.2.7
 
 2014-06-18
