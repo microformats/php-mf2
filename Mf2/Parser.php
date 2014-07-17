@@ -191,7 +191,7 @@ function convertTimeFormat($time) {
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// if no am/pm specified
-	if ( empty($matches[4]) ) {
+	if (empty($matches[4])) {
 		return $time;
 	}
 	// else am/pm specified
@@ -202,31 +202,27 @@ function convertTimeFormat($time) {
 		$hh = $matches[1];
 
 		// add 12 to the pm hours
-		if ( $meridiem == 'pm' && ($hh < 12) )
-		{
+		if ($meridiem == 'pm' && ($hh < 12)) {
 			$hh += 12;
 		}
 
 		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
 
 		// minutes
-		$mm = ( empty($matches[2]) ) ? '00' : $matches[2];
+		$mm = (empty($matches[2]) ) ? '00' : $matches[2];
 
 		// seconds, only if supplied
-		if ( !empty($matches[3]) )
-		{
+		if (!empty($matches[3])) {
 			$ss = $matches[3];
 		}
 
-		if ( empty($ss) ) {
+		if (empty($ss)) {
 			return sprintf('%s:%s', $hh, $mm);
 		}
 		else {
 			return sprintf('%s:%s:%s', $hh, $mm, $ss);
 		}
-
 	}
-
 }
 
 /**

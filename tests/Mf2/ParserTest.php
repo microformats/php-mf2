@@ -243,4 +243,18 @@ EOT;
 		$result = Mf2\parse('<template class="h-card"><span class="p-name">Tom Morris</span></template>');
 		$this->assertCount(0, $result['items']);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/53
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
+	 */
+	public function testConvertsNestedImgElementToAltOrSrc() {
+		$input = <<<EOT
+<div class="h-entry">
+	<p class="e-content">It is a strange thing to see a <img alt="five legged elephant" src="/photos/five-legged-elephant.jpg" /></p>
+</div>
+EOT;
+		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
+		$this->assertEquals('It is a strange thing to see a five legged elephant', $result['items'][0]['properties']['content'][0]['value']);
+	}
 }
