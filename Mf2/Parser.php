@@ -293,6 +293,11 @@ class Parser {
 			}
 			break;
 		}
+
+		// Ignore <template> elements as per the HTML5 spec
+		foreach ($this->xpath->query('//template') as $templateEl) {
+			$templateEl->parentNode->removeChild($templateEl);
+		}
 		
 		$this->baseurl = $baseurl;
 		$this->doc = $doc;
