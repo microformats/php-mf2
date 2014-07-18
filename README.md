@@ -223,7 +223,7 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 4. Run PHPUnit with `./vendor/bin/phpunit`
 5. Make your changes
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
-7. Make sure your tests pass (`./vendor/bin/phpunit`)
+7. Make sure your tests pass (`./vendor/bin/phpunit`), preferably using both PHP 5.3 and 5.4
 8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
 9. Bask in the warm feeling of having contributed to a piece of free software
 
