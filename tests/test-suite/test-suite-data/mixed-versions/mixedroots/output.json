@@ -1,0 +1,51 @@
+{
+    "items": [{
+        "type": ["h-resume"],
+        "properties": {
+            "contact": [{
+                "value": "Tim Berners-Lee Director of the World Wide Web Foundation",
+                "type": ["h-card"],
+                "properties": {
+                    "name": ["Tim Berners-Lee"],
+                    "title": ["Director of the World Wide Web Foundation"]
+                }
+            }],
+            "summary": ["Invented the World Wide Web."],
+            "experience": [{
+                "value": "Director World Wide Web Foundation Jan 2009 - Present (2 years 11 month)",
+                "type": ["h-event", "h-card"],
+                "properties": {
+                    "org": ["World Wide Web Foundation"],
+                    "name": ["World Wide Web Foundation"],
+                    "url": ["http://www.webfoundation.org/"],
+                    "start": ["2009-01-18"],
+                    "duration": ["P2Y11M"],
+                    "title": ["Director"]
+                }
+            }]
+        }
+    },{
+        "type": ["h-card"],
+        "properties": {
+            "name": ["Tim Berners-Lee"],
+            "title": ["Director of the World Wide Web Foundation"]
+        }
+    },{
+        "type": ["h-event"],
+        "properties": {
+            "org": ["World Wide Web Foundation"],
+            "name": ["World Wide Web Foundation"],
+            "url": ["http://www.webfoundation.org/"],
+            "start": ["2009-01-18"],
+            "duration": ["P2Y11M"]
+        }
+    },{
+        "type": ["h-card"],
+        "properties": {
+            "title": ["Director"],
+            "name": ["World Wide Web Foundation"],
+            "org": ["World Wide Web Foundation"],
+            "url": ["http://www.webfoundation.org/"]
+        }
+    }]
+}

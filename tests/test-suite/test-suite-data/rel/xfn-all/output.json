@@ -1,0 +1,22 @@
+{
+    "items": [],
+    "rels": {
+        "friend": ["http://example.com/profile/jane"],
+        "acquaintance": ["http://example.com/profile/jeo"],
+        "contact": ["http://example.com/profile/lily"],
+        "met": ["http://example.com/profile/oliver"],
+        "co-worker": ["http://example.com/profile/emily"],
+        "colleague": ["http://example.com/profile/jack"],
+        "neighbor": ["http://example.com/profile/isabella"],
+        "child": ["http://example.com/profile/harry"],
+        "parent": ["http://example.com/profile/sophia"],
+        "sibling": ["http://example.com/profile/charlie"],
+        "spouse": ["http://example.com/profile/olivia"],
+        "kin": ["http://example.com/profile/james"],
+        "muse": ["http://example.com/profile/ava"],
+        "crush": ["http://example.com/profile/joshua"],
+        "date": ["http://example.com/profile/chloe"],
+        "sweetheart": ["http://example.com/profile/alfie"],
+        "me": ["http://example.com/profile/isla"]
+    }
+}

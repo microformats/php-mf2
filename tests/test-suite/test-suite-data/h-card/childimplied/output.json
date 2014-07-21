@@ -1,0 +1,10 @@
+{
+    "items": [{
+        "type": ["h-card"],
+        "properties": {
+            "name": ["Håkon Wium Lie"],
+            "photo": ["http://upload.wikimedia.org/wikipedia/commons/thumb/9/96/H%C3%A5kon-Wium-Lie-2009-03.jpg/215px-H%C3%A5kon-Wium-Lie-2009-03.jpg"],
+            "url": ["http://people.opera.com/howcome/"]
+        }
+    }]
+}

@@ -1,0 +1,9 @@
+{
+    "items": [{ 
+        "type": ["h-org"],
+        "properties": {
+            "name": ["Mozilla Foundation"],
+            "url": ["http://mozilla.org/"]
+        }
+    }]
+}

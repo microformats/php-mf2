@@ -1,0 +1,19 @@
+{
+    "items": [{ 
+        "type": ["h-entry"],
+        "properties": {
+            "name": ["microformats.org at 7"],
+            "url": [
+                "http://microformats.org/",
+                "http://microformats.org/2012/06/25/microformats-org-at-7",
+                "http://microformats.org/2012/06/25/microformats-org-at-7",
+                "http://microformats.org/",
+                "http://microformats.org/wiki/microformats2-parsing",
+                "http://microformats.org/wiki/value-class-pattern",
+                "http://microformats.org/wiki/",
+                "http://microformats.org/discuss"
+            ],
+            "photo": ["http://example.com/images/logo.gif"]
+        }
+    }]
+}

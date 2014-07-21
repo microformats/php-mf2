@@ -1,0 +1,4 @@
+{
+    "name": "geo parsing tests",
+    "description": "This page was design to test the parsing of geo and its output to the newer JSON structure of micorformats 2. These tests are part of the micorformats 2 test suite."
+}
