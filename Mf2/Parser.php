@@ -1012,7 +1012,8 @@ class Parser {
 		'hrecipe' => 'h-recipe',
 		'hresume' => 'h-resume',
 		'hevent' => 'h-event',
-		'hreview' => 'h-review'
+		'hreview' => 'h-review',
+		'hproduct' => 'h-product'
 	);
 	
 	public $classicPropertyMap = array(
@@ -1104,6 +1105,17 @@ class Parser {
 			'best' => 'p-best',
 			'worst' => 'p-worst',
 			'description' => 'p-description'
+		),
+		'hproduct' => array(
+			'fn' => 'p-name',
+			'photo' => 'u-photo',
+			'brand' => 'p-brand',
+			'category' => 'p-category',
+			'description' => 'p-description',
+			'identifier' => 'u-identifier',
+			'url' => 'u-url',
+			'review' => 'p-review h-review',
+			'price' => 'p-price'
 		)
 	);
 }
