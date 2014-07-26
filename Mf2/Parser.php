@@ -69,7 +69,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-	$response = curl_exec($ch);
+	$html = curl_exec($ch);
 	$info = $curlInfo = curl_getinfo($ch);
 	curl_close($ch);
 
@@ -78,7 +78,6 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$html = mb_substr($response, $info['header_size']);
 	return parse($html, $url, $convertClassic);
 }
 
