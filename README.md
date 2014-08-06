@@ -9,6 +9,28 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 Install php-mf2 with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.2.*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
 
+Then, verify the installed files using OpenGPG. The tags (from v0.2.9) are signed by barnaby@waterpigs.co.uk — if you don’t have my key, get it like this:
+
+```bash
+gpg --recv-keys 7D49834B0416CFA3
+```
+
+Then verify the installed files like this:
+
+```bash
+# in your project root
+cd vendor/mf2/mf2
+git tag -v v0.2.9
+```
+
+If nothing went wrong, you should see the tag commit message, ending with this:
+
+```
+gpg: Signature made Wed  6 Aug 10:04:20 2014 GMT using RSA key ID 2B2BBB65
+gpg: Good signature from "Barnaby Walters <barnaby@waterpigs.co.uk>"
+gpg:                 aka "[jpeg image of size 12805]"
+```
+
 You could install it by just downloading `/Mf2/Parser.php` and including that, but please use Composer. Seriously, it’s amazing.
 
 ## Usage
