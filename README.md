@@ -237,6 +237,13 @@ php-mf2 can also be hooked up to the official, cross-platform [microformats2 tes
 
 ### Changelog
 
+#### v0.2.9
+
+2014-08-06
+
+* Added backcompat classmap for hProduct, associated tests
+* Started GPG signing version tags as barnaby@waterpigs.co.uk, fingerprint CBC7 7876 BF7C 9637 B6AE 77BA 7D49 834B 0416 CFA3
+
 #### v0.2.8
 
 2014-07-17
