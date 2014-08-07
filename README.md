@@ -34,7 +34,7 @@ gpg:                 aka "[jpeg image of size 12805]"
 Possible issues:
 
 * **Git complains that there’s no such tag**: check for a .git file in the source folder; odds are you have the prefer-dist setting enabled and composer is just extracting a zip rather than checking out from git.
-* **Git complains the gpg command doesn’t exist**: If you successfully imported my key then you obviously do have gpg installed, but you might have gpg2, whereas git looks for gpg. Solution: symlink gpg to gpg2.
+* **Git complains the gpg command doesn’t exist**: If you successfully imported my key then you obviously do have gpg installed, but you might have gpg2, whereas git looks for gpg. Solution: tell git which binary to use: `git config --global gpg.program 'gpg2'`
 
 You could install it by just downloading `/Mf2/Parser.php` and including that, but please use Composer. Seriously, it’s amazing.
 
