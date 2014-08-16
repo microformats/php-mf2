@@ -78,8 +78,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$html = mb_substr($response, $info['header_size']);
-	return parse($html, $url, $convertClassic);
+	return parse($response, $url, $convertClassic);
 }
 
 /**
