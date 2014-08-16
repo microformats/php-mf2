@@ -69,7 +69,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-	$response = curl_exec($ch);
+	$html = curl_exec($ch);
 	$info = $curlInfo = curl_getinfo($ch);
 	curl_close($ch);
 
@@ -78,7 +78,6 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$html = mb_substr($response, $info['header_size']);
 	return parse($html, $url, $convertClassic);
 }
 
@@ -122,7 +121,8 @@ function unicodeTrim($str) {
  * @param string $prefix The prefix to look for
  * @return string|array The prefixed name of the first microfomats class found or false
  */
-function mfNamesFromClass($class, $prefix = 'h-') {
+function mfNamesFromClass($class, $prefix='h-') {
+	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
 	$matches = array();
 
@@ -147,9 +147,10 @@ function mfNamesFromClass($class, $prefix = 'h-') {
  * @return array
  */
 function nestedMfPropertyNamesFromClass($class) {
-	$prefixes = array(' p-', ' u-', ' dt-', ' e-');
+	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
-	
+
+	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
 			$compare_classname = strtolower(' ' . $classname);
@@ -192,7 +193,7 @@ function convertTimeFormat($time) {
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// if no am/pm specified
-	if ( empty($matches[4]) ) {
+	if (empty($matches[4])) {
 		return $time;
 	}
 	// else am/pm specified
@@ -203,31 +204,27 @@ function convertTimeFormat($time) {
 		$hh = $matches[1];
 
 		// add 12 to the pm hours
-		if ( $meridiem == 'pm' && ($hh < 12) )
-		{
+		if ($meridiem == 'pm' && ($hh < 12)) {
 			$hh += 12;
 		}
 
 		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
 
 		// minutes
-		$mm = ( empty($matches[2]) ) ? '00' : $matches[2];
+		$mm = (empty($matches[2]) ) ? '00' : $matches[2];
 
 		// seconds, only if supplied
-		if ( !empty($matches[3]) )
-		{
+		if (!empty($matches[3])) {
 			$ss = $matches[3];
 		}
 
-		if ( empty($ss) ) {
+		if (empty($ss)) {
 			return sprintf('%s:%s', $hh, $mm);
 		}
 		else {
 			return sprintf('%s:%s:%s', $hh, $mm, $ss);
 		}
-
 	}
-
 }
 
 /**
@@ -294,6 +291,11 @@ class Parser {
 			}
 			break;
 		}
+
+		// Ignore <template> elements as per the HTML5 spec
+		foreach ($this->xpath->query('//template') as $templateEl) {
+			$templateEl->parentNode->removeChild($templateEl);
+		}
 		
 		$this->baseurl = $baseurl;
 		$this->doc = $doc;
@@ -321,7 +323,33 @@ class Parser {
 		
 		return true;
 	}
-	
+
+	private function resolveChildUrls(DOMElement $el) {
+		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
+
+		foreach ($hyperlinkChildren as $child) {
+			if ($child->hasAttribute('href'))
+				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
+			if ($child->hasAttribute('src'))
+				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
+			if ($child->hasAttribute('data'))
+				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
+		}
+	}
+
+	public function textContent(DOMElement $el) {
+		$this->resolveChildUrls($el);
+
+		$clonedEl = $el->cloneNode(true);
+
+		foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
+			$newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
+			$imgEl->parentNode->replaceChild($newNode, $imgEl);
+		}
+
+		return $clonedEl->textContent;
+	}
+
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this 
@@ -355,7 +383,7 @@ class Parser {
 			// Process value-class stuff
 			$val = '';
 			foreach ($valueClassElements as $el) {
-				$val .= $el->textContent;
+				$val .= $this->textContent($el);
 			}
 			
 			return unicodeTrim($val);
@@ -399,7 +427,7 @@ class Parser {
 		} elseif (in_array($p->tagName, array('data', 'input')) and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
-			$pValue = unicodeTrim($p->textContent);
+			$pValue = unicodeTrim($this->textContent($p));
 		}
 		
 		return $pValue;
@@ -434,7 +462,7 @@ class Parser {
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->getAttribute('value') !== null) {
 			return $u->getAttribute('value');
 		} else {
-			return unicodeTrim($u->textContent);
+			return unicodeTrim($this->textContent($u));
 		}
 	}
 
@@ -596,17 +624,8 @@ class Parser {
 		
 		// Expand relative URLs within children of this element
 		// TODO: as it is this is not relative to only children, make this .// and rerun tests
-		$hyperlinkChildren = $this->xpath->query('//*[@src or @href or @data]', $e);
-		
-		foreach ($hyperlinkChildren as $child) {
-			if ($child->hasAttribute('href'))
-				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
-			if ($child->hasAttribute('src'))
-				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
-			if ($child->hasAttribute('data'))
-				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
-		}
-		
+		$this->resolveChildUrls($e);
+
 		$html = '';
 		foreach ($e->childNodes as $node) {
 			$html .= $node->C14N();
@@ -614,7 +633,7 @@ class Parser {
 		
 		return array(
 			'html' => $html,
-			'value' => unicodeTrim($e->textContent)
+			'value' => unicodeTrim($this->textContent($e))
 		);
 	}
 

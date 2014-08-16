@@ -1,0 +1,10 @@
+{
+    "items": [{ 
+        "type": ["h-geo"],
+        "properties": {
+            "latitude": ["51.513458"],
+            "longitude": ["-0.14812"],
+            "name": ["The Bricklayer's Arms"]
+        }
+    }]
+}

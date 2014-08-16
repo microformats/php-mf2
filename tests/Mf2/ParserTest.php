@@ -30,21 +30,21 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass', 'h-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testMicroformatNameFromClassHandlesMultipleHNames() {
 		$expected = array('h-card', 'h-person');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testMicroformatStripsPrefixFromPropertyClassname() {
 		$expected = array('name');
 		$actual = Mf2\mfNamesFromClass('someclass p-name someotherclass', 'p-');
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testNestedMicroformatPropertyNameWorks() {
@@ -52,7 +52,29 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$test = 'someclass p-location someotherclass u-author';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
 		
-		$this->assertEquals($actual, $expected);
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassIgnoresPrefixesWithoutNames() {
+		$expected = array();
+		$actual = Mf2\mfNamesFromClass('someclass h- someotherclass', 'h-');
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassHandlesExcessiveWhitespace() {
+		$expected = array('h-card');
+		$actual = Mf2\mfNamesFromClass('  someclass
+			 	h-card 	 someotherclass		   	 ', 'h-');
+
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testMicroformatNamesFromClassIgnoresUppercaseClassnames() {
+		$expected = array();
+		$actual = Mf2\mfNamesFromClass('H-ENTRY', 'h-');
+
+		$this->assertEquals($expected, $actual);
 	}
 	
 	public function testParseE() {
@@ -71,7 +93,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 		
 		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img"></img>', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertEquals('Blah blah thing.', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertEquals('Blah blah thing.  http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	/**
@@ -209,9 +231,30 @@ EOT;
 		$input = '<span class="h-entry"> <span class="e-">foo</span> </span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		// print_r($output);
 
 		$this->assertArrayNotHasKey('0', $output['items'][0]['properties']);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/52
+	 * @see https://github.com/tommorris/mf2py/commit/92740deb7e19b8f1e7fbf6bec001cf52f2b07e99
+	 */
+	public function testIgnoresTemplateElements() {
+		$result = Mf2\parse('<template class="h-card"><span class="p-name">Tom Morris</span></template>');
+		$this->assertCount(0, $result['items']);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/53
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
+	 */
+	public function testConvertsNestedImgElementToAltOrSrc() {
+		$input = <<<EOT
+<div class="h-entry">
+	<p class="e-content">It is a strange thing to see a <img alt="five legged elephant" src="/photos/five-legged-elephant.jpg" /></p>
+</div>
+EOT;
+		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
+		$this->assertEquals('It is a strange thing to see a five legged elephant', $result['items'][0]['properties']['content'][0]['value']);
+	}
 }

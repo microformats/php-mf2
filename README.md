@@ -223,7 +223,7 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 4. Run PHPUnit with `./vendor/bin/phpunit`
 5. Make your changes
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
-7. Make sure your tests pass (`./vendor/bin/phpunit`)
+7. Make sure your tests pass (`./vendor/bin/phpunit`), preferably using both PHP 5.3 and 5.4
 8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
 9. Bask in the warm feeling of having contributed to a piece of free software
 
@@ -236,6 +236,23 @@ There are enough tests to warrant putting them into separate suites for maintena
 php-mf2 can also be hooked up to the official, cross-platform [microformats2 test suite](https://github.com/microformats/tests). TODO: write a guide on how to do this, make a public endpoint for people to look at the results
 
 ### Changelog
+
+#### v0.2.8
+
+2014-07-17
+
+* Fixed issue #51 causing php-mf2 to not work with PHP 5.3
+* Fixed issue #52 correctly handling the `<template>` element by ignoring it
+* Fixed issue #53 improving the plaintext parsing of `<img>` elements
+
+#### v0.2.7
+
+2014-06-18
+
+* Added `Mf2\fetch()` which fetches content from a URL and returns parsed microformats
+* Added implied `dt-end` discovery (thanks @gRegorLove)
+* Fixed issue causing classnames like `blah e- blah` to produce properties with numeric keys (thanks @aaronpk and @gRegorLove)
+* Fixed issue causing resolved URLs to not include port numbers (thanks @aaronpk)
 
 #### v0.2.6
 

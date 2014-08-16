@@ -1,0 +1,9 @@
+{
+    "items": [{
+        "type": ["h-product"],
+        "properties": {
+            "name": ["Raspberry Pi"],
+            "url": ["http://www.raspberrypi.org/"]
+        }
+    }]
+}

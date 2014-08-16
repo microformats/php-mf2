@@ -1,0 +1,12 @@
+{
+    "items": [{
+        "type": ["h-entry"],
+        "properties": {
+            "name": ["Expanding URLs within HTML content"],
+            "content": [{
+                "value": "Should not change: http://www.w3.org/ Should not change: http://example.com/ File relative: test.html = http://example.com/test.html Directory relative: /test/test.html = http://example.com/test/test.html Relative to root: /test.html = http://example.com/test.html",
+                "html": "\n        <ul>\n            <li><a href=\"http://www.w3.org/\">Should not change: http://www.w3.org/</a></li>\n            <li><a href=\"http://example.com/\">Should not change: http://example.com/</a></li>\n            <li><a href=\"http://example.com/test.html\">File relative: test.html = http://example.com/test.html</a></li>\n            <li><a href=\"http://example.com/test/test.html\">Directory relative: /test/test.html = http://example.com/test/test.html</a></li>\n            <li><a href=\"http://example.com/test.html\">Relative to root: /test.html = http://example.com/test.html</a></li>\n        </ul>\n        <img src=\"http://www.w3.org/2008/site/images/logo-w3c-mobile-lg\"><img src=\"http://example.com/images/test.gif\">\n    "
+            }]
+        }
+    }]
+}
