@@ -34,7 +34,7 @@ gpg:                 aka "[jpeg image of size 12805]"
 Possible issues:
 
 * **Git complains that there’s no such tag**: check for a .git file in the source folder; odds are you have the prefer-dist setting enabled and composer is just extracting a zip rather than checking out from git.
-* **Git complains the gpg command doesn’t exist**: If you successfully imported my key then you obviously do have gpg installed, but you might have gpg2, whereas git looks for gpg. Solution: symlink gpg to gpg2.
+* **Git complains the gpg command doesn’t exist**: If you successfully imported my key then you obviously do have gpg installed, but you might have gpg2, whereas git looks for gpg. Solution: tell git which binary to use: `git config --global gpg.program 'gpg2'`
 
 You could install it by just downloading `/Mf2/Parser.php` and including that, but please use Composer. Seriously, it’s amazing.
 
@@ -254,13 +254,13 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
 9. Bask in the warm feeling of having contributed to a piece of free software
 
-## Testing
+### Testing
 
-Tests are written in phpunit and are contained within `/tests/`. Running <kbd>bin/phpunit</kbd> from the root dir will run them all.
+There are currently two separate test suites: one, in `tests/Mf2`, is written in phpunit, containing many microformats parsing examples as well as internal parser tests and regression tests for specific issues over php-mf2’s history. Run it with `./vendor/bin/phpunit`.
 
-There are enough tests to warrant putting them into separate suites for maintenance. They should be fairly self-explanatory.
+The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf2 to the cross-platform microformats test suite. Each test consists of a HTML file and a corresponding JSON file, and the suite can be run with `php ./tests/test-suite/test-suite.php`.
 
-php-mf2 can also be hooked up to the official, cross-platform [microformats2 test suite](https://github.com/microformats/tests). TODO: write a guide on how to do this, make a public endpoint for people to look at the results
+Currently php-mf2 passes the majority of it’s own test case, and a good percentage of the cross-platform tests. Contributors should ALWAYS test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
 ### Changelog
 
