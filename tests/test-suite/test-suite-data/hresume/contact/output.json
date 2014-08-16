@@ -1,0 +1,52 @@
+{
+    "items": [{
+        "type": ["h-resume"],
+        "properties": {
+            "contact": [{
+                "value": "Tim Berners-Lee MIT 32 Vassar Street, Room 32-G524, Cambridge, MA 02139, USA. (Work) Tel:+1 (617) 253 5702 Email:timbl@w3.org",
+                "type": ["h-card"],
+                "properties": {
+                    "name": ["Tim Berners-Lee"],
+                    "org": ["MIT"],
+                    "adr": [{
+                        "value": "32 Vassar Street, Room 32-G524, Cambridge, MA 02139, USA. (Work)",
+                        "type": ["h-adr"],
+                        "properties": {
+                            "street-address": ["32 Vassar Street"], 
+                            "extended-address": ["Room 32-G524"], 
+                            "locality": ["Cambridge"], 
+                            "region": ["MA"], 
+                            "postal-code": ["02139"], 
+                            "country-name": ["USA"],
+                            "name": ["32 Vassar Street, Room 32-G524, Cambridge, MA 02139, USA. (Work)"]
+                        }
+                    }],
+                    "tel": ["+1 (617) 253 5702"],
+                    "email": ["mailto:timbl@w3.org"]
+                }
+            }],
+            "summary": ["Invented the World Wide Web."]
+        }
+    },{
+        "type": ["h-card"],
+        "properties": {
+            "name": ["Tim Berners-Lee"],
+            "org": ["MIT"],
+            "adr": [{
+                "value": "32 Vassar Street, Room 32-G524, Cambridge, MA 02139, USA. (Work)",
+                "type": ["h-adr"],
+                "properties": {
+                    "street-address": ["32 Vassar Street"], 
+                    "extended-address": ["Room 32-G524"], 
+                    "locality": ["Cambridge"], 
+                    "region": ["MA"], 
+                    "postal-code": ["02139"], 
+                    "country-name": ["USA"],
+                    "name": ["32 Vassar Street, Room 32-G524, Cambridge, MA 02139, USA. (Work)"]
+                }
+            }],
+            "tel": ["+1 (617) 253 5702"],
+            "email": ["mailto:timbl@w3.org"]
+        }
+    }]
+}

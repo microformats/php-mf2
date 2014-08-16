@@ -1,0 +1,8 @@
+{
+    "items": [{
+        "type": ["h-product"],
+        "properties": {
+            "name": ["Raspberry Pi"]
+        }
+    }]
+}

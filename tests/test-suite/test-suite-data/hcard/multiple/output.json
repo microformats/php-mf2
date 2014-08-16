@@ -1,0 +1,51 @@
+{
+    "items": [{
+        "type": ["h-card"],
+        "properties": {
+            "name": ["John Doe"],
+            "given-name": ["John"],
+            "family-name": ["Doe"],
+            "sound": ["http://www.madgex.com/johndoe.mpeg"],
+            "photo": ["http://example.com/images/photo.gif"],
+            "nickname": ["Man with no name","Lost boy"],
+            "note": [
+                "John Doe is one of those names you always have issues with.",
+                "It can be a real problem booking a hotel room with the name John Doe."
+            ],
+            "url": ["http://www.madgex.com/", "http://www.webfeetmedia.com/"],
+            "org": ["Madgex","Web Feet Media Ltd"],
+            "title": ["Creative Director", "Owner"],
+            "category": ["design", "development", "web"],
+            "tel": ["+1 415 555 100", "+1 415 555 200", "+1 415 555 300"],
+            "email": ["mailto:john.doe@madgex.com", "mailto:john.doe@webfeetmedia.com"],
+            "mailer": ["PigeonMail 2.1","Outlook 2007"],
+            "adr": [{
+                "value": "Work: North Street, Brighton, United Kingdom",
+                "type": ["h-adr"],
+                "properties": {
+                    "street-address": ["North Street"],
+                    "locality": ["Brighton"],
+                    "country-name": ["United Kingdom"]
+                }
+            },{
+                "value": "Home: West Street, Brighton, United Kingdom",
+                "type": ["h-adr"],
+                "properties": {
+                    "street-address": ["West Street"],
+                    "locality": ["Brighton"],
+                    "country-name": ["United Kingdom"]
+                }
+            }],
+            "label": ["Work: North Street, Brighton, United Kingdom", "Home: West Street, Brighton, United Kingdom"],
+            "agent": ["Jane Doe",
+            {
+                "value": "Dave Doe",
+                "type": ["h-card"],
+                "properties": {
+                    "name": ["Dave Doe"]
+                }
+            }],
+            "key": ["hd02$Gfu*d%dh87KTa2=23934532479"]
+        }
+    }]
+}

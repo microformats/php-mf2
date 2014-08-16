@@ -1,0 +1,23 @@
+{
+    "items": [{
+        "type": ["h-card"],
+        "properties": {
+            "name": ["John Doe"],
+            "given-name": ["John"],
+            "sort-string": ["John"],
+            "bday": ["2000-01-01T00:00:00-0800"],
+            "role": ["Designer"],
+            "geo": [{
+                "value": "Brighton",
+                "type": ["h-geo"],
+                "properties": {
+                    "name": ["30.267991;-97.739568"]
+                }
+            }],
+            "tz": ["-05:00"],
+            "uid": ["http://example.com/profiles/johndoe"],
+            "class": ["Public"],
+            "rev": ["2008-01-01T13:45:00"]
+        }
+    }]
+}

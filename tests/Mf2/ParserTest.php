@@ -225,8 +225,8 @@ EOT;
 	}
 
 	/**
-	* @see https://github.com/indieweb/php-mf2/issues/48
-	*/
+	 * @see https://github.com/indieweb/php-mf2/issues/48
+	 */
 	public function testIgnoreClassesEndingInHyphen() {
 		$input = '<span class="h-entry"> <span class="e-">foo</span> </span>';
 		$parser = new Parser($input);

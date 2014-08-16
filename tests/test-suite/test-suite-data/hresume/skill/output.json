@@ -1,0 +1,15 @@
+{
+    "items": [{
+        "type": ["h-resume"],
+        "properties": {
+            "contact": [{
+                "value": "Tim Berners-Lee",
+                "type": ["h-card"],
+                "properties": {
+                    "name": ["Tim Berners-Lee"]
+                }
+            }],
+            "summary": ["invented the World Wide Web"]
+        }
+    }]
+}

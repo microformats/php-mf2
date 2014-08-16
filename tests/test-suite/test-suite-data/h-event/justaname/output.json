@@ -1,0 +1,8 @@
+{
+    "items": [{ 
+        "type": ["h-event"],
+        "properties": {
+            "name": ["IndieWebCamp 2012"] 
+        }
+    }]
+}

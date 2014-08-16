@@ -69,7 +69,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-	$response = curl_exec($ch);
+	$html = curl_exec($ch);
 	$info = $curlInfo = curl_getinfo($ch);
 	curl_close($ch);
 
@@ -78,7 +78,6 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$html = mb_substr($response, $info['header_size']);
 	return parse($html, $url, $convertClassic);
 }
 
@@ -128,7 +127,9 @@ function mfNamesFromClass($class, $prefix='h-') {
 	$matches = array();
 
 	foreach ($classes as $classname) {
-		if (strpos($classname, $prefix) === 0 && $classname !== $prefix) {
+		$compare_classname = strtolower(' ' . $classname);
+		$compare_prefix = strtolower(' ' . $prefix);
+		if (stristr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
 			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 		}
 	}
@@ -152,7 +153,8 @@ function nestedMfPropertyNamesFromClass($class) {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
-			if (strpos($classname, $prefix) === 0 and $classname !== $prefix) {
+			$compare_classname = strtolower(' ' . $classname);
+			if (stristr($compare_classname, $prefix) && ($compare_classname != $prefix)) {
 				$propertyNames = array_merge($propertyNames, mfNamesFromClass($classname, ltrim($prefix)));
 			}
 		}
