@@ -688,6 +688,15 @@ class Parser {
 			$this->elementPrefixParsed($subMF, 'dt');
 			$this->elementPrefixParsed($subMF, 'e');
 		}
+        if($e->tagName == 'area') {
+            if(!empty($e->getAttribute('coords'))){
+                $coords = $e->getAttribute('coords');
+            }
+            if(!empty($e->getAttribute('shape'))){
+                $shape = $e->getAttribute('shape');
+            }
+
+        }
 
 		// Handle p-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
@@ -762,7 +771,7 @@ class Parser {
 		if (!array_key_exists('name', $return)) {
 			try {
 				// Look for img @alt
-				if ($e->tagName == 'img' and $e->getAttribute('alt') != '')
+				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '')
 					throw new Exception($e->getAttribute('alt'));
 				
 				if ($e->tagName == 'abbr' and $e->hasAttribute('title'))
@@ -774,8 +783,21 @@ class Parser {
 						throw new Exception($em->getAttribute('alt'));
 				}
 
+				// Look for nested area @alt
+				foreach ($this->xpath->query('./area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
+					if ($em->getAttribute('alt') != '')
+						throw new Exception($em->getAttribute('alt'));
+				}
+
+
 				// Look for double nested img @alt
 				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
+					if ($em->getAttribute('alt') != '')
+						throw new Exception($em->getAttribute('alt'));
+				}
+
+				// Look for double nested img @alt
+				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
 					if ($em->getAttribute('alt') != '')
 						throw new Exception($em->getAttribute('alt'));
 				}
@@ -812,11 +834,17 @@ class Parser {
 		// Check for u-url
 		if (!array_key_exists('url', $return)) {
 			// Look for img @src
-			if ($e->tagName == 'a')
+			if ($e->tagName == 'a' or $e->tagName == 'area')
 				$url = $e->getAttribute('href');
 			
 			// Look for nested img @src
 			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
+				$url = $em->getAttribute('href');
+				break;
+			}
+
+			// Look for nested area @src
+			foreach ($this->xpath->query('./area[count(preceding-sibling::area)+count(following-sibling::area)=0]', $e) as $em) {
 				$url = $em->getAttribute('href');
 				break;
 			}
@@ -833,6 +861,12 @@ class Parser {
 			'type' => $mfTypes,
 			'properties' => $return
 		);
+        if (!empty($shape)){
+			$parsed['shape'] = $shape;
+        }
+        if (!empty($coords)){
+			$parsed['coords'] = $coords;
+        }
 		if (!empty($children))
 			$parsed['children'] = array_values(array_filter($children));
 		return $parsed;
