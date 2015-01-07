@@ -689,12 +689,8 @@ class Parser {
 			$this->elementPrefixParsed($subMF, 'e');
 		}
         if($e->tagName == 'area') {
-            if(!empty($e->getAttribute('coords'))){
-                $coords = $e->getAttribute('coords');
-            }
-            if(!empty($e->getAttribute('shape'))){
-                $shape = $e->getAttribute('shape');
-            }
+            $coords = $e->getAttribute('coords');
+            $shape = $e->getAttribute('shape');
 
         }
 
