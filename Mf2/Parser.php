@@ -127,9 +127,9 @@ function mfNamesFromClass($class, $prefix='h-') {
 	$matches = array();
 
 	foreach ($classes as $classname) {
-		$compare_classname = strtolower(' ' . $classname);
-		$compare_prefix = strtolower(' ' . $prefix);
-		if (stristr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
+		$compare_classname = ' ' . $classname;
+		$compare_prefix = ' ' . $prefix;
+		if (strstr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
 			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 		}
 	}
