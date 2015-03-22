@@ -285,4 +285,25 @@ EOT;
 		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);
 
     }
+
+	public function testParseHcardInCategory() {
+
+    $input = '<span class="h-entry">
+                <a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged 
+                <a href="http://b.example.com/" class="p-category h-card">Bob Smith</a> in 
+                <a class="u-tag-of u-in-reply-to" href="http://s.example.com/permalink47">
+                  <img src="http://s.example.com/photo47.png" alt="a photo of Bob and Cole" /></a>
+              </span>';
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
+		$this->assertContains('h-card', $output['items'][0]['properties']['category'][0]['type']);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']['category'][0]['properties']);
+		$this->assertEquals('Bob Smith', $output['items'][0]['properties']['category'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
+		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
+	}
 }
