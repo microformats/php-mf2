@@ -290,7 +290,7 @@ EOT;
 
     $input = '<span class="h-entry">
                 <a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged 
-                <a href="http://b.example.com/" class="p-category h-card">Bob Smith</a> in 
+                <a href="http://b.example.com/" class="u-category h-card">Bob Smith</a> in 
                 <a class="u-tag-of u-in-reply-to" href="http://s.example.com/permalink47">
                   <img src="http://s.example.com/photo47.png" alt="a photo of Bob and Cole" /></a>
               </span>';
