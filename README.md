@@ -264,6 +264,12 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.2.10
+
+2015-04-29
+
+* Merged #58, fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
+
 #### v0.2.9
 
 2014-08-06
@@ -284,7 +290,7 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 2014-06-18
 
 * Added `Mf2\fetch()` which fetches content from a URL and returns parsed microformats
-* Added implied `dt-end` discovery (thanks @gRegorLove)
+* Added implied `dt-end` discovery (thanks for all your hard work, @gRegorLove!)
 * Fixed issue causing classnames like `blah e- blah` to produce properties with numeric keys (thanks @aaronpk and @gRegorLove)
 * Fixed issue causing resolved URLs to not include port numbers (thanks @aaronpk)
 
