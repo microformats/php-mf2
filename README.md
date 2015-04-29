@@ -44,7 +44,7 @@ Possible issues:
 
 ## Usage
 
-php-mf2 is PSR-0 autoloadable, so simply include Composer’s auto-generated autoload file (`/vendor/autoload.php`) and you can start using it. There are two functions which cover the majority of 
+php-mf2 is PSR-0 autoloadable, so simply include Composer’s auto-generated autoload file (`/vendor/autoload.php`) and you can start using it. These two functions cover most situations:
 
 * To fetch microformats from a URL, call `Mf2\fetch($url)`
 * To parse microformats from HTML, call `Mf2\parse($html, $url)`, where `$url` is the URL from which `$html` was loaded, if any. This parameter is required for correct relative URL parsing and must not be left out unless parsing HTML which is not loaded from the web.
