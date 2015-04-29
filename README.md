@@ -89,7 +89,7 @@ $output = Mf2\parse('<a class="h-card" href="https://waterpigs.co.uk/">Barnaby W
 	"items": [{
 		"type": ["h-card"],
 		"properties": {
-			"name": ["Barnaby Walters"]
+			"name": ["Barnaby Walters"],
 			"url": ["https://waterpigs.co.uk/"]
 		}
 	}],
