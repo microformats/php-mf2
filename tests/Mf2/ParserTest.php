@@ -259,11 +259,13 @@ EOT;
 		$this->assertEquals('It is a strange thing to see a five legged elephant', $result['items'][0]['properties']['content'][0]['value']);
 	}
 
-    // parser not respecting not[h-*] in rule  "else if .h-x>a[href]:only-of-type:not[.h-*] then use that [href] for url"
+	// parser not respecting not[h-*] in rule  "else if .h-x>a[href]:only-of-type:not[.h-*] then use that [href] for url"
 	public function testNotImpliedUrlFromHCard() {
-        $input = '<span class="h-entry">
-            <a class="h-card" href="http://test.com">John Q</a>
-            </span>';
+		$input = <<<EOT
+<span class="h-entry">
+	<a class="h-card" href="http://test.com">John Q</a>
+</span>
+EOT;
 		
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -271,10 +273,12 @@ EOT;
 		$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
 	}
 
-    public function testAreaTag() {
-        $input = '<div class="h-entry">
-            <area class="p-category h-card" href="http://personB.example.com" alt="Person Bee" shape="rect" coords="100,100,120,120">
-			</div>';
+	public function testAreaTag() {
+		$input = <<<EOT
+<div class="h-entry">
+	<area class="p-category h-card" href="http://personB.example.com" alt="Person Bee" shape="rect" coords="100,100,120,120">
+</div>
+EOT;
 		
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -283,17 +287,18 @@ EOT;
 		$this->assertEquals('rect', $output['items'][0]['properties']['category'][0]['shape']);
 		$this->assertEquals('100,100,120,120', $output['items'][0]['properties']['category'][0]['coords']);
 		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);
-
-    }
+	}
 
 	public function testParseHcardInCategory() {
-
-    $input = '<span class="h-entry">
-                <a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged 
-                <a href="http://b.example.com/" class="u-category h-card">Bob Smith</a> in 
-                <a class="u-tag-of u-in-reply-to" href="http://s.example.com/permalink47">
-                  <img src="http://s.example.com/photo47.png" alt="a photo of Bob and Cole" /></a>
-              </span>';
+		$input = <<<EOT
+<span class="h-entry">
+	<a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged
+	<a href="http://b.example.com/" class="u-category h-card">Bob Smith</a> in
+	<a class="u-tag-of u-in-reply-to" href="http://s.example.com/permalink47">
+		<img src="http://s.example.com/photo47.png" alt="a photo of Bob and Cole" />
+	</a>
+</span>
+EOT;
 
 		$parser = new Parser($input);
 		$output = $parser->parse();
