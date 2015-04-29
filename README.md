@@ -7,9 +7,15 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 ## Installation
 
-Install php-mf2 with [Composer](http://getcomposer.org) by adding `"mf2/mf2": "0.2.*"` to the `require` object in your `composer.json` and running <kbd>php composer.phar update</kbd>.
+There are two ways of installing php-mf2. I **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
 
-Then, verify the installed files using GPG. The tags (from v0.2.9) are signed by barnaby@waterpigs.co.uk — if you don’t have my key, get it like this:
+To install using Composer, run `./composer.phar require mf2/mf2:~0.2`
+
+If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from.
+
+### Signed Code Verification
+
+From v0.2.9, php-mf2’s version tags are signed using GPG by barnaby@waterpigs.co.uk. This allows you to cryptographically verify that you’re using the right code. To do so you will need my key — you don’t have it, get it like this:
 
 ```bash
 gpg --recv-keys 7D49834B0416CFA3
@@ -23,7 +29,7 @@ cd vendor/mf2/mf2
 git tag -v v0.2.9
 ```
 
-If nothing went wrong, you should see the tag commit message, ending with this:
+If nothing went wrong, you should see the tag commit message, ending something like this:
 
 ```
 gpg: Signature made Wed  6 Aug 10:04:20 2014 GMT using RSA key ID 2B2BBB65
@@ -36,15 +42,12 @@ Possible issues:
 * **Git complains that there’s no such tag**: check for a .git file in the source folder; odds are you have the prefer-dist setting enabled and composer is just extracting a zip rather than checking out from git.
 * **Git complains the gpg command doesn’t exist**: If you successfully imported my key then you obviously do have gpg installed, but you might have gpg2, whereas git looks for gpg. Solution: tell git which binary to use: `git config --global gpg.program 'gpg2'`
 
-You could install it by just downloading `/Mf2/Parser.php` and including that, but please use Composer. Seriously, it’s amazing.
-
 ## Usage
 
-php-mf2 is PSR-0 autoloadable, so all you have to do to load it is:
+php-mf2 is PSR-0 autoloadable, so simply include Composer’s auto-generated autoload file (`/vendor/autoload.php`) and you can start using it. There are two functions which cover the majority of 
 
-1. Include Composer’s auto-generated autoload file (`/vendor/autoload.php`)
-1. To fetch microformats from a URL, call `Mf2\fetch($url)`
-1. To parse microformats from HTML, call `Mf2\parse($html)`, optionally with a URL as a second parameter to resolve relative URLs against.
+* To fetch microformats from a URL, call `Mf2\fetch($url)`
+* To parse microformats from HTML, call `Mf2\parse($html, $url)`, where `$url` is the URL from which `$html` was loaded, if any. This parameter is required for correct relative URL parsing and must not be left out unless parsing HTML which is not loaded from the web.
 
 ## Examples
 
@@ -69,12 +72,14 @@ foreach ($mf['items'] as $microformat) {
 
 ```
 
-### Parsing implied microformats2
+### Parsing microformats from a HTML string
+
+Here we demonstrate parsing of microformats2 implied property parsing, where an entire h-card with name and URL properties is created using a single `h-card` class.
 
 ```php
 <?php
 
-$output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
+$output = Mf2\parse('<a class="h-card" href="https://waterpigs.co.uk/">Barnaby Walters</a>');
 ```
 
 `$output` is a canonical microformats2 array structure like:
@@ -85,6 +90,7 @@ $output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 		"type": ["h-card"],
 		"properties": {
 			"name": ["Barnaby Walters"]
+			"url": ["https://waterpigs.co.uk/"]
 		}
 	}],
 	"rels": {}
@@ -93,11 +99,11 @@ $output = Mf2\parse('<p class="h-card">Barnaby Walters</p>');
 
 If no microformats are found, `items` will be an empty array.
 
-Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname(s) in the "type" array are left on.
+Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname(s) in the "type" array are retained.
 
 ### Parsing a document with relative URLs
 
-Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.com/`:
+Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org`:
 
 ```html
 <div class="h-card">
