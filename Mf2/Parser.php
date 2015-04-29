@@ -127,9 +127,9 @@ function mfNamesFromClass($class, $prefix='h-') {
 	$matches = array();
 
 	foreach ($classes as $classname) {
-		$compare_classname = strtolower(' ' . $classname);
-		$compare_prefix = strtolower(' ' . $prefix);
-		if (stristr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
+		$compare_classname = ' ' . $classname;
+		$compare_prefix = ' ' . $prefix;
+		if (strstr($compare_classname, $compare_prefix) !== false && ($compare_classname != $compare_prefix)) {
 			$matches[] = ($prefix === 'h-') ? $classname : substr($classname, strlen($prefix));
 		}
 	}
@@ -192,28 +192,27 @@ function convertTimeFormat($time) {
 	$hh = $mm = $ss = '';
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
-	// if no am/pm specified
+	// If no am/pm is specified:
 	if (empty($matches[4])) {
 		return $time;
-	}
-	// else am/pm specified
-	else {
+	} else {
+		// Otherwise, am/pm is specified.
 		$meridiem = strtolower(str_replace('.', '', $matches[4]));
 
-		// hours
+		// Hours.
 		$hh = $matches[1];
 
-		// add 12 to the pm hours
+		// Add 12 to hours if pm applies.
 		if ($meridiem == 'pm' && ($hh < 12)) {
 			$hh += 12;
 		}
 
 		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
 
-		// minutes
+		// Minutes.
 		$mm = (empty($matches[2]) ) ? '00' : $matches[2];
 
-		// seconds, only if supplied
+		// Seconds, only if supplied.
 		if (!empty($matches[3])) {
 			$ss = $matches[3];
 		}
@@ -591,16 +590,16 @@ class Parser {
 				$dtValue = $dt->nodeValue;
 			}
 
-			if ( preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches) ) {
+			if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches)) {
 				$dates[] = $matches[0];
 			}
 		}
 
 		/**
 		 * if $dtValue is only a time and there are recently parsed dates, 
-		 * form the full date-time using the most recnetly parsed dt- value
+		 * form the full date-time using the most recently parsed dt- value
 		 */
-		if ( (preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates) ) {
+		if ((preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates)) {
 			$dtValue = convertTimeFormat($dtValue);
 			$dtValue = end($dates) . 'T' . unicodeTrim($dtValue, 'T');
 		}
@@ -689,6 +688,11 @@ class Parser {
 			$this->elementPrefixParsed($subMF, 'e');
 		}
 
+		if($e->tagName == 'area') {
+			$coords = $e->getAttribute('coords');
+			$shape = $e->getAttribute('shape');
+		}
+
 		// Handle p-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
 			if ($this->isElementParsed($p, 'p'))
@@ -762,7 +766,7 @@ class Parser {
 		if (!array_key_exists('name', $return)) {
 			try {
 				// Look for img @alt
-				if ($e->tagName == 'img' and $e->getAttribute('alt') != '')
+				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '')
 					throw new Exception($e->getAttribute('alt'));
 				
 				if ($e->tagName == 'abbr' and $e->hasAttribute('title'))
@@ -770,14 +774,35 @@ class Parser {
 				
 				// Look for nested img @alt
 				foreach ($this->xpath->query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					if ($em->getAttribute('alt') != '')
+					$emNames = mfNamesFromElement($em, 'h-');
+					if (empty($emNames) && $em->getAttribute('alt') != '') {
 						throw new Exception($em->getAttribute('alt'));
+					}
 				}
+
+				// Look for nested area @alt
+				foreach ($this->xpath->query('./area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
+					$emNames = mfNamesFromElement($em, 'h-');
+					if (empty($emNames) && $em->getAttribute('alt') != '') {
+						throw new Exception($em->getAttribute('alt'));
+					}
+				}
+
 
 				// Look for double nested img @alt
 				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					if ($em->getAttribute('alt') != '')
+					$emNames = mfNamesFromElement($em, 'h-');
+					if (empty($emNames) && $em->getAttribute('alt') != '') {
 						throw new Exception($em->getAttribute('alt'));
+					}
+				}
+
+				// Look for double nested img @alt
+				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
+					$emNames = mfNamesFromElement($em, 'h-');
+					if (empty($emNames) && $em->getAttribute('alt') != '') {
+						throw new Exception($em->getAttribute('alt'));
+					}
 				}
 
 				throw new Exception($e->nodeValue);
@@ -812,13 +837,25 @@ class Parser {
 		// Check for u-url
 		if (!array_key_exists('url', $return)) {
 			// Look for img @src
-			if ($e->tagName == 'a')
+			if ($e->tagName == 'a' or $e->tagName == 'area')
 				$url = $e->getAttribute('href');
 			
-			// Look for nested img @src
+			// Look for nested a @href
 			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
-				$url = $em->getAttribute('href');
-				break;
+				$emNames = mfNamesFromElement($em, 'h-');
+				if (empty($emNames)) {
+					$url = $em->getAttribute('href');
+					break;
+				}
+			}
+
+			// Look for nested area @src
+			foreach ($this->xpath->query('./area[count(preceding-sibling::area)+count(following-sibling::area)=0]', $e) as $em) {
+				$emNames = mfNamesFromElement($em, 'h-');
+				if (empty($emNames)) {
+					$url = $em->getAttribute('href');
+					break;
+				}
 			}
 			
 			if (!empty($url))
@@ -833,8 +870,18 @@ class Parser {
 			'type' => $mfTypes,
 			'properties' => $return
 		);
-		if (!empty($children))
+
+		if (!empty($shape)) {
+			$parsed['shape'] = $shape;
+		}
+
+		if (!empty($coords)) {
+			$parsed['coords'] = $coords;
+		}
+
+		if (!empty($children)) {
 			$parsed['children'] = array_values(array_filter($children));
+		}
 		return $parsed;
 	}
 	

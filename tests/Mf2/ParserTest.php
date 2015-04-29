@@ -129,6 +129,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('<dt>', $output['items'][0]['properties']['published'][0]);
 		$this->assertEquals('<u>', $output['items'][0]['properties']['url'][0]);
 	}
+
 	
 	public function testHtmlEncodesImpliedProperties() {
 		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" />&lt;name&gt;</a>';
@@ -256,5 +257,58 @@ EOT;
 EOT;
 		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
 		$this->assertEquals('It is a strange thing to see a five legged elephant', $result['items'][0]['properties']['content'][0]['value']);
+	}
+
+	// parser not respecting not[h-*] in rule  "else if .h-x>a[href]:only-of-type:not[.h-*] then use that [href] for url"
+	public function testNotImpliedUrlFromHCard() {
+		$input = <<<EOT
+<span class="h-entry">
+	<a class="h-card" href="http://test.com">John Q</a>
+</span>
+EOT;
+		
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
+	}
+
+	public function testAreaTag() {
+		$input = <<<EOT
+<div class="h-entry">
+	<area class="p-category h-card" href="http://personB.example.com" alt="Person Bee" shape="rect" coords="100,100,120,120">
+</div>
+EOT;
+		
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('rect', $output['items'][0]['properties']['category'][0]['shape']);
+		$this->assertEquals('100,100,120,120', $output['items'][0]['properties']['category'][0]['coords']);
+		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);
+	}
+
+	public function testParseHcardInCategory() {
+		$input = <<<EOT
+<span class="h-entry">
+	<a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged
+	<a href="http://b.example.com/" class="u-category h-card">Bob Smith</a> in
+	<a class="u-tag-of u-in-reply-to" href="http://s.example.com/permalink47">
+		<img src="http://s.example.com/photo47.png" alt="a photo of Bob and Cole" />
+	</a>
+</span>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
+		$this->assertContains('h-card', $output['items'][0]['properties']['category'][0]['type']);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']['category'][0]['properties']);
+		$this->assertEquals('Bob Smith', $output['items'][0]['properties']['category'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
+		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
 }
