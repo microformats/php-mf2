@@ -11,7 +11,16 @@ There are two ways of installing php-mf2. I **highly recommend** installing php-
 
 To install using Composer, run `./composer.phar require mf2/mf2:~0.2`
 
-If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from.
+If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from, like this:
+
+```php
+<?php
+
+require_once 'Mf2/Parser.php';
+
+// Now all the functions documented below are available, for example:
+$mf = Mf2\fetch('https://waterpigs.co.uk');
+```
 
 ### Signed Code Verification
 
