@@ -1060,7 +1060,7 @@ class Parser {
 		'hentry' => 'h-entry',
 		'hrecipe' => 'h-recipe',
 		'hresume' => 'h-resume',
-		'hevent' => 'h-event',
+		'vevent' => 'h-event',
 		'hreview' => 'h-review',
 		'hproduct' => 'h-product'
 	);
@@ -1131,7 +1131,7 @@ class Parser {
 			'skill' => 'p-skill',
 			'affiliation' => 'p-affiliation h-card',
 		),
-		'hevent' => array(
+		'vevent' => array(
 			'dtstart' => 'dt-start',
 			'dtend' => 'dt-end',
 			'duration' => 'dt-duration',
