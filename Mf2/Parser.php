@@ -442,7 +442,7 @@ class Parser {
 	public function parseU(\DOMElement $u) {
 		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->getAttribute('href') !== null) {
 			$uValue = $u->getAttribute('href');
-		} elseif ($u->tagName == 'img' and $u->getAttribute('src') !== null) {
+		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->getAttribute('src') !== null) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'object' and $u->getAttribute('data') !== null) {
 			$uValue = $u->getAttribute('data');
