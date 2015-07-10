@@ -152,7 +152,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testParsesRelAlternateValues() {
-		$input = '<a rel="alternate home" href="http://example.org" hreflang="de", media="screen" type="text/html" title="German Homepage">German Homepage</a>';
+		$input = '<a rel="alternate home" href="http://example.org" hreflang="de", media="screen" type="text/html" title="German Homepage Link">German Homepage</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
@@ -162,7 +162,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('de', $output['alternates'][0]['hreflang']);
 		$this->assertEquals('screen', $output['alternates'][0]['media']);
 		$this->assertEquals('text/html', $output['alternates'][0]['type']);
-		$this->assertEquals('German Homepage', $output['alternates'][0]['title']);
+		$this->assertEquals('German Homepage Link', $output['alternates'][0]['title']);
 		$this->assertEquals('German Homepage', $output['alternates'][0]['text']);
 	}
 
