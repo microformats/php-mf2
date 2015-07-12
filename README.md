@@ -279,6 +279,19 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.2.12
+
+2015-07-12
+
+* Merges pull requests #65, #66 and #67.
+* Fixes issue #64.
+
+Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and @kevinmarks for PR management and @tantek for issue reporting!
+
+#### v0.2.11
+
+2015-07-10
+
 #### v0.2.10
 
 2015-04-29
