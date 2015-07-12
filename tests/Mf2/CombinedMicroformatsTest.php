@@ -45,7 +45,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 			"start": ["2012-06-30"],
 			"end": ["2012-07-01"],
 			"location": [{
-				"value": "Geoloqi, 920 SW 3rd Ave. Suite 400, Portland, OR",
+				"value": "Geoloqi",
 				"type": ["h-card"],
 				"properties": {
 					"name": ["Geoloqi"],
@@ -219,5 +219,34 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertCount(1, $mf['items'][0]['properties']['like-of']);
 		$this->assertCount(1, $mf['items'][0]['properties']['in-reply-to']);
+	}
+	
+	/**
+	 * Test microformats nested under e-* property classnames retain html: key in structure
+	 * 
+	 * @see https://github.com/indieweb/php-mf2/issues/64
+	 */
+	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey() {
+		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
+		$mf = Mf2\parse($input);
+		
+		$this->assertEquals($mf['items'][0]['properties']['content'][0]['html'], '<p>Hello</p>');
+	}
+	
+	/**
+	 * Test microformats nested under u-* property classnames derive value: key from parsing as u-*
+	 */
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly() {
+		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
+		$mf = Mf2\parse($input);
+		
+		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value');
+	}
+	
+	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {
+		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
+		$mf = Mf2\parse($input);
+		
+		$this->assertEquals($mf['items'][0]['properties']['author'][0]['value'], 'Zoe');
 	}
 }

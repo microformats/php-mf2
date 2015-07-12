@@ -153,11 +153,16 @@ function nestedMfPropertyNamesFromClass($class) {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	foreach (explode(' ', $class) as $classname) {
 		foreach ($prefixes as $prefix) {
-			$compare_classname = strtolower(' ' . $classname);
-			if (stristr($compare_classname, $prefix) && ($compare_classname != $prefix)) {
-				$propertyNames = array_merge($propertyNames, mfNamesFromClass($classname, ltrim($prefix)));
+			// Check if $classname is a valid property classname for $prefix.
+			if (mb_substr($classname, 0, mb_strlen($prefix)) == $prefix && $classname != $prefix) {
+				$propertyName = mb_substr($classname, mb_strlen($prefix));
+				$propertyNames[$propertyName][] = $prefix;
 			}
 		}
+	}
+	
+	foreach ($propertyNames as $property => $prefixes) {
+		$propertyNames[$property] = array_unique($prefixes);
 	}
 
 	return $propertyNames;
@@ -663,7 +668,9 @@ class Parser {
 			// If result was already parsed, skip it
 			if (null === $result)
 				continue;
-
+			
+			// In most cases, the value attribute of the nested microformat should be the p- parsed value of the elemnt.
+			// The only times this is different is when the microformat is nested under certain prefixes, which are handled below.
 			$result['value'] = $this->parseP($subMF);
 
 			// Does this µf have any property names other than h-*?
@@ -671,8 +678,19 @@ class Parser {
 
 			if (!empty($properties)) {
 				// Yes! It’s a nested property µf
-				foreach ($properties as $property) {
-					$return[$property][] = $result;
+				foreach ($properties as $property => $prefixes) {
+					// Note: handling microformat nesting under multiple conflicting prefixes is not currently specified by the mf2 parsing spec.
+					$prefixSpecificResult = $result;
+					if (in_array('p-', $prefixes)) {
+						$prefixSpecificResult['value'] = $prefixSpecificResult['properties']['name'][0];
+					} elseif (in_array('e-', $prefixes)) {
+						$eParsedResult = $this->parseE($subMF);
+						$prefixSpecificResult['html'] = $eParsedResult['html'];
+						$prefixSpecificResult['value'] = $eParsedResult['value'];
+					} elseif (in_array('u-', $prefixes)) {
+						$prefixSpecificResult['value'] = $this->parseU($subMF);
+					}
+					$return[$property][] = $prefixSpecificResult;
 				}
 			} else {
 				// No, it’s a child µf
