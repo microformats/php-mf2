@@ -283,8 +283,8 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 2015-07-12
 
-* Merges pull requests #65, #66 and #67.
-* Fixes issue #64.
+* Merges pull requests [#65](https://github.com/indieweb/php-mf2/pull/65), [#66](https://github.com/indieweb/php-mf2/pull/66) and [#67](https://github.com/indieweb/php-mf2/pull/67).
+* Fixes issue [#64](https://github.com/indieweb/php-mf2/issues/64).
 
 Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and @kevinmarks for PR management and @tantek for issue reporting!
 
@@ -296,7 +296,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 2015-04-29
 
-* Merged #58, fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
+* Merged [#58](https://github.com/indieweb/php-mf2/pull/58), fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
 
 #### v0.2.9
 
