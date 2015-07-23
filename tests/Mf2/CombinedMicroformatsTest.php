@@ -242,6 +242,55 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value');
 	}
+
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL() {
+		$input = '<div class="h-entry">
+		  <h1 class="p-name">Name</h1>
+		  <p class="e-content">Hello World</p>
+		  <ul>
+		    <li class="u-comment h-cite">
+		    	<a class="u-author h-card" href="http://jane.example.com/">Jane Bloggs</a>
+		    	<p class="p-content p-name">lol</p>
+		    	<a class="u-url" href="http://example.org/post1234"><time class="dt-published">2015-07-12 12:03</time></a>
+		    </li>
+		  </ul>
+		</div>';
+		$expected = '{
+		  "items": [{
+    	  "type": ["h-entry"],
+	      "properties": {
+	        "name": ["Name"],
+	        "content": [{
+	          "html": "Hello World",
+	          "value": "Hello World"
+	        }],
+	        "comment": [{
+            "type": ["h-cite"],
+            "properties": {
+              "author": [{
+                "type": ["h-card"],
+                "properties": {
+                  "name": ["Jane Bloggs"],
+                  "url": ["http:\/\/jane.example.com\/"]
+                },
+                "value": "http:\/\/jane.example.com\/"
+              }],
+              "content": ["lol"],
+              "name": ["lol"],
+              "url": ["http:\/\/example.org\/post1234"],
+              "published": ["2015-07-12 12:03"]
+            },
+            "value": "http:\/\/example.org\/post1234"
+          }]
+	      }
+	    }],
+	    "rels":{}
+	  }';
+		$parser = new Parser($input, '', true);
+		$output = $parser->parse();
+
+		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+	}
 	
 	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {
 		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
