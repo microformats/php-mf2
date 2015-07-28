@@ -255,8 +255,37 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		    </li>
 		  </ul>
 		</div>';
-		$expected = '{"rels": [], "items": [{"type": ["h-entry"], "properties": {"content": [{"html": "Hello World", "value": "Hello World"}], "comment": [{"type": ["h-cite"], "properties": {"content": ["lol"], "url": ["http://example.org/post1234"], "published": ["2015-07-12 12:03"], "name": ["lol"], "author": [{"type": ["h-card"], "properties": {"url": ["http://jane.example.com/"], "name": ["Jane Bloggs"]}, "value": "http://jane.example.com/"}]}, "value": "http://example.org/post1234"}], "name": ["Name"]}}]}
-';
+		$expected = '{
+		  "items": [{
+    	  "type": ["h-entry"],
+	      "properties": {
+	        "name": ["Name"],
+	        "content": [{
+	          "html": "Hello World",
+	          "value": "Hello World"
+	        }],
+	        "comment": [{
+            "type": ["h-cite"],
+            "properties": {
+              "author": [{
+                "type": ["h-card"],
+                "properties": {
+                  "name": ["Jane Bloggs"],
+                  "url": ["http:\/\/jane.example.com\/"]
+                },
+                "value": "http:\/\/jane.example.com\/"
+              }],
+              "content": ["lol"],
+              "name": ["lol"],
+              "url": ["http:\/\/example.org\/post1234"],
+              "published": ["2015-07-12 12:03"]
+            },
+            "value": "http:\/\/example.org\/post1234"
+          }]
+	      }
+	    }],
+	    "rels":[]
+	  }';
 	  	$mf = Mf2\parse($input);
 
 		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
