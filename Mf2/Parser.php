@@ -672,7 +672,7 @@ class Parser {
 			// In most cases, the value attribute of the nested microformat should be the p- parsed value of the elemnt.
 			// The only times this is different is when the microformat is nested under certain prefixes, which are handled below.
 			$result['value'] = $this->parseP($subMF);
-
+			
 			// Does this µf have any property names other than h-*?
 			$properties = nestedMfPropertyNamesFromElement($subMF);
 
@@ -688,7 +688,7 @@ class Parser {
 						$prefixSpecificResult['html'] = $eParsedResult['html'];
 						$prefixSpecificResult['value'] = $eParsedResult['value'];
 					} elseif (in_array('u-', $prefixes)) {
-						$prefixSpecificResult['value'] = $this->parseU($subMF);
+						$prefixSpecificResult['value'] = (empty($result['properties']['url'])) ? $this->parseU($subMF) : reset($result['properties']['url']);
 					}
 					$return[$property][] = $prefixSpecificResult;
 				}
