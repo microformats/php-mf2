@@ -361,6 +361,9 @@ class Parser {
 		if (parse_url($url) === false)
 			return $url;
 
+        // per issue #40 valid URLs could have a space on either side
+        $url = trim($url);
+
 		$scheme = parse_url($url, PHP_URL_SCHEME);
 
 		if (empty($scheme) and !empty($this->baseurl)) {
