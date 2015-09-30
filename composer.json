@@ -4,10 +4,10 @@
     "description": "A pure, generic microformats2 parser — makes HTML as easy to consume as a JSON API",
     "keywords": ["microformats", "microformats 2", "parser", "semantic", "html"],
     "authors" : [
-    	{
-    		"name": "Barnaby Walters",
-    		"homepage": "http://waterpigs.co.uk"
-    	}
+        {
+            "name": "Barnaby Walters",
+            "homepage": "http://waterpigs.co.uk"
+        }
     ],
     "bin": ["bin/fetch-mf2", "bin/parse-mf2"],
     "require": {
@@ -17,10 +17,10 @@
       "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
-    	"files": ["Mf2/Parser.php"]
+        "files": ["Mf2/Parser.php"]
     },
-		"license": "MIT",
-		"suggest": {
-			"barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"
-		}
+    "license": "MIT",
+    "suggest": {
+        "barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"
+    }
 }
