@@ -175,4 +175,17 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/video.ogg', $output['items'][0]['properties']['video'][1]);
 	}
 
+	/**
+	 * @group parseU
+	 */
+	public function testParseUWithSpaces() {
+		$input = '<div class="h-card"><a class="u-url" href=" http://example.com ">Awesome example website</a></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
+	}
+	
+
 }
