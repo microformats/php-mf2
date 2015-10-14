@@ -1,6 +1,8 @@
 php-mf2
 =======
 
+[![Build Status](https://travis-ci.org/indieweb/php-mf2.png?branch=master)](http://travis-ci.org/indieweb/php-mf2)
+
 php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
 
 Instead of having a hard-coded list of all the different microformats, it follows a set of procedures to handle different property types (e.g. `p-` for plaintext, `u-` for URL, etc). This allows for a very small and maintainable parser.
