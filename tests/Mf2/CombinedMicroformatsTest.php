@@ -284,12 +284,13 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
           }]
 	      }
 	    }],
-	    "rels":{}
+	    "rels":[]
 	  }';
-		$parser = new Parser($input, '', true);
-		$output = $parser->parse();
+	  	$mf = Mf2\parse($input);
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
+		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'http://example.org/post1234');
+		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'http://jane.example.com/');
 	}
 	
 	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {

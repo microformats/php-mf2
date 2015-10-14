@@ -691,7 +691,7 @@ class Parser {
 						$prefixSpecificResult['html'] = $eParsedResult['html'];
 						$prefixSpecificResult['value'] = $eParsedResult['value'];
 					} elseif (in_array('u-', $prefixes)) {
-						$prefixSpecificResult['value'] = $this->parseU($subMF);
+						$prefixSpecificResult['value'] = (empty($result['properties']['url'])) ? $this->parseU($subMF) : reset($result['properties']['url']);
 					}
 					$return[$property][] = $prefixSpecificResult;
 				}
