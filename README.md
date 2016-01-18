@@ -1,5 +1,4 @@
-php-mf2
-=======
+# php-mf2
 
 [![Build Status](https://travis-ci.org/indieweb/php-mf2.png?branch=master)](http://travis-ci.org/indieweb/php-mf2)
 
@@ -418,7 +417,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 ## License
 
-Copyright (c) 2013 G5
+Copyright (c) 2013 [Barnaby Walters](https://github.com/barnabywalters)
 
 MIT License
 
