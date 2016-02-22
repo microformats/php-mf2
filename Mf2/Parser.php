@@ -372,7 +372,7 @@ class Parser {
 
 		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
-		if ( isset($el->tagName) )
+		if (isset($el->tagName))
 		{
 
 			if (in_array(strtolower($el->tagName), $excludeTags)) {
@@ -391,14 +391,12 @@ class Parser {
 				return $el->getAttribute('alt');
 			} else if ($el->tagName == 'abbr' and $el->getAttribute('title') !== '') {
 				return $el->getAttribute('title');
-			// } else if (in_array($el->tagName, array('data', 'input')) and $el->getAttribute('value') !== '') {
-				// return $el->getAttribute('value');
 			}
 
 		}
 
 		// if node is a text node get its text
-		if ( isset($el->nodeType) && $el->nodeType === 3) {
+		if (isset($el->nodeType) && $el->nodeType === 3) {
 			$out .= $el->textContent;
 		}
 
@@ -417,22 +415,22 @@ class Parser {
 			}
 		}
 
-		if ( isset($el->tagName) ) {
+		if (isset($el->tagName)) {
 
 			// if its a block level tag add an additional space at the end
-			if ( in_array(strtolower($el->tagName), $blockLevelTags) )
+			if (in_array(strtolower($el->tagName), $blockLevelTags))
 			{
 				$out .= ' ';
 			}
 			// else if its a br, replace with newline
-			else if ( strtolower($el->tagName) == 'br')
+			else if (strtolower($el->tagName) == 'br')
 			{
 				$out .= "\n";
 			}
 
 		} 
 
-		return ( $out === '' ) ? NULL : $out;
+		return ($out === '') ? NULL : $out;
 	}
 
 	// TODO: figure out if this has problems with sms: and geo: URLs
@@ -508,9 +506,6 @@ class Parser {
 		}
 
 		$this->resolveChildUrls($p);
-
-		// $pValue = unicodeTrim($this->innerText($p));
-		// return $pValue;
 		
 		if ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
 			$pValue = $p->getAttribute('alt');
@@ -522,11 +517,9 @@ class Parser {
 			$pValue = $p->getAttribute('value');
 		} else {
 			$pValue = unicodeTrim($this->innerText($p));
-			// $pValue = unicodeTrim($this->textContent($p));
 		}
 
 		return $pValue;
-		
 	}
 
 	/**
