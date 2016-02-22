@@ -354,6 +354,87 @@ class Parser {
 		return $clonedEl->textContent;
 	}
 
+	/**
+	 * This method attempts to return a better 'innerText' representation than DOMNode::textContent
+	 *
+	 * @param DOMElement|DOMText $el
+	 * @param bool $implied when parsing for implied name for h-*, rules may be slightly different
+	 * @see: https://github.com/glennjones/microformat-shiv/blob/dev/lib/text.js
+	 */
+	public function innerText($el, $implied = false) {
+		$out = '';
+
+		$blockLevelTags = array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
+			'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
+			'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
+			'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
+			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details');
+
+		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
+
+		if ( isset($el->tagName) )
+		{
+
+			if (in_array(strtolower($el->tagName), $excludeTags)) {
+				return $out;
+			}
+			else if ($el->tagName == 'img') {
+				if ($el->getAttribute('alt') !== '') {
+					return $el->getAttribute('alt');
+				}
+				else if (!$implied && $el->getAttribute('src') !== '') {
+				{
+					return $this->resolveUrl($el->getAttribute('src'));
+				}
+			}
+			} else if ($el->tagName == 'area' and $el->getAttribute('alt') !== '') {
+				return $el->getAttribute('alt');
+			} else if ($el->tagName == 'abbr' and $el->getAttribute('title') !== '') {
+				return $el->getAttribute('title');
+			// } else if (in_array($el->tagName, array('data', 'input')) and $el->getAttribute('value') !== '') {
+				// return $el->getAttribute('value');
+			}
+
+		}
+
+		// if node is a text node get its text
+		if ( isset($el->nodeType) && $el->nodeType === 3) {
+			$out .= $el->textContent;
+		}
+
+		// get the text of the child nodes
+		if ($el->childNodes && $el->childNodes->length > 0) {
+
+			for ($j = 0; $j < $el->childNodes->length; $j++) {
+
+				$text = $this->innerText($el->childNodes->item($j), $implied);
+
+				if ( !is_null($text) )
+				{
+					$out .= $text;
+				}
+
+			}
+		}
+
+		if ( isset($el->tagName) ) {
+
+			// if its a block level tag add an additional space at the end
+			if ( in_array(strtolower($el->tagName), $blockLevelTags) )
+			{
+				$out .= ' ';
+			}
+			// else if its a br, replace with newline
+			else if ( strtolower($el->tagName) == 'br')
+			{
+				$out .= "\n";
+			}
+
+		} 
+
+		return ( $out === '' ) ? NULL : $out;
+	}
+
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this
@@ -413,7 +494,7 @@ class Parser {
 	}
 
 	/**
-	 * Given an element with class="p-*", get it’s value
+	 * Given an element with class="p-*", get its value
 	 *
 	 * @param DOMElement $p The element to parse
 	 * @return string The plaintext value of $p, dependant on type
@@ -422,9 +503,15 @@ class Parser {
 	public function parseP(\DOMElement $p) {
 		$classTitle = $this->parseValueClassTitle($p, ' ');
 
-		if ($classTitle !== null)
+		if ($classTitle !== null) {
 			return $classTitle;
+		}
 
+		$this->resolveChildUrls($p);
+
+		// $pValue = unicodeTrim($this->innerText($p));
+		// return $pValue;
+		
 		if ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
 			$pValue = $p->getAttribute('alt');
 		} elseif ($p->tagName == 'area' and $p->getAttribute('alt') !== '') {
@@ -434,10 +521,12 @@ class Parser {
 		} elseif (in_array($p->tagName, array('data', 'input')) and $p->getAttribute('value') !== '') {
 			$pValue = $p->getAttribute('value');
 		} else {
-			$pValue = unicodeTrim($this->textContent($p));
+			$pValue = unicodeTrim($this->innerText($p));
+			// $pValue = unicodeTrim($this->textContent($p));
 		}
 
 		return $pValue;
+		
 	}
 
 	/**
@@ -809,7 +898,6 @@ class Parser {
 					}
 				}
 
-
 				// Look for double nested img @alt
 				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
 					$emNames = mfNamesFromElement($em, 'h-');
@@ -826,7 +914,7 @@ class Parser {
 					}
 				}
 
-				throw new Exception($e->nodeValue);
+				throw new Exception($this->innerText($e, true));
 			} catch (Exception $exc) {
 				$return['name'][] = unicodeTrim($exc->getMessage());
 			}
