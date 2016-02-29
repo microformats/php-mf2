@@ -314,4 +314,45 @@ EOT;
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
 		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
+
+	public function testScriptTagContentsRemovedFromTextValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="p-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
+	}
+
+	public function testScriptTagContentsRemovedFromHTMLValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="e-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
+		# The script tag and its contents should be present in the HTML returned
+		$this->assertContains('<script>alert("hi");</script>', $output['items'][0]['properties']['content'][0]['html']);
+		# The contents of the script tag should not be present in the plaintext "value" of the content
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
+	}
+
 }
