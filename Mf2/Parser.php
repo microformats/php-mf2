@@ -715,6 +715,9 @@ class Parser {
 		// TODO: as it is this is not relative to only children, make this .// and rerun tests
 		$this->resolveChildUrls($e);
 
+		$this->removeTags($e, 'script');
+		$this->removeTags($e, 'style');
+
 		$html = '';
 		foreach ($e->childNodes as $node) {
 			$html .= $node->C14N();
@@ -722,8 +725,14 @@ class Parser {
 
 		return array(
 			'html' => $html,
-			'value' => unicodeTrim($this->textContent($e))
+			'value' => unicodeTrim($this->innerText($e))
 		);
+	}
+
+	private function removeTags(\DOMElement &$e, $tagName) {
+		while(($r = $e->getElementsByTagName($tagName)) && $r->length) {
+			$r->item(0)->parentNode->removeChild($r->item(0));
+		}
 	}
 
 	/**
