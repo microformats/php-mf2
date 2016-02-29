@@ -339,6 +339,11 @@ EOT;
 	<div class="e-content">
 		<b>Hello World</b>
 		<script>alert("hi");</script>
+		<style>body{ visibility: hidden; }</style>
+		<p>
+			<script>alert("hi");</script>
+			<style>body{ visibility: hidden; }</style>
+		</p>
 	</div>
 </div>
 EOT;
@@ -349,10 +354,11 @@ EOT;
 		$this->assertContains('h-entry', $output['items'][0]['type']);
 		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
 		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
-		# The script tag and its contents should be present in the HTML returned
-		$this->assertContains('<script>alert("hi");</script>', $output['items'][0]['properties']['content'][0]['html']);
-		# The contents of the script tag should not be present in the plaintext "value" of the content
+		# The script and style tags should be removed from both HTML and plaintext results
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 }
