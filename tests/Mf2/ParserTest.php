@@ -286,7 +286,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('Person Bee', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('rect', $output['items'][0]['properties']['category'][0]['shape']);
 		$this->assertEquals('100,100,120,120', $output['items'][0]['properties']['category'][0]['coords']);
 		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);

@@ -102,4 +102,17 @@ EOT;
 		$this->assertEquals('Blah blah http://waterpigs.co.uk/photos/five-legged-elephant.jpg', $result['items'][0]['properties']['summary'][0]);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/69
+	 */
+	public function testBrWhitespaceIssue69() {
+		$input = '<div class="h-card"><p class="p-adr"><span class="p-street-address">Street Name 9</span><br/><span class="p-locality">12345 NY, USA</span></p></div>';
+		$result = Mf2\parse($input);
+
+		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['adr'][0]);
+		$this->assertEquals('Street Name 9', $result['items'][0]['properties']['street-address'][0]);
+		$this->assertEquals('12345 NY, USA', $result['items'][0]['properties']['locality'][0]);
+		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['name'][0]);
+	}
+
 }
