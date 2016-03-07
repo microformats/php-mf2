@@ -314,4 +314,14 @@ EOT;
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
 		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/84
+	 */
+	public function testRelativeURLResolvedWithFinalURL() {
+		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
+
+		$this->assertEquals('https://aaronparecki.com/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+	}
+
 }
