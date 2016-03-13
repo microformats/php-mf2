@@ -78,6 +78,9 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
+	# ensure the final URL is used to resolve relative URLs
+	$url = $info['url'];
+
 	return parse($html, $url, $convertClassic);
 }
 

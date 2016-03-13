@@ -325,4 +325,13 @@ EOT;
 		$result = Mf2\applySrcsetUrlTransformation($srcset, $transformation);
 		$this->assertEquals('https://example.com/banner-HD.jpeg 2x, https://example.com/banner-phone.jpeg 100w, https://example.com/banner-phone-HD.jpeg 100w 2x', $result);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/84
+	 */
+	public function testRelativeURLResolvedWithFinalURL() {
+		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
+
+		$this->assertEquals('https://aaronparecki.com/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+	}
 }
