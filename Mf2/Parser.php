@@ -1265,7 +1265,7 @@ class Parser {
 			'dtend' => 'dt-end',
 			'duration' => 'dt-duration',
 			'description' => 'p-description',
-			'summary' => 'p-summary',
+			'summary' => 'p-name',
 			'description' => 'p-description',
 			'url' => 'u-url',
 			'category' => 'p-category',
