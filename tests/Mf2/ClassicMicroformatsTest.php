@@ -128,4 +128,47 @@ EOT;
 		$result = Mf2\parse($input, 'http://www.staples.com/Swingline-747-Rio-Red-Stapler-20-Sheet-Capacity/product_562485');
 		$this->assertCount(4, $result['items']);
 	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/81
+	 */
+	public function test_vevent() {
+		$input = <<< EOT
+<div class="vevent">
+<h3 class="summary">XYZ Project Review</h3>
+<p class="description">Project XYZ Review Meeting</p>
+<p> <a class="url" href="http://example.com/xyz-meeting">http://example.com/xyz-meeting</a> </p>
+<p>To be held on 
+ <span class="dtstart">
+  <abbr class="value" title="1998-03-12">the 12th of March</abbr> 
+  from <span class="value">8:30am</span> <abbr class="value" title="-0500">EST</abbr>
+ </span> until 
+ <span class="dtend">
+  <span class="value">9:30am</span> <abbr class="value" title="-0500">EST</abbr>
+ </span>
+</p>
+<p>Location: <span class="location">1CP Conference Room 4350</span></p>
+<small>Booked by: <span class="uid">guid-1.host1.com</span> on 
+ <span class="dtstamp">
+  <abbr class="value" title="1998-03-09">the 9th</abbr> at <span class="value">6:00pm</span>
+ </span>
+</small>
+</div>
+EOT;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('description', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
+
+		$this->assertEquals('XYZ Project Review', $output['items'][0]['properties']['name'][0]);
+		$this->assertEquals('Project XYZ Review Meeting', $output['items'][0]['properties']['description'][0]);
+		$this->assertEquals('http://example.com/xyz-meeting', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('1998-03-12T08:30', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('1998-03-12T09:30', $output['items'][0]['properties']['end'][0]);
+	}
+
 }
