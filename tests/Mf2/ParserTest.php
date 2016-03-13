@@ -314,4 +314,15 @@ EOT;
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
 		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
+	
+	public function testApplyTransformationToSrcset() {
+		$transformation = function ($url) {
+			return 'https://example.com/' . ltrim($url, '/');
+		};
+		
+		// Example from https://developers.whatwg.org/edits.html#attr-img-srcset
+		$srcset = 'banner-HD.jpeg 2x, banner-phone.jpeg 100w, banner-phone-HD.jpeg 100w 2x';
+		$result = Mf2\applySrcsetUrlTransformation($srcset, $transformation);
+		$this->assertEquals('https://example.com/banner-HD.jpeg 2x, https://example.com/banner-phone.jpeg 100w, https://example.com/banner-phone-HD.jpeg 100w 2x', $result);
+	}
 }
