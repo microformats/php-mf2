@@ -231,6 +231,19 @@ function convertTimeFormat($time) {
 	}
 }
 
+function applySrcsetUrlTransformation($srcset, $transformation) {
+	return implode(', ', array_filter(array_map(function ($srcsetPart) use ($transformation) {
+		$parts = explode(" \t\n\r\0\x0B", trim($srcsetPart), 2);
+		$parts[0] = rtrim($parts[0]);
+
+		if (empty($parts[0])) { return false; }
+
+		$parts[0] = call_user_func($transformation, $parts[0]);
+
+		return $parts[0] . (empty($parts[1]) ? '' : ' ' . $parts[1]);
+	}, explode(',', trim($srcset)))));
+}
+
 /**
  * Microformats2 Parser
  *
@@ -336,6 +349,8 @@ class Parser {
 				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
 			if ($child->hasAttribute('src'))
 				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
+			if ($child->hasAttribute('srcset'))
+				$child->setAttribute('srcset', applySrcsetUrlTransformation($child->getAttribute('href'), [$this, 'resolveUrl']));
 			if ($child->hasAttribute('data'))
 				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
 		}
