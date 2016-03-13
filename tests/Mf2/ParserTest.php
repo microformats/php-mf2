@@ -325,4 +325,50 @@ EOT;
 		$result = Mf2\applySrcsetUrlTransformation($srcset, $transformation);
 		$this->assertEquals('https://example.com/banner-HD.jpeg 2x, https://example.com/banner-phone.jpeg 100w, https://example.com/banner-phone-HD.jpeg 100w 2x', $result);
 	}
+
+	public function testScriptTagContentsRemovedFromTextValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="p-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
+	}
+
+	public function testScriptTagContentsRemovedFromHTMLValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="e-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+		<style>body{ visibility: hidden; }</style>
+		<p>
+			<script>alert("hi");</script>
+			<style>body{ visibility: hidden; }</style>
+		</p>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
+		# The script and style tags should be removed from both HTML and plaintext results
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
+	}
 }
