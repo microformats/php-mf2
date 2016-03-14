@@ -36,7 +36,7 @@ Then verify the installed files like this:
 ```bash
 # in your project root
 cd vendor/mf2/mf2
-git tag -v v0.2.9
+git tag -v v0.3.0
 ```
 
 If nothing went wrong, you should see the tag commit message, ending something like this:
