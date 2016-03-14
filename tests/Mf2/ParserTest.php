@@ -326,6 +326,7 @@ EOT;
 		$this->assertEquals('https://example.com/banner-HD.jpeg 2x, https://example.com/banner-phone.jpeg 100w, https://example.com/banner-phone-HD.jpeg 100w 2x', $result);
 	}
 
+
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/84
 	 */
@@ -333,5 +334,66 @@ EOT;
 		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
 
 		$this->assertEquals('https://aaronparecki.com/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+	}
+	
+	public function testScriptTagContentsRemovedFromTextValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="p-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
+	}
+	
+	public function testScriptElementContentsRemovedFromAllPlaintextValues() {
+		$input = <<<EOT
+<div class="h-entry">
+	<span class="dt-published">contained<script>not contained</script><style>not contained</style></span>
+	<span class="u-url">contained<script>not contained</script><style>not contained</style></span>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertNotContains('not contained', $output['items'][0]['properties']['published'][0]);
+		$this->assertNotContains('not contained', $output['items'][0]['properties']['url'][0]);
+	}
+
+	public function testScriptTagContentsNotRemovedFromHTMLValue() {
+		$input = <<<EOT
+<div class="h-entry">
+	<div class="e-content">
+		<b>Hello World</b>
+		<script>alert("hi");</script>
+		<style>body{ visibility: hidden; }</style>
+		<p>
+			<script>alert("hi");</script>
+			<style>body{ visibility: hidden; }</style>
+		</p>
+	</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
+		# The script and style tags should be removed from plaintext results but left in HTML results.
+		$this->assertContains('alert', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
 }

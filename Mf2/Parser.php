@@ -360,6 +360,12 @@ class Parser {
 	}
 
 	public function textContent(DOMElement $el) {
+		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
+		
+		if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
+			return '';
+		}
+		
 		$this->resolveChildUrls($el);
 
 		$clonedEl = $el->cloneNode(true);
@@ -368,8 +374,14 @@ class Parser {
 			$newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
 			$imgEl->parentNode->replaceChild($newNode, $imgEl);
 		}
+		
+		foreach ($excludeTags as $tagName) {
+			foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
+				$elToRemove->parentNode->removeChild($elToRemove);
+			}
+		}
 
-		return $clonedEl->textContent;
+		return $this->innerText($clonedEl);
 	}
 
 	/**
@@ -390,27 +402,20 @@ class Parser {
 
 		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
-		if (isset($el->tagName))
-		{
-
+		if (isset($el->tagName)) {
 			if (in_array(strtolower($el->tagName), $excludeTags)) {
 				return $out;
-			}
-			else if ($el->tagName == 'img') {
+			} else if ($el->tagName == 'img') {
 				if ($el->getAttribute('alt') !== '') {
 					return $el->getAttribute('alt');
-				}
-				else if (!$implied && $el->getAttribute('src') !== '') {
-				{
+				} else if (!$implied && $el->getAttribute('src') !== '') {
 					return $this->resolveUrl($el->getAttribute('src'));
 				}
-			}
 			} else if ($el->tagName == 'area' and $el->getAttribute('alt') !== '') {
 				return $el->getAttribute('alt');
 			} else if ($el->tagName == 'abbr' and $el->getAttribute('title') !== '') {
 				return $el->getAttribute('title');
 			}
-
 		}
 
 		// if node is a text node get its text
@@ -420,32 +425,22 @@ class Parser {
 
 		// get the text of the child nodes
 		if ($el->childNodes && $el->childNodes->length > 0) {
-
 			for ($j = 0; $j < $el->childNodes->length; $j++) {
-
 				$text = $this->innerText($el->childNodes->item($j), $implied);
-
-				if ( !is_null($text) )
-				{
+				if (!is_null($text)) {
 					$out .= $text;
 				}
-
 			}
 		}
 
 		if (isset($el->tagName)) {
-
 			// if its a block level tag add an additional space at the end
-			if (in_array(strtolower($el->tagName), $blockLevelTags))
-			{
+			if (in_array(strtolower($el->tagName), $blockLevelTags)) {
 				$out .= ' ';
-			}
-			// else if its a br, replace with newline
-			else if (strtolower($el->tagName) == 'br')
-			{
+			} else if (strtolower($el->tagName) == 'br') {
+				// else if its a br, replace with newline 
 				$out .= "\n";
 			}
-
 		} 
 
 		return ($out === '') ? NULL : $out;
@@ -455,11 +450,12 @@ class Parser {
 	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this
 		// parser to try to do anything with it.
-		if (parse_url($url) === false)
+		if (parse_url($url) === false) {
 			return $url;
+		}
 
-        // per issue #40 valid URLs could have a space on either side
-        $url = trim($url);
+		// per issue #40 valid URLs could have a space on either side
+		$url = trim($url);
 
 		$scheme = parse_url($url, PHP_URL_SCHEME);
 
@@ -677,7 +673,7 @@ class Parser {
 				if (!empty($value))
 					$dtValue = $value;
 				else
-					$dtValue = $dt->nodeValue;
+					$dtValue = $this->textContent($dt);
 			} elseif ($dt->tagName == 'abbr') {
 				// Use @title, otherwise innertext
 				// Is it an entire dt?
@@ -685,7 +681,7 @@ class Parser {
 				if (!empty($title))
 					$dtValue = $title;
 				else
-					$dtValue = $dt->nodeValue;
+					$dtValue = $this->textContent($dt);
 			} elseif ($dt->tagName == 'del' or $dt->tagName == 'ins' or $dt->tagName == 'time') {
 				// Use @datetime if available, otherwise innertext
 				// Is it an entire dt?
@@ -693,9 +689,9 @@ class Parser {
 				if (!empty($dtAttr))
 					$dtValue = $dtAttr;
 				else
-					$dtValue = $dt->nodeValue;
+					$dtValue = $this->textContent($dt);
 			} else {
-				$dtValue = $dt->nodeValue;
+				$dtValue = $this->textContent($dt);
 			}
 
 			if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches)) {
@@ -740,8 +736,14 @@ class Parser {
 
 		return array(
 			'html' => $html,
-			'value' => unicodeTrim($this->textContent($e))
+			'value' => unicodeTrim($this->innerText($e))
 		);
+	}
+
+	private function removeTags(\DOMElement &$e, $tagName) {
+		while(($r = $e->getElementsByTagName($tagName)) && $r->length) {
+			$r->item(0)->parentNode->removeChild($r->item(0));
+		}
 	}
 
 	/**
@@ -1422,7 +1424,7 @@ function resolveUrl($baseURI, $referenceURI) {
 # 5.2.3 Merge Paths
 function mergePaths($base, $reference) {
 	# If the base URI has a defined authority component and an empty
-	#    path,
+	# path,
 	if($base['authority'] && $base['path'] == null) {
 		# then return a string consisting of "/" concatenated with the
 		# reference's path; otherwise,
@@ -1430,13 +1432,13 @@ function mergePaths($base, $reference) {
 	} else {
 		if(($pos=strrpos($base['path'], '/')) !== false) {
 			# return a string consisting of the reference's path component
-			#    appended to all but the last segment of the base URI's path (i.e.,
-			#    excluding any characters after the right-most "/" in the base URI
-			#    path,
+			# appended to all but the last segment of the base URI's path (i.e.,
+			# excluding any characters after the right-most "/" in the base URI
+			# path,
 			$merged = substr($base['path'], 0, $pos + 1) . $reference['path'];
 		} else {
-			#    or excluding the entire base URI path if it does not contain
-			#    any "/" characters).
+			# or excluding the entire base URI path if it does not contain
+			# any "/" characters).
 			$merged = $base['path'];
 		}
 	}
