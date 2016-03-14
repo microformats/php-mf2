@@ -396,4 +396,20 @@ EOT;
 		$this->assertContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
+	
+	public function testWhitespaceBetweenElements() {
+		$input = <<<EOT
+<div class="h-entry">
+	<data class="p-rsvp" value="yes">I'm attending</data>
+	<a class="u-in-reply-to" href="https://snarfed.org/2014-06-16_homebrew-website-club-at-quip">Homebrew Website Club at Quip</a>
+	<div class="p-content">Thanks for hosting!</div>
+</div>
+EOT;
+
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertNotContains('attendingHomebrew', $output['items'][0]['properties']['name'][0]);
+	}
 }

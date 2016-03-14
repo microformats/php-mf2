@@ -391,7 +391,7 @@ class Parser {
 	 * @param bool $implied when parsing for implied name for h-*, rules may be slightly different
 	 * @see: https://github.com/glennjones/microformat-shiv/blob/dev/lib/text.js
 	 */
-	public function innerText($el, $implied = false) {
+	public function innerText($el, $implied=false) {
 		$out = '';
 
 		$blockLevelTags = array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
@@ -401,7 +401,10 @@ class Parser {
 			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details');
 
 		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
-
+		
+		// PHP DOMDocument doesn’t correctly handle whitespace around elements it doesn’t recognise.
+		$unsupportedTags = array('data');
+		
 		if (isset($el->tagName)) {
 			if (in_array(strtolower($el->tagName), $excludeTags)) {
 				return $out;
@@ -436,6 +439,8 @@ class Parser {
 		if (isset($el->tagName)) {
 			// if its a block level tag add an additional space at the end
 			if (in_array(strtolower($el->tagName), $blockLevelTags)) {
+				$out .= ' ';
+			} elseif ($implied and in_array(strtolower($el->tagName), $unsupportedTags)) {
 				$out .= ' ';
 			} else if (strtolower($el->tagName) == 'br') {
 				// else if its a br, replace with newline 
