@@ -10,7 +10,7 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 There are two ways of installing php-mf2. I **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
 
-To install using Composer, run `./composer.phar require mf2/mf2:~0.2`
+To install using Composer, run `./composer.phar require mf2/mf2:~0.3`
 
 If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from, like this:
 
@@ -279,6 +279,18 @@ The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf
 Currently php-mf2 passes the majority of it’s own test case, and a good percentage of the cross-platform tests. Contributors should ALWAYS test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
 ### Changelog
+
+#### v0.3.0
+
+2016-03-14
+
+* Requires PHP 5.4 at minimum (PHP 5.3 is EOL)
+* Licensed under CC0 rather than MIT
+* Merges Pull requests #70, #73, #74, #75, #77, #80, #82, #83, #85 and #86.
+* Variety of small bug fixes and features including improved whitespace support, removal of style and script contents from plaintext properties
+* All PHPUnit tests passing finally
+
+Many thanks to @aaronpk, @diplix, @dissolve, @dymcx @gRegorLove, @jeena, @veganstraightedge and @voxpelli for all your hard work opening issues and sending and merging PRs!
 
 #### v0.2.12
 
