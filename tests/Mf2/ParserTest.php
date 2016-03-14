@@ -343,8 +343,23 @@ EOT;
 		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
 		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
 	}
+	
+	public function testScriptElementContentsRemovedFromAllPlaintextValues() {
+		$input = <<<EOT
+<div class="h-entry">
+	<span class="dt-published">contained<script>not contained</script><style>not contained</style></span>
+	<span class="u-url">contained<script>not contained</script><style>not contained</style></span>
+</div>
+EOT;
 
-	public function testScriptTagContentsRemovedFromHTMLValue() {
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertNotContains('not contained', $output['items'][0]['properties']['published'][0]);
+		$this->assertNotContains('not contained', $output['items'][0]['properties']['url'][0]);
+	}
+
+	public function testScriptTagContentsNotRemovedFromHTMLValue() {
 		$input = <<<EOT
 <div class="h-entry">
 	<div class="e-content">
@@ -365,10 +380,10 @@ EOT;
 		$this->assertContains('h-entry', $output['items'][0]['type']);
 		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
 		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
-		# The script and style tags should be removed from both HTML and plaintext results
-		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['html']);
+		# The script and style tags should be removed from plaintext results but left in HTML results.
+		$this->assertContains('alert', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
-		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
 }
