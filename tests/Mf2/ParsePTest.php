@@ -115,4 +115,15 @@ EOT;
 		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['name'][0]);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/89
+	 */
+	public function testEmptyAlt() {
+		$input = '<div class="p-author h-card"><a href="/" class="p-org p-name"><img class="u-logo" src="/static/logo.jpg" alt="" />mention.tech</a></div>';
+		$result = Mf2\parse($input);
+
+		$this->assertEquals('mention.tech', $result['items'][0]['properties']['org'][0]);
+		$this->assertEquals('mention.tech', $result['items'][0]['properties']['name'][0]);
+	}
+
 }

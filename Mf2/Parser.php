@@ -409,14 +409,14 @@ class Parser {
 			if (in_array(strtolower($el->tagName), $excludeTags)) {
 				return $out;
 			} else if ($el->tagName == 'img') {
-				if ($el->getAttribute('alt') !== '') {
+				if ($el->hasAttribute('alt')) {
 					return $el->getAttribute('alt');
-				} else if (!$implied && $el->getAttribute('src') !== '') {
+				} else if (!$implied && $el->hasAttribute('src')) {
 					return $this->resolveUrl($el->getAttribute('src'));
 				}
-			} else if ($el->tagName == 'area' and $el->getAttribute('alt') !== '') {
+			} else if ($el->tagName == 'area' and $el->hasAttribute('alt')) {
 				return $el->getAttribute('alt');
-			} else if ($el->tagName == 'abbr' and $el->getAttribute('title') !== '') {
+			} else if ($el->tagName == 'abbr' and $el->hasAttribute('title')) {
 				return $el->getAttribute('title');
 			}
 		}
