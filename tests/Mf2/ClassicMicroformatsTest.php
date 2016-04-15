@@ -191,30 +191,30 @@ EOT;
 
     <article class="hentry">
       <span class="author">Lee Adama</span>
-      <span class="entry-title">Jumping Rope for Weight Loss</span>
+      <span class="entry-title"><a rel="bookmark" class="something" href="/2014/11/24/jump-rope">Jumping Rope for Weight Loss</a></span>
       <div class="entry-content">Some Content</div>
-      <a rel="bookmark" href="/2014/11/24/jump-rope">Nov 24, 2014</a>
+      Nov 24, 2014
     </article>
 
     <article class="hentry">
       <span class="author">Kara Thrace</span>
-      <span class="entry-title">Abstract Art in Graffiti</span>
+      <span class="entry-title"><a rel="bookmark" class="" href="/2014/11/23/graffiti">Abstract Art in Graffiti</a></span>
       <div class="entry-content">More Content</div>
-      <a rel="bookmark" href="/2014/11/23/graffiti">Nov 23, 2014</a>
+      Nov 23, 2014
     </article>
 
     <article class="hentry">
       <span class="author">President Roslyn</span>
-      <span class="entry-title">Dreams of Earth</span>
+      <span class="entry-title"><a rel="something bookmark" href="/2014/11/21/earth">Dreams of Earth</a></span>
       <div class="entry-content">Additional Content</div>
-      <a rel="bookmark" href="/2014/11/21/earth">Nov 21, 2014</a>
+      Nov 21, 2014
     </article>
 
     <article class="hentry">
       <span class="author">Chief Tyrrol</span>
-      <span class="entry-title">Organized Labor in Mining Colonies</span>
+      <span class="entry-title"><a rel="something bookmark somethingelse" class="somethingelse" href="/2014/11/19/labor">Organized Labor in Mining Colonies</a></span>
       <div class="entry-content">More Content</div>
-      <a rel="bookmark" href="/2014/11/19/labor">Nov 19, 2014</a>
+      Nov 19, 2014
     </article>
 
   </body>
