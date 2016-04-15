@@ -171,4 +171,71 @@ EOT;
 		$this->assertEquals('1998-03-12T09:30', $output['items'][0]['properties']['end'][0]);
 	}
 
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/57
+	 * @see https://github.com/kartikprabhu/mf2py/pull/50/
+	 */
+	public function testRelBookmarkUrl() {
+		$input = <<< END
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Backcompat test for hEntry with nested rel=bookmark</title>
+    <!-- This should not affect parsing elsewhere -->
+    <link rel="bookmark" href="/about">
+  </head>
+  <body>
+    <!-- This should not affect parsing elsewhere -->
+    <a rel="bookmark" href="/"></a>
+
+    <article class="hentry">
+      <span class="author">Lee Adama</span>
+      <span class="entry-title">Jumping Rope for Weight Loss</span>
+      <div class="entry-content">Some Content</div>
+      <a rel="bookmark" href="/2014/11/24/jump-rope">Nov 24, 2014</a>
+    </article>
+
+    <article class="hentry">
+      <span class="author">Kara Thrace</span>
+      <span class="entry-title">Abstract Art in Graffiti</span>
+      <div class="entry-content">More Content</div>
+      <a rel="bookmark" href="/2014/11/23/graffiti">Nov 23, 2014</a>
+    </article>
+
+    <article class="hentry">
+      <span class="author">President Roslyn</span>
+      <span class="entry-title">Dreams of Earth</span>
+      <div class="entry-content">Additional Content</div>
+      <a rel="bookmark" href="/2014/11/21/earth">Nov 21, 2014</a>
+    </article>
+
+    <article class="hentry">
+      <span class="author">Chief Tyrrol</span>
+      <span class="entry-title">Organized Labor in Mining Colonies</span>
+      <div class="entry-content">More Content</div>
+      <a rel="bookmark" href="/2014/11/19/labor">Nov 19, 2014</a>
+    </article>
+
+  </body>
+</html>
+END;
+		$output = Mf2\parse($input);
+
+		$u_urls = array(
+			'/2014/11/24/jump-rope',
+			'/2014/11/23/graffiti',
+			'/2014/11/21/earth',
+			'/2014/11/19/labor',
+		);
+
+		foreach ( $u_urls as $key => $url )
+		{
+			$this->assertEquals('h-entry', $output['items'][$key]['type'][0]);
+			$this->assertArrayHasKey('url', $output['items'][$key]['properties']);
+			$this->assertEquals($url, $output['items'][$key]['properties']['url'][0]);
+		}
+
+	}
+
 }
