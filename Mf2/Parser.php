@@ -1025,7 +1025,7 @@ class Parser {
 		$alternates = array();
 
 		// Iterate through all a, area and link elements with rel attributes
-		foreach ($this->xpath->query('//*[@rel and @href]') as $hyperlink) {
+		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') as $hyperlink) {
 			if ($hyperlink->getAttribute('rel') == '')
 				continue;
 
