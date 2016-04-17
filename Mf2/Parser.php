@@ -770,6 +770,17 @@ class Parser {
 		$children = array();
 		$dates = array();
 
+		// each rel-bookmark with an href attribute
+		foreach ( $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $e) as $el )
+		{
+			$class = 'u-url';
+			// rel-bookmark already has class attribute; append current value
+			if ($el->hasAttribute('class')) {
+				$class .= ' ' . $el->getAttribute('class');
+			}
+			$el->setAttribute('class', $class);
+		}
+
 		// Handle nested microformats (h-*)
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF) {
 			// Parse
