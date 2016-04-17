@@ -92,8 +92,18 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input, 'http://example.com');
 		$output = $parser->parse();
 
-		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img"></img>', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img">', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertEquals('Blah blah thing.  http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
+	}
+
+	public function testParseEWithBR() {
+		$input = '<div class="h-entry"><div class="e-content">Here is content with two lines.<br>The br tag should not be converted to an XML br/br element.</div></div>';
+		//$parser = new Parser($input);
+		$output = Mf2\parse($input);
+
+		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
+		$this->assertEquals('Here is content with two lines.<br>The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('Here is content with two lines.'."\n".'The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	/**
