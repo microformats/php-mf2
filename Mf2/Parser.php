@@ -736,7 +736,7 @@ class Parser {
 
 		$html = '';
 		foreach ($e->childNodes as $node) {
-			$html .= $node->C14N();
+			$html .= $node->ownerDocument->saveHTML($node);
 		}
 
 		return array(
