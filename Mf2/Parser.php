@@ -451,6 +451,35 @@ class Parser {
 		return ($out === '') ? NULL : $out;
 	}
 
+	/**
+	 * This method parses the language of an element
+	 * @param DOMElement $el 
+	 * @access public
+	 * @return string
+	 */
+	public function language(DOMElement $el)
+	{
+		// element has a lang attribute; use it
+		if ($el->hasAttribute('lang')) {
+			return trim($el->getAttribute('lang'));
+		}
+		
+		if ($el->tagName == 'html') {
+			// we're at the <html> element and no lang; check <meta> http-equiv Content-Language
+			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
+			{
+				if ($node->hasAttribute('http-equiv') && $node->hasAttribute('content') && strtolower($node->getAttribute('http-equiv')) == 'content-language') {
+					return trim($node->getAttribute('content'));
+				}
+			}
+		} else {
+			// check the parent node
+			return $this->language($el->parentNode);			
+		}
+
+		return '';
+	} # end method language()
+
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
 		// If the URL is seriously malformed it’s probably beyond the scope of this
@@ -741,7 +770,8 @@ class Parser {
 
 		return array(
 			'html' => $html,
-			'value' => unicodeTrim($this->innerText($e))
+			'value' => unicodeTrim($this->innerText($e)),
+			'html-lang' => $this->language($e)
 		);
 	}
 
@@ -999,6 +1029,9 @@ class Parser {
 			if (!empty($url))
 				$return['url'][] = $this->resolveUrl($url);
 		}
+
+		// Language
+		$return['html-lang'] = $this->language($e);
 
 		// Make sure things are in alphabetical order
 		sort($mfTypes);
