@@ -461,7 +461,7 @@ class Parser {
 	{
 		// element has a lang attribute; use it
 		if ($el->hasAttribute('lang')) {
-			return trim($el->getAttribute('lang'));
+			return unicodeTrim($el->getAttribute('lang'));
 		}
 		
 		if ($el->tagName == 'html') {
@@ -469,7 +469,7 @@ class Parser {
 			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
 			{
 				if ($node->hasAttribute('http-equiv') && $node->hasAttribute('content') && strtolower($node->getAttribute('http-equiv')) == 'content-language') {
-					return trim($node->getAttribute('content'));
+					return unicodeTrim($node->getAttribute('content'));
 				}
 			}
 		} else {
