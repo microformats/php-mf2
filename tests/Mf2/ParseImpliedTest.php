@@ -81,6 +81,8 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 	
+	/*
+	 * see testImpliedPhotoFromNestedObject() and testImpliedPhotoFromNestedObject()
 	public function testIgnoresImgIfNotOnlyChild() {
 		$input = '<div class="h-card"><img src="http://example.com/img.png" /> <p>Moar text</p></div>';
 		$parser = new Parser($input);
@@ -88,7 +90,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
-	
+
 	public function testIgnoresDoublyNestedImgIfNotOnlyDoublyNestedChild() {
 		$input = '<div class="h-card"><span><img src="http://example.com/img.png" /> <p>Moar text</p></span></div>';
 		$parser = new Parser($input);
@@ -96,7 +98,7 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
-	
+	*/
 	
 	public function testParsesImpliedUUrlFromAHref() {
 		$input = '<a class="h-card" href="http://example.com/">Some Name</a>';
@@ -182,4 +184,73 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$result = Mf2\parse($input);
 		$this->assertEquals('Barnaby Walters', $result['items'][0]['properties']['name'][0]);
 	}
+
+	public function testImpliedPhotoFromObject() {
+		$input = '<object class="h-card" data="http://example/photo1.jpg">John Doe</object>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
+		$this->assertEquals('http://example/photo1.jpg', $result['items'][0]['properties']['photo'][0]);
+	}
+
+	/**
+	 * Correcting previous test testIgnoresImgIfNotOnlyChild()
+	 * This *should* return the photo since h-x>img[src]:only-of-type:not[.h-*]
+	 * @see https://indiewebcamp.com/User:Tantek.com
+	 */
+	public function testImpliedPhotoFromNestedImg() {
+		$input = '<span class="h-card"><a href="http://tantek.com/" class="external text" style="border: 0px none;"><img src="https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg" style="width:128px;float:right;margin-left:1em"><b><span style="font-size:2em">Tantek Çelik</span></b></a></span>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
+		$this->assertEquals('https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg', $result['items'][0]['properties']['photo'][0]);
+	}
+
+	public function testIgnoredPhotoIfMultipleImg() {
+		$input = '<div class="h-card"><img src="http://example/photo2.jpg" /> <img src="http://example/photo3.jpg" /> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	/**
+	 * Correcting previous test testIgnoresDoublyNestedImgIfNotOnlyDoublyNestedChild()
+	 * This *should* return the photo since .h-x>object[data]:only-of-type:not[.h-*]
+	 */
+	public function testImpliedPhotoFromNestedObject() {
+		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <p>Moar text</p></div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
+		$this->assertEquals('http://example/photo3.jpg', $result['items'][0]['properties']['photo'][0]);
+	}
+
+	public function testIgnoredPhotoIfMultipleObject() {
+		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <object data="http://example/photo4.jpg"></object> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	public function testIgnoredPhotoIfNestedImgH() {
+		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" class="h-card" /> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	public function testIgnoredPhotoIfNestedImgHasHClass() {
+		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" alt="John Doe" class="h-card" /> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	public function testIgnoredPhotoIfNestedObjectHasHClass() {
+		$input = '<div class="h-entry"> <object data="http://example/photo3.jpg" class="h-card">John Doe</object> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
 }
