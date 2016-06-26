@@ -422,4 +422,82 @@ EOT;
 		$this->assertContains('h-entry', $output['items'][0]['type']);
 		$this->assertNotContains('attendingHomebrew', $output['items'][0]['properties']['name'][0]);
 	}
+
+
+	/**
+	 * @see http://www.kevinmarks.com/twitterutils.html
+	 */
+	public function testCamelCaseClassNames() {
+		$input = <<<EOT
+<div class="EmbeddedTweet js-clickToOpenTarget" data-click-to-open-target="https://twitter.com/kevinmarks/status/700752598123433985" data-iframe-title="Twitter Tweet" data-dt-full="%{hours12}:%{minutes} %{amPm} - %{day} %{month} %{year}" data-dt-months="Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec" data-dt-am="AM" data-dt-pm="PM" data-dt-now="now" data-dt-s="s" data-dt-m="m" data-dt-h="h" data-dt-second="second" data-dt-seconds="seconds" data-dt-minute="minute" data-dt-minutes="minutes" data-dt-hour="hour" data-dt-hours="hours" data-dt-abbr="%{number}%{symbol}" data-dt-short="%{day} %{month}" data-dt-long="%{day} %{month} %{year}" data-scribe="page:tweet" id="twitter-widget-0" lang="en" data-twitter-event-id="0">
+
+    <div class="EmbeddedTweet-tweet">
+<blockquote class="Tweet h-entry js-tweetIdInfo subject expanded
+                   is-deciderHtmlWhitespace" cite="https://twitter.com/kevinmarks/status/700752598123433985" data-tweet-id="700752598123433985" data-scribe="section:subject">
+  <div class="Tweet-header u-cf">
+    <div class="Tweet-brand u-floatRight">
+      <span class="u-hiddenInNarrowEnv">
+<a class="FollowButton follow-button profile" data-scribe="component:followbutton" href="https://twitter.com/kevinmarks" role="button" title="Follow Kevin Marks on Twitter"><span class="FollowButton-bird"><div class="Icon Icon--twitter " aria-label="" title="" role="presentation"></div></span> Follow</a>
+</span>
+      <span class="u-hiddenInWideEnv"><a href="https://twitter.com/download" data-scribe="element:logo"><div class="Icon Icon--twitter " aria-label="Get Twitter app" title="Get Twitter app" role="img"></div></a></span>
+    </div>
+    
+<div class="TweetAuthor" data-scribe="component:author">
+  <a class="TweetAuthor-link Identity u-linkBlend" data-scribe="element:user_link" href="https://twitter.com/kevinmarks" aria-label="Kevin Marks (screen name: kevinmarks)">
+    <span class="TweetAuthor-avatar Identity-avatar">
+      <img class="Avatar" data-scribe="element:avatar" data-src-2x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_bigger.jpeg" alt="" data-src-1x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg" src="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg">
+    </span>
+    <span class="TweetAuthor-name Identity-name customisable-highlight" title="Kevin Marks" data-scribe="element:name">Kevin Marks</span>
+    
+    <span class="TweetAuthor-screenName Identity-screenName" title="@kevinmarks" data-scribe="element:screen_name">@kevinmarks</span>
+  </a>
+</div>
+
+  </div>
+
+  <div class="Tweet-body e-entry-content" data-scribe="component:tweet">
+    <p class="Tweet-text e-entry-title" lang="en" dir="ltr">I wish people would stop using u- as a prefix for utility classes in CSS. Use util- instead. You're messing with my microformats.</p>
+
+
+    <div class="Tweet-metadata dateline">
+      
+
+<a class="u-linkBlend u-url customisable-highlight long-permalink" data-datetime="2016-02-19T18:43:33+0000" data-scribe="element:full_timestamp" href="https://twitter.com/kevinmarks/status/700752598123433985">
+<time class="dt-updated" datetime="2016-02-19T18:43:33+0000" pubdate="" title="Time posted: 19 Feb 2016, 18:43:33 (UTC)">10:43 AM - 19 Feb 2016</time></a>
+    </div>
+
+
+    <ul class="Tweet-actions" data-scribe="component:actions" role="menu" aria-label="Tweet actions">
+      <li class="Tweet-action">
+<a class="TweetAction TweetAction--reply web-intent" href="https://twitter.com/intent/tweet?in_reply_to=700752598123433985" data-scribe="element:reply"><div class="Icon Icon--reply TweetAction-icon" aria-label="Reply" title="Reply" role="img"></div></a></li>
+      <li class="Tweet-action">
+<a class="TweetAction TweetAction--retweet web-intent" href="https://twitter.com/intent/retweet?tweet_id=700752598123433985" data-scribe="element:retweet"><div class="Icon Icon--retweet TweetAction-icon" aria-label="Retweet" title="Retweet" role="img"></div>    <span class="TweetAction-stat" data-scribe="element:retweet_count" aria-hidden="true">1</span>
+    <span class="u-hiddenVisually">1 Retweet</span>
+</a></li>
+      <li class="Tweet-action">
+<a class="TweetAction TweetAction--heart web-intent" href="https://twitter.com/intent/like?tweet_id=700752598123433985" data-scribe="element:heart"><div class="Icon Icon--heart TweetAction-icon" aria-label="Like" title="Like" role="img"></div>    <span class="TweetAction-stat" data-scribe="element:heart_count" aria-hidden="true">4</span>
+    <span class="u-hiddenVisually">4 likes</span>
+</a></li>
+    </ul>
+  </div>
+</blockquote>
+</div>
+  </div>
+EOT;
+
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('linkBlend', $output['items'][0]['properties']);
+		$this->assertArrayNotHasKey('hiddenInNarrowEnv', $output['items'][0]['properties']);
+		$this->assertArrayNotHasKey('floatRight', $output['items'][0]['properties']);
+	}
+
+
+	public function testClassNameNumbers() {
+		$input = '<div class="h-entry"> <div class="u-column1"> <p class="p-title">Test</p> </div> </div>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('column1', $output['items'][0]['properties']);
+	}
+
 }

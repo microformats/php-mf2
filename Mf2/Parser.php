@@ -127,6 +127,7 @@ function unicodeTrim($str) {
 function mfNamesFromClass($class, $prefix='h-') {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
+	$classes = preg_grep('#^[a-z\-]+$#', $classes);
 	$matches = array();
 
 	foreach ($classes as $classname) {
