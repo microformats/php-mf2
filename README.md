@@ -113,19 +113,19 @@ Note that, whilst the property prefixes are stripped, the prefix of the `h-*` cl
 
 ### Parsing a document with relative URLs
 
-Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org`:
+Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org/post/1`:
 
 ```html
 <div class="h-card">
 	<h1 class="p-name">Mr. Example</h1>
-	<img class="u-photo" alt="" src="photo.png" />
+	<img class="u-photo" alt="" src="/photo.png" />
 </div>
 ```
 
 Parsing like this:
 
 ```php
-$output = Mf2\parse($html, 'http://example.org');
+$output = Mf2\parse($html, 'http://example.org/post/1');
 ```
 
 will result in the following output, with relative URLs made absolute:
