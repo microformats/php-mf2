@@ -9,9 +9,16 @@
             "homepage": "http://waterpigs.co.uk"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/microformats/tests"
+        }
+    ],
     "bin": ["bin/fetch-mf2", "bin/parse-mf2"],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "microformats/test": "@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"

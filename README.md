@@ -266,7 +266,7 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 4. Run PHPUnit with `./vendor/bin/phpunit`
 5. Make your changes
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
-7. Make sure your tests pass (`./vendor/bin/phpunit`), preferably using both PHP 5.3 and 5.4
+7. Make sure your tests pass (`./vendor/bin/phpunit`), using 5.4+
 8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
 9. Bask in the warm feeling of having contributed to a piece of free software
 
@@ -274,7 +274,7 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 
 There are currently two separate test suites: one, in `tests/Mf2`, is written in phpunit, containing many microformats parsing examples as well as internal parser tests and regression tests for specific issues over php-mf2’s history. Run it with `./vendor/bin/phpunit`.
 
-The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf2 to the cross-platform microformats test suite. Each test consists of a HTML file and a corresponding JSON file, and the suite can be run with `php ./tests/test-suite/test-suite.php`.
+The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf2 to the cross-platform [microformats test suite](https://github.com/microformats/tests). To run these tests you must first install the tests with `./composer.phar install`. Each test consists of a HTML file and a corresponding JSON file, and the suite can be run with `php ./tests/test-suite/test-suite.php`.
 
 Currently php-mf2 passes the majority of it’s own test case, and a good percentage of the cross-platform tests. Contributors should ALWAYS test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
