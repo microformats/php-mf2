@@ -768,11 +768,17 @@ class Parser {
 			$html .= $node->ownerDocument->saveHTML($node);
 		}
 
-		return array(
+		$return = array(
 			'html' => $html,
 			'value' => unicodeTrim($this->innerText($e)),
-			'html-lang' => $this->language($e)
 		);
+
+		// Language
+		if ( $html_lang = $this->language($e) ) {
+			$return['html-lang'] = $html_lang;
+		}
+
+		return $return;
 	}
 
 	private function removeTags(\DOMElement &$e, $tagName) {
@@ -1031,7 +1037,9 @@ class Parser {
 		}
 
 		// Language
-		$return['html-lang'] = $this->language($e);
+		if ( $html_lang = $this->language($e) ) {
+			$return['html-lang'] = $html_lang;
+		}
 
 		// Make sure things are in alphabetical order
 		sort($mfTypes);
