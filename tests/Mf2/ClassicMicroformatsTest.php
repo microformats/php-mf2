@@ -238,4 +238,444 @@ END;
 
 	}
 
+
+	/**
+	 * @see http://microformats.org/wiki/microformats2-parsing-issues#uf2_children_on_backcompat_properties
+	 */
+	public function testMf2ChildrenOnBackcompatProperties()
+	{
+		$input = '<div class="vcard">
+  <div class="adr h-custom">
+    <div class="locality">MF1</div>
+    <div class="p-locality">MF2</div>
+  </div>
+</div>';
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['properties']['adr'][0]['properties']['locality']);
+		$this->assertEquals('MF2', $result['items'][0]['properties']['adr'][0]['properties']['locality'][0]);
+	}
+
+
+	/**
+	 * Test mixed microformats2 with mf1 roots + properties
+	 * Technically covered by other tests, but this is an additional test with @pfefferle's content
+	 * 		after improvements were made to the backcompat parsing.
+	 * @see https://github.com/indieweb/php-mf2/issues/45#issue-33893491
+	 */
+	public function testMixedMf2andMf1Case1() {
+		$input = <<< END
+<body class="h-entry hentry h-as-article" itemscope="" itemtype="http://schema.org/BlogPosting">
+<div id="page">
+ <article id="post-7546" class="post-7546 post type-post status-publish format-standard category-web tag-dezentral tag-email-to-id tag-facebook tag-whatsapp tag-xmpp">
+  <header class="entry-header">
+    <h1 class="entry-title p-name" itemprop="name headline"><a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" class="u-url url" title="Permalink to Wir brauchen Metadaten für Telefonnummern" rel="bookmark" itemprop="url">Wir brauchen Metadaten für Telefonnummern</a></h1>
+
+        <div class="entry-meta">      
+      <span class="sep">Ver&ouml;ffentlicht am </span><a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" title="10:30" rel="bookmark" class="url u-url"><time class="entry-date updated published dt-updated dt-published" datetime="2014-02-20T10:30:40+00:00" itemprop="dateModified">20. Februar 2014</time></a><address class="byline"> <span class="sep"> von </span> <span class="author p-author vcard hcard h-card" itemprop="author" itemscope itemtype="http://schema.org/Person"><img alt='' src='http://1.gravatar.com/avatar/b36983a5651df2c413e264ad4d5cc1a1?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='u-photo avatar avatar-40 photo' height='40' width='40' /> <a class="url uid u-url u-uid fn p-name" href="http://notizblog.org/author/matthias-pfefferle/" title="Alle Beitr&auml;ge von Matthias Pfefferle ansehen" rel="author" itemprop="url"><span itemprop="name">Matthias Pfefferle</span></a></span></address>    </div><!-- .entry-meta -->
+      </header><!-- .entry-header -->
+
+      <div class="entry-content e-content" itemprop="description articleBody">
+    <p><a href="http://netzwertig.com/2014/02/19/zuckerberg-bekommt-wieder-was-er-will-facebook-uebernimmt-whatsapp-fuer-bis-zu-19-milliarden-dollar/">Facebook kauft WhatsApp</a> und ich hab nur wenig Möglichkeiten meine Konsequenzen daraus zu ziehen. Leider sind alle aktuell populären &#8220;Chat&#8221; Systeme direkt an die App gekoppelt und ich &#8220;muss&#8221; zwangsläufig die App benutzen die mein Freundeskreis bevorzugt.</p>
+<p><a href="http://www.whatsapp.com/">WhatsApp</a> benutzt intern das <a href="http://de.wikipedia.org/wiki/WhatsApp#cite_note-10">XMPP-Protokoll</a> und arbeitet dadurch ja theoretisch dezentral und auch <a href="https://telegram.org">Telegram</a> hat beispielsweise <a href="https://core.telegram.org/mtproto">eine Art offenes Protokoll</a> gebaut&#8230; Das Problem: Woher wissen auf welchem Server der Andere angemeldet ist.</p>
+<p>Seit WhatsApp die Identifizierung über die Telefonnummer (statt einer z.B. E-Mail Adresse) eingeführt hat, sind viele anderen diesem Beispiel gefolgt und es gibt nichts Verwerfliches daran. Jeder der eine solche App nutzt hat zwangsläufig ein Telefon, was bedeutet dass er auch eine Telefonnummer hat und die Wahrscheinlichkeit dass in seinem (Telefon-)Adressbuch mehr Telefonnummern als E-Mail Adressen stehen ist auch sehr hoch. Prinzipiell also eine gute Idee! Leider kann man aber anhand einer Telefonnummer nicht auf einen Server (mal abgesehen vom Telekommunikations-unternehmen) schließen und das bedeutet, dass das Verfahren leider auch nur zentral funktionieren kann. Nutze ich WhatsApp, kann man mich nur über die WhatsApp-Server erreichen, für Telegram läuft die Kommunikation nur über die Telegram-Server usw.</p>
+<p>Um mit XMPP oder anderen Protokollen wirklich dezentral arbeiten zu können, müsste man über die Telefonnummer erfahren können welchen Chat-Server der Andere benutzt. Vielleicht über so eine Art <a href="http://notizblog.org/2008/07/27/email-address-to-url-transformation/"><em>Tel to Id</em></a> &#8211; Service oder über andere Protokolle wie z.B. SMS. Damit könnte sich jeder selbst den Client seines Vertrauens aussuchen und alles wäre <del datetime="2014-02-20T08:59:56+00:00">gut</del> <ins datetime="2014-02-20T08:59:56+00:00">besser</ins> <img src="http://notizblog.org/wp-includes/images/smilies/icon_wink.gif" alt=";)" class="wp-smiley" /> </p>
+
+<div class="social-buttons">
+  <a class="FlattrButton" style="display:none;"
+     data-flattr-button="compact"
+     data-flattr-uid="pfefferle"
+     data-flattr-category="text"
+     data-flattr-language="de_DE"
+     href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/"
+     rel="donation payment"></a>
+
+  <div class="g-plusone" data-size="medium" data-lang="de-DE" data-href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/"></div>
+</div>      </div><!-- .entry-content -->
+
+  <footer class="entry-meta">
+  Ver&ouml;ffentlicht    <span class="cat-links">
+    in <a href="http://notizblog.org/category/web/" title="Alle Beiträge in Open Web ansehen" rel="category tag">Open Web</a>  </span>
+
+    <span class="sep"> | </span>
+  <span class="tag-links" itemprop="keywords">
+    Tags: <a href="http://notizblog.org/tag/dezentral/" rel="tag">dezentral</a>, <a href="http://notizblog.org/tag/email-to-id/" rel="tag">Email to ID</a>, <a href="http://notizblog.org/tag/facebook/" rel="tag">Facebook</a>, <a href="http://notizblog.org/tag/whatsapp/" rel="tag">WhatsApp</a>, <a href="http://notizblog.org/tag/xmpp/" rel="tag">XMPP</a>  </span>
+
+    <span class="sep"> | </span>
+  <span class="comments-link"><a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comments" title="Kommentiere Wir brauchen Metadaten für Telefonnummern">7 Meinungen</a></span>
+
+  </footer><!-- #entry-meta --></article><!-- #post-7546 -->
+          <nav id="nav-below">
+    <h1 class="assistive-text section-heading">Beitragsnavigation</h1>
+
+
+    <div class="nav-previous"><a href="http://notizblog.org/2014/02/13/amber-case-ueber-privacy-und-das-indieweb/" rel="prev"><span class="meta-nav">&larr;</span> Amber Case über Privacy und das IndieWeb</a></div>    
+
+  </nav><!-- #nav-below -->
+
+          <div id="comments">
+
+
+      <h2 id="comments-title">
+      7 Gedanken zu &ldquo;<span>Wir brauchen Metadaten für Telefonnummern</span>&rdquo;    </h2>
+
+
+    <ol class="commentlist">
+        <li class="comment even thread-even depth-1 h-as-comment p-comment h-entry" id="li-comment-466758">
+    <article id="comment-466758" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://1.gravatar.com/avatar/1d6a0566df7760e7d1507810b71a363e?s=50&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://dentaku.wazong.de' rel='external' class='u-url url'>Dentaku</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-466758"><time class="updated published u-updated u-published" datetime="2014-02-20T10:36:01+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 10:36          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>ENUM (<a href="https://tools.ietf.org/html/rfc6116">RFC6116</a>) macht genau das. Ist zwar für SIP gedacht, passt aber auch auf diese Anforderung.</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=466758#respond' onclick='return addComment.moveForm("comment-466758", "466758", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  <ul class="children">
+  <li class="comment byuser comment-author-matthias-pfefferle bypostauthor odd alt depth-2 h-as-comment p-comment h-entry" id="li-comment-466780">
+    <article id="comment-466780" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://1.gravatar.com/avatar/b36983a5651df2c413e264ad4d5cc1a1?s=50&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://notizblog.org' rel='external' class='u-url openid_link url'>Matthias Pfefferle</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-466780"><time class="updated published u-updated u-published" datetime="2014-02-20T10:41:31+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 10:41          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>Das war ne schnelle Antwort <img src="http://notizblog.org/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> </p>
+<p>Vielen Dank für den Tipp mit ENUM (noch nie davon gehört) und den Link&#8230; werde mich später mal durch das RFC kämpfen&#8230;</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=466780#respond' onclick='return addComment.moveForm("comment-466780", "466780", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  </li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+  <li class="comment even thread-odd thread-alt depth-1 h-as-comment p-comment h-entry" id="li-comment-466867">
+    <article id="comment-466867" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://0.gravatar.com/avatar/2d4d94afbc593569446625c02e7a2f73?s=50&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://lukasrosenstock.net/' rel='external' class='u-url url'>Lukas Rosenstock</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-466867"><time class="updated published u-updated u-published" datetime="2014-02-20T11:04:26+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 11:04          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>Wollte auch gerade ENUM sagen. Dabei wird die Telefonnummer in einen DNS-Namen konvertiert. Wenn du damit spielen willst, kannst du dir unter <a href="http://www.portunity.de/access/produkte/telefonie/enum-domains.html" >http://www.portunity.de/access/produkte/telefonie/enum-domains.html</a> kostenlos eine deutsche Nummer in ENUM eintragen lassen.</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=466867#respond' onclick='return addComment.moveForm("comment-466867", "466867", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  <ul class="children">
+  <li class="comment byuser comment-author-matthias-pfefferle bypostauthor odd alt depth-2 h-as-comment p-comment h-entry" id="li-comment-466932">
+    <article id="comment-466932" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://1.gravatar.com/avatar/b36983a5651df2c413e264ad4d5cc1a1?s=50&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://notizblog.org' rel='external' class='u-url openid_link url'>Matthias Pfefferle</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-466932"><time class="updated published u-updated u-published" datetime="2014-02-20T11:18:25+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 11:18          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>Krass dass das so vollkommen an mit vorbei gegangen ist&#8230; Gibt es da produktive Anwendungen die ENUM zum Beispiel für Chats o.Ä. verwenden?</p>
+<p>&#8230;ich sollte echt mehr bloggen!</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=466932#respond' onclick='return addComment.moveForm("comment-466932", "466932", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  <ul class="children">
+  <li class="comment even depth-3 h-as-comment p-comment h-entry" id="li-comment-467106">
+    <article id="comment-467106" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://0.gravatar.com/avatar/2d4d94afbc593569446625c02e7a2f73?s=50&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://lukasrosenstock.net/' rel='external' class='u-url url'>Lukas Rosenstock</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-467106"><time class="updated published u-updated u-published" datetime="2014-02-20T12:01:54+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 12:01          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>ENUM wurde bisher nur als Möglichkeit zur Umgehung der Carrier/Kostenersparnis gesehen, dementsprechend natürlich von Carriern und nahestehenden Hard-/Softwareherstellern nicht unterstützt. Somit kommt es nicht in den Mainstream. Ich sehe es zur Zeit (leider) als reines &#8220;Nerd-Tool&#8221;, genau wie Diaspora, OpenID, IndieWeb &#8230;<br />
+Aber der Gedanke eines &#8220;dezentralen WhatsApp&#8221; auf ENUM-Basis kam mir auch schon. Interessantes Projekt, aber auch nicht massentauglich wegen Huhn&amp;Ei-Problemen.</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=467106#respond' onclick='return addComment.moveForm("comment-467106", "467106", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  <ul class="children">
+  <li class="comment byuser comment-author-matthias-pfefferle bypostauthor odd alt depth-4 h-as-comment p-comment h-entry" id="li-comment-467346">
+    <article id="comment-467346" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://1.gravatar.com/avatar/b36983a5651df2c413e264ad4d5cc1a1?s=50&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://notizblog.org' rel='external' class='u-url openid_link url'>Matthias Pfefferle</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-467346"><time class="updated published u-updated u-published" datetime="2014-02-20T13:22:57+00:00" itemprop="commentTime">
+          20. Februar 2014 bei 13:22          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>Hmmm&#8230; Eine Unterstützung von Seiten aller Carrier wäre natürlich wirklich notwendig um massentaugliche Produkte zu bauen&#8230;</p>
+<p>Wäre großartig wenn jede Nummer automatisch ne URI bekäme und unter dieser URI ne Art &#8220;Registry&#8221; zu finden wäre, die auch von Apps erweitert werden kann. So ne Art WebFinger für Telefonnummern quasi&#8230;</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=467346#respond' onclick='return addComment.moveForm("comment-467346", "467346", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  </li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+  <li class="comment even thread-even depth-1 h-as-comment p-comment h-entry" id="li-comment-505365">
+    <article id="comment-505365" class="comment " itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <footer>
+        <address class="comment-author p-author author vcard hcard h-card" itemprop="creator" itemscope itemtype="http://schema.org/Person">
+          <img alt='' src='http://1.gravatar.com/avatar/f7a7b6a59e64d4b8c4a3ded1f85a9879?s=50&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D50&amp;r=G' class='u-photo avatar avatar-50 photo' height='50' width='50' />          <cite class="fn p-name" itemprop="name"><a href='http://www.maexoticde/' rel='external' class='u-url url'>Markus Stumpf</a></cite> <span class="says">meant:</span>        </address><!-- .comment-author .vcard -->
+
+        <div class="comment-meta commentmetadata">
+          <a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#comment-505365"><time class="updated published u-updated u-published" datetime="2014-03-08T21:45:26+00:00" itemprop="commentTime">
+          8. März 2014 bei 21:45          </time></a>
+                  </div><!-- .comment-meta .commentmetadata -->
+      </footer>
+
+      <div class="comment-content e-content p-summary p-name" itemprop="commentText name description"><p>Diese Interoperabilität nennt sich gemeinhin &#8220;Federation&#8221;: <a href="http://en.wikipedia.org/wiki/Federation_(information_technology)" >http://en.wikipedia.org/wiki/Federation_(information_technology)</a></p>
+<p>WhatsApp verwendet kein XMPP. XMPP ist für Mobiles der absolute Horror, denn es basiert auf TCP und damit braucht der Client eine stehende TCP-Verbindung, was massiv auf den Akku geht. Außerdem kommt es permanent zu reconnects, wenn sich laufend die IP-Adresse des Clients ändert.<br />
+Aus diesem Grund will man ein verbindungsloses Push-System dahinter haben.</p>
+<p>Google und Facebook verwenden XMPP, Facebook hat sich aber noch nie an s2s (Server to Server) Verbindungen beteiligt, Google hat es vor ca 1 Jahr abgeschaltet, damit kann man sich zB. von eigenen XMPP-Servern und damit eigenen XMPP-Accounts nicht mehr mit Google-Usern unterhalten, sonern muss den Google Account verwenden.<br />
+Ich habe zB. sowohl meine Facebook als auch Google-Account in meinem pidgin konfiguriert.</p>
+<p>TextSecure (clients momentan nur für Android) ist momentan das IMHO beste System in diesem Bereich:<br />
+- open source<br />
+- harte crypto<br />
+- multi device (man kann einen Account auf meheren Devices nutzen)<br />
+- bald für iOS und Desktop<br />
+und: es unterstützt Federation, man kann sich also seinen eigenen Server hinstellen und es darüber machen.<br />
+Siehe: <a href="https://whispersystems.org/blog/the-new-textsecure/" >https://whispersystems.org/blog/the-new-textsecure/</a></p>
+<p>Ich muss natürlich immer noch den Account des anderen Teilnehmers kennen &#8230;</p>
+</div>
+
+      <div class="reply">
+        <a class='comment-reply-link' href='/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/?replytocom=505365#respond' onclick='return addComment.moveForm("comment-505365", "505365", "respond", "7546")'>Antworten</a>      </div><!-- .reply -->
+    </article><!-- #comment-## -->
+  </li><!-- #comment-## -->
+    </ol>
+
+
+
+
+                                <div id="respond" class="comment-respond">
+                <h3 id="reply-title" class="comment-reply-title">Hinterlasse eine Antwort <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/#respond" style="display:none;">Antworten abbrechen</a></small></h3>
+                                    <form action="http://notizblog.org/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate>
+                                                                            <p class="comment-notes">Deine E-Mail-Adresse wird nicht veröffentlicht. Erforderliche Felder sind markiert <span class="required">*</span></p>                            <p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input autocomplete="nickname name"  id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">E-Mail <span class="required">*</span></label> <input autocomplete="email"  id="email" name="email" type="email" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input autocomplete="url"  id="url" name="url" type="url" value="" size="30" /></p>
+                                                <p class="comment-form-comment"><label for="comment">Kommentar</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>                        <p class="form-allowed-tags">Du kannst folgende <abbr title="HyperText Markup Language">HTML</abbr>-Tags benutzen:  <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>                       <p class="form-submit">
+                            <input name="submit" type="submit" id="submit" value="Kommentar abschicken" />
+                            <input type='hidden' name='comment_post_ID' value='7546' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+                        </p>
+                        <p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="9552e566de" /></p><p class="comment-subscription-form"><input type="checkbox" name="subscribe_comments" id="subscribe_comments" value="subscribe" style="width: auto; -moz-appearance: checkbox; -webkit-appearance: checkbox;" /> <label class="subscribe-label" id="subscribe-label" for="subscribe_comments">Benachrichtige mich über nachfolgende Kommentare via E-Mail.</label></p><p class="comment-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto; -moz-appearance: checkbox; -webkit-appearance: checkbox;" /> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog">Benachrichtige mich über neue Beiträge via E-Mail.</label></p><script type='text/javascript' src='http://notizblog.org/wp-content/plugins/akismet/_inc/form.js?ver=3.0.0'></script>
+<p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="76"/></p>                 </form>
+                            </div><!-- #respond -->
+                <form id="webmention-form" action="http://notizblog.org/?webmention=endpoint" method="post">
+      <p>
+        <label for="webmention-source">Responding with a post on your own blog? Send me a <a href="http://indiewebcamp.com/webmention">WebMention</a> <sup>(<a href="http://adactio.com/journal/6469/">?</a>)</sup></label>
+        <input id="webmention-source" type="url" name="source" placeholder="URL/Permalink of your article" />
+      </p>
+      <p>
+        <input id="webmention-submit" type="submit" name="submit" value="Ping me!" />
+      </p>
+      <input id="webmention-target" type="hidden" name="target" value="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" />
+    </form>
+    <p>
+    <label for="cite-shortlink">Shortlink</label>
+    <input id="cite-shortlink" class="u-url url shortlink" type="text" value="http://notizblog.org/b/25m" />
+  </p>
+  <p>
+    <label for="cite-permalink">Permalink</label>
+    <input id="cite-permalink" class="u-url url u-uid uid bookmark" type="text" value="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" />
+  </p>
+  <p>
+    <label for="cite-cite">HTML</label>
+    <input id="cite-cite" class="code" type="text" size="70" value="&lt;cite class=&quot;h-cite&quot;&gt;&lt;a class=&quot;u-url p-name&quot; href=&quot;http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/&quot;&gt;Wir brauchen Metadaten für Telefonnummern&lt;/a&gt; (&lt;span class=&quot;p-author h-card&quot; title=&quot;Matthias Pfefferle&quot;&gt;Matthias Pfefferle&lt;/span&gt; &lt;time class=&quot;dt-published&quot; datetime=&quot;2014-02-20T10:30:40+00:00&quot;&gt;20. Februar 2014&lt;/time&gt;)&lt;/cite&gt;">
+  </p>
+
+</div><!-- #comments -->
+</body>
+END;
+		$parser = new Parser($input, 'http://notiz.blog/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/');
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['properties']['author']);
+		$this->assertCount(1, $result['items'][0]['properties']['author'][0]['type']);
+
+		$this->assertEquals('h-card', $result['items'][0]['properties']['author'][0]['type'][0]);
+	}
+
+
+	/**
+	 * Test mixed microformats2 with mf1 roots + properties
+	 * Technically covered by other tests, but this is an additional test with @aaronpk's content
+	 * 		after improvements were made to the backcompat parsing.
+	 * @see https://github.com/indieweb/php-mf2/issues/45#issuecomment-267621041
+	 */
+	public function testMixedMf2andMf1Case2() {
+		$input = <<< END
+<li class="h-review post-review  hreview  post" id="post-id-28640">
+      <div style="" class="content-area   has-responses ">
+  <div class="pad">
+    <div class="item">
+      <h3><a href="http://www.irradiatedsoftware.com/dropvox/" class="url fn p-item h-product">Dropvox</a></h3>
+    </div>
+
+    <div class="rating-stars">
+              <span class="selected"></span>
+              <span class="selected"></span>
+              <span class="selected"></span>
+              <span class="selected"></span>
+              <span class="selected"></span>
+                </div>
+    <span class="rating hidden"><span class="value">5</span> out of <span class="best">5</span></span>
+  </div>
+    <div class="hidden">
+    <!-- provide p-name as fallback for mf2 consumers -->
+    <span class="p-name">Dropvox</span>
+    <span class="reviewer vcard"><a class="url fn" href="https://aaronparecki.com/">Aaron Parecki</a></span>
+    <span class="dtreviewed">2016-12-15T18:01:31-08:00</span>
+    <!-- permalink for the review -->
+    <a href="https://aaronparecki.com/2016/12/15/16/dropvox" class="permalink">permalink</a>
+  </div>
+            <div class="pad">
+      <div class="post-text e-content description content-type-plain">Voice memos that record straight to your Dropbox account.</div>
+    </div>
+        <div class="metaline pad">
+  <i class="marker icon"></i>
+      <span class="p-location h-adr">
+          <span class="p-locality">Portland</span>,
+        <span class="p-region">Oregon</span>
+                <data class="p-latitude" value="45.535432705698"></data>
+      <data class="p-longitude" value="-122.62130255822"></data>
+      </span>
+  </div>
+    
+          <div class="metaline pad">
+      <a href="https://aaronparecki.com/2016/12/15/16/dropvox" class="u-url">
+      <time class="dt-published" datetime="2016-12-15T18:01:31-08:00">
+        Thu, Dec 15, 2016 6:01pm -08:00
+      </time>
+    </a>
+      </div>
+<a class="u-author" href="/"></a>
+        
+  <div style="clear:both;"></div>
+</div>
+  <div class="responses">
+  
+  
+  
+    <form class="webmention-form ui form" action="https://webmention.io/aaronpk/webmention" method="post">
+    <div class="fields">
+      <div class="twelve wide field">
+        <label>Have you written a <a href="https://indieweb.org/responses">response</a> to this? Let me know the URL:</label>
+        <input type="url" name="source" class="url">
+      </div>
+      <div class="four wide field">
+        <label>&nbsp;</label>
+        <input type="submit" class="ui submit button" value="Send Webmention">
+      </div>
+    </div>
+    <div class="status hidden">
+      <div class="ui message"></div>
+    </div>
+    <input type="hidden" name="target" value="https://aaronparecki.com/2016/12/15/16/dropvox">
+  </form>
+  
+  
+  
+  
+</div>
+  </li>
+END;
+		$parser = new Parser($input, 'https://aaronparecki.com/2016/12/15/16/dropvox');
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['properties']['item']);
+		$this->assertCount(1, $result['items'][0]['properties']['item'][0]['type']);
+		$this->assertCount(1, $result['items'][0]['properties']['name']);
+		$this->assertCount(1, $result['items'][0]['properties']['url']);
+		$this->assertCount(1, $result['items'][0]['properties']['author']);
+
+		$this->assertArrayNotHasKey('reviewer', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('description', $result['items'][0]['properties']);
+		# The following two are correct per backcompat algorithm: classic properties are ignored inside the mf2 root.
+		$this->assertArrayNotHasKey('rating', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('best', $result['items'][0]['properties']);
+
+		$this->assertEquals('h-product', $result['items'][0]['properties']['item'][0]['type'][0]);
+		$this->assertEquals('Dropvox', $result['items'][0]['properties']['name'][0]);
+		$this->assertEquals('https://aaronparecki.com/2016/12/15/16/dropvox', $result['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://aaronparecki.com/', $result['items'][0]['properties']['author'][0]);
+	}
+
+
+	/**
+	 * @see http://microformats.org/wiki/hReview#Examples
+	 */
+	public function testParsesClassicHreview() {
+		$input = <<< END
+<div class="hreview">
+	<span><span class="rating">5</span> out of 5 stars</span>
+	<h4 class="summary">Crepes on Cole is awesome</h4>
+	<span class="reviewer vcard">Reviewer: <span class="fn">Tantek</span> - 
+	<abbr class="dtreviewed" title="2005-04-18">April 18, 2005</abbr></span>
+	<div class="description item vcard">
+		<p> <span class="fn org">Crepes on Cole</span> is one of the best little creperies in <span class="adr"><span class="locality">San Francisco</span></span>. Excellent food and service. Plenty of tables in a variety of sizes for parties large and small.  Window seating makes for excellent people watching to/from the N-Judah which stops right outside. I've had many fun social gatherings here, as well as gotten plenty of work done thanks to neighborhood WiFi. </p>
+	</div>
+	<p>Visit date: <span>April 2005</span></p>
+	<p>Food eaten: <span>Florentine crepe</span></p>
+</div>
+END;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertArrayNotHasKey('reviewer', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('description', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
+
+		$this->assertArrayHasKey('author', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('item', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('rating', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('summary', $result['items'][0]['properties']);
+
+		$this->assertCount(1, $result['items'][0]['properties']['author'][0]['type']);
+		$this->assertCount(1, $result['items'][0]['properties']['item'][0]['type']);
+		$this->assertCount(1, $result['items'][0]['properties']['content'][0]['type']);
+
+		$this->assertEquals('h-card', $result['items'][0]['properties']['item'][0]['type'][0]);
+		$this->assertEquals('h-card', $result['items'][0]['properties']['content'][0]['type'][0]);
+	}
+
 }
+

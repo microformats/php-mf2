@@ -275,6 +275,13 @@ class Parser {
 	public $jsonMode;
 
 	/**
+	 * Elements upgraded to mf2 during backcompat
+	 * @var SplObjectStorage
+	 */
+	protected $upgraded;
+
+
+	/**
 	 * Constructor
 	 *
 	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
@@ -321,6 +328,7 @@ class Parser {
 		$this->baseurl = $baseurl;
 		$this->doc = $doc;
 		$this->parsed = new SplObjectStorage();
+		$this->upgraded = new SplObjectStorage();
 		$this->jsonMode = $jsonMode;
 	}
 
@@ -333,16 +341,40 @@ class Parser {
 		$this->parsed[$e] = $prefixes;
 	}
 
+	/**
+	 * Determine if the element has already been parsed
+	 * @param DOMElement $e
+	 * @param string $prefix
+	 * @return bool
+	 */
 	private function isElementParsed(\DOMElement $e, $prefix) {
-		if (!$this->parsed->contains($e))
+		if (!$this->parsed->contains($e)) {
 			return false;
-
+		}
+			
 		$prefixes = $this->parsed[$e];
 
-		if (!in_array($prefix, $prefixes))
+		if (!in_array($prefix, $prefixes)) {
 			return false;
+		}
 
 		return true;
+	}
+
+	/**
+	 * Determine if the element's specified property has already been upgraded during backcompat
+	 * @param DOMElement $el
+	 * @param string $property
+	 * @return bool
+	 */
+	private function isElementUpgraded(\DOMElement $el, $property) {
+		if ( $this->upgraded->contains($el) ) {
+			if ( in_array($property, $this->upgraded[$el]) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function resolveChildUrls(DOMElement $el) {
@@ -792,12 +824,14 @@ class Parser {
 	 * Recursively parse microformats
 	 *
 	 * @param DOMElement $e The element to parse
+	 * @param bool $is_backcompat Whether using backcompat parsing or not
 	 * @return array A representation of the values contained within microformat $e
 	 */
-	public function parseH(\DOMElement $e) {
+	public function parseH(\DOMElement $e, $is_backcompat = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
-		if ($this->parsed->contains($e))
+		if ($this->parsed->contains($e)) {
 			return null;
+		}
 
 		// Get current µf name
 		$mfTypes = mfNamesFromElement($e, 'h-');
@@ -818,15 +852,19 @@ class Parser {
 			$el->setAttribute('class', $class);
 		}
 
+		$subMFs = $this->getRootMF($e);
+
 		// Handle nested microformats (h-*)
-		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," h-")]', $e) as $subMF) {
+		foreach ( $subMFs as $subMF ) {
+
 			// Parse
 			$result = $this->parseH($subMF);
 
 			// If result was already parsed, skip it
-			if (null === $result)
+			if (null === $result) {
 				continue;
-			
+			}
+
 			// In most cases, the value attribute of the nested microformat should be the p- parsed value of the elemnt.
 			// The only times this is different is when the microformat is nested under certain prefixes, which are handled below.
 			$result['value'] = $this->parseP($subMF);
@@ -871,15 +909,17 @@ class Parser {
 
 		// Handle p-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
-			if ($this->isElementParsed($p, 'p'))
+			if ($this->isElementParsed($p, 'p')) {
 				continue;
+			}
 
 			$pValue = $this->parseP($p);
 
 			// Add the value to the array for it’s p- properties
 			foreach (mfNamesFromElement($p, 'p-') as $propName) {
-				if (!empty($propName))
+				if (!empty($propName)) {
 					$return[$propName][] = $pValue;
+				}
 			}
 
 			// Make sure this sub-mf won’t get parsed as a top level mf
@@ -888,8 +928,9 @@ class Parser {
 
 		// Handle u-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ",  @class)," u-")]', $e) as $u) {
-			if ($this->isElementParsed($u, 'u'))
+			if ($this->isElementParsed($u, 'u')) {
 				continue;
+			}
 
 			$uValue = $this->parseU($u);
 
@@ -904,8 +945,9 @@ class Parser {
 
 		// Handle dt-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
-			if ($this->isElementParsed($dt, 'dt'))
+			if ($this->isElementParsed($dt, 'dt')) {
 				continue;
+			}
 
 			$dtValue = $this->parseDT($dt, $dates);
 
@@ -922,8 +964,9 @@ class Parser {
 
 		// Handle e-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
-			if ($this->isElementParsed($em, 'e'))
+			if ($this->isElementParsed($em, 'e')) {
 				continue;
+			}
 
 			$eValue = $this->parseE($em);
 
@@ -939,14 +982,16 @@ class Parser {
 
 		// Implied Properties
 		// Check for p-name
-		if (!array_key_exists('name', $return)) {
+		if (!array_key_exists('name', $return) && !$is_backcompat) {
 			try {
 				// Look for img @alt
-				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '')
+				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '') {
 					throw new Exception($e->getAttribute('alt'));
+				}
 
-				if ($e->tagName == 'abbr' and $e->hasAttribute('title'))
+				if ($e->tagName == 'abbr' and $e->hasAttribute('title')) {
 					throw new Exception($e->getAttribute('title'));
+				}
 
 				// Look for nested img @alt
 				foreach ($this->xpath->query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
@@ -987,7 +1032,7 @@ class Parser {
 		}
 
 		// Check for u-photo
-		if (!array_key_exists('photo', $return)) {
+		if (!array_key_exists('photo', $return) && !$is_backcompat) {
 
 			$photo = $this->parseImpliedPhoto($e);
 
@@ -998,10 +1043,11 @@ class Parser {
 		}
 
 		// Check for u-url
-		if (!array_key_exists('url', $return)) {
+		if (!array_key_exists('url', $return) && !$is_backcompat) {
 			// Look for img @src
-			if ($e->tagName == 'a' or $e->tagName == 'area')
+			if ($e->tagName == 'a' or $e->tagName == 'area') {
 				$url = $e->getAttribute('href');
+			}
 
 			// Look for nested a @href
 			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
@@ -1021,8 +1067,9 @@ class Parser {
 				}
 			}
 
-			if (!empty($url))
+			if (!empty($url)) {
 				$return['url'][] = $this->resolveUrl($url);
+			}
 		}
 
 		// Language
@@ -1171,22 +1218,16 @@ class Parser {
 	 */
 	public function parse($convertClassic = true, DOMElement $context = null) {
 		$mfs = array();
+		$mfElements = $this->getRootMF($context);
 
-		if ($convertClassic) {
-			$this->convertLegacy();
-		}
-
-		$mfElements = null === $context
-			? $this->xpath->query('//*[contains(concat(" ",	@class), " h-")]')
-			: $this->xpath->query('.//*[contains(concat(" ",	@class), " h-")]', $context);
-
-		// Parser microformats
 		foreach ($mfElements as $node) {
-			// For each microformat
-			$result = $this->parseH($node);
+			$is_backcompat = !$this->hasRootMf2($node);
 
-			// Add the value to the array for this property type
-			$mfs[] = $result;
+			if ( $convertClassic && $is_backcompat ) {
+				$this->backcompat($node);
+			}
+
+			$mfs[] = $this->parseH($node, $is_backcompat);
 		}
 
 		// Parse rels
@@ -1197,8 +1238,9 @@ class Parser {
 			'rels' => $rels
 		);
 
-		if (count($alternates))
+		if (count($alternates)) {
 			$top['alternates'] = $alternates;
+		}
 
 		return $top;
 	}
@@ -1228,6 +1270,202 @@ class Parser {
 	}
 
 	/**
+	 * Get the root microformat elements
+	 * @param DOMElement $context
+	 * @return DOMNodeList
+	 */
+	public function getRootMF(DOMElement $context = null) {
+		// start with mf2 root class name xpath
+		$xpaths = array(
+			'contains(concat(" ",normalize-space(@class)), " h-")'
+		);
+
+		// add mf1 root class names
+		foreach ( $this->classicRootMap as $old => $new ) {
+			$xpaths[] = '( contains(concat(" ",normalize-space(@class), " "), " ' . $old . ' ") and not(ancestor::*[contains(concat(" ",normalize-space(@class)), " h-")]) )';
+		}
+
+		// final xpath with OR
+		$xpath = '//*[' . implode(' or ', $xpaths) . ']';
+
+		$mfElements = (null === $context)
+			? $this->xpath->query($xpath)
+			: $this->xpath->query('.' . $xpath, $context);
+
+		return $mfElements;
+	}
+
+	/**
+	 * Apply the backcompat algorithm to upgrade mf1 classes to mf2.
+	 * This method is called recursively.
+	 * @param DOMElement $el
+	 * @param string $context
+	 * @param bool $isParentMf2
+	 * @see http://microformats.org/wiki/microformats2-parsing#algorithm
+	 */
+	public function backcompat(DOMElement $el, $context = '', $isParentMf2 = false) {
+
+		if ( $context ) {
+			$mf1Classes = array($context);
+		} else {
+			$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+			$classes = array_filter(explode(' ', $class));
+			$mf1Classes = array_intersect($classes, array_keys($this->classicRootMap));
+		}
+
+		foreach ($mf1Classes as $classname) {
+			// special handling for specific properties
+			switch ( $classname )
+			{
+				case 'vcard':
+					$adr = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " adr ")]', $el);
+
+					if ( $adr->length ) {
+						foreach ( $adr as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->backcompat($tempEl, 'adr');
+								$this->addMfClasses($tempEl, 'p-adr h-adr');
+							}
+						}
+					}
+				break;
+
+				case 'hreview':
+					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
+
+					if ( $item_and_vcard->length ) {
+						foreach ( $item_and_vcard as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->backcompat($tempEl, 'vcard');
+								$this->addMfClasses($tempEl, 'p-item h-card');
+								$this->addUpgraded($tempEl, array('item', 'vcard'));
+							}
+						}
+					}
+
+					$item_and_vevent = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vevent ")]', $el);
+
+					if ( $item_and_vevent->length ) {
+						foreach ( $item_and_vevent as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->addMfClasses($tempEl, 'p-item h-event');
+								$this->backcompat($tempEl, 'vevent');
+								$this->addUpgraded($tempEl, array('item', 'vevent'));
+							}
+						}
+					}
+
+					$item_and_hproduct = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " hproduct ")]', $el);
+
+					if ( $item_and_hproduct->length ) {
+						foreach ( $item_and_hproduct as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->addMfClasses($tempEl, 'p-item h-product');
+								$this->backcompat($tempEl, 'vevent');
+								$this->addUpgraded($tempEl, array('item', 'hproduct'));
+							}
+						}
+					}
+				break;
+
+				case 'vevent':
+					$location = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " location ")]', $el);
+
+					if ( $location->length ) {
+						foreach ( $location as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->addMfClasses($tempEl, 'h-card');
+								$this->backcompat($tempEl, 'vcard');
+							}
+						}
+					}
+				break;
+			}
+
+			// root class has mf1 properties to be upgraded
+			if ( isset($this->classicPropertyMap[$classname]) ) {
+				// loop through each property of the mf1 root
+				foreach ( $this->classicPropertyMap[$classname] as $property => $data ) {
+					$propertyElements = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " ' . $property . ' ")]', $el);
+
+					// loop through each element with the property
+					foreach ( $propertyElements as $propertyEl ) {
+						$hasRootMf2 = $this->hasRootMf2($propertyEl);
+
+						// if the element has not been upgraded and we're not inside an mf2 root, recurse
+						if ( !$this->isElementUpgraded($propertyEl, $property) && !$isParentMf2 )
+						{
+							$temp_context = ( isset($data['context']) ) ? $data['context'] : null;
+							$this->backcompat($propertyEl, $temp_context, $hasRootMf2);
+							$this->addMfClasses($propertyEl, $data['replace']);
+						}
+
+						$this->addUpgraded($propertyEl, $property);
+					}
+				}
+			}
+
+			if ( empty($context) && isset($this->classicRootMap[$classname]) ) {
+				$this->addMfClasses($el, $this->classicRootMap[$classname]);
+			}
+		}
+
+		return;
+	}
+
+	/**
+	 * Add element + property as upgraded during backcompat
+	 * @param DOMElement $el
+	 * @param string|array $property
+	 */
+	public function addUpgraded(DOMElement $el, $property) {
+		if ( !is_array($property) ) {
+			$property = array($property);
+		}
+
+		// add element to list of upgraded elements
+		if ( !$this->upgraded->contains($el) ) {
+			$this->upgraded->attach($el, $property);
+		} else {
+			$this->upgraded[$el] = array_merge($this->upgraded[$el], $property);
+		}
+	}
+
+	/**
+	 * Add the provided classes to an element.
+	 * Does not add duplicate if class name already exists.
+	 * @param DOMElement $el
+	 * @param string $classes
+	 */
+	public function addMfClasses(DOMElement $el, $classes) {
+		$existingClasses = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+		$existingClasses = array_filter(explode(' ', $existingClasses));
+
+		$addClasses = array_diff(explode(' ', $classes), $existingClasses);
+
+		if ( $addClasses ) {
+			$el->setAttribute('class', $el->getAttribute('class') . ' ' . implode(' ', $addClasses));
+		}
+	}
+
+	/**
+	 * Check an element for mf2 h-* class, typically to determine if backcompat should be used
+	 * @param DOMElement $el
+	 */
+	public function hasRootMf2(\DOMElement $el) {
+		$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+		$classes = array_filter(explode(' ', $class));
+
+		foreach ( $classes as $classname ) {
+			if ( strpos($classname, 'h-') === 0 ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Convert Legacy Classnames
 	 *
 	 * Adds microformats2 classnames into a document containing only legacy
@@ -1248,9 +1486,9 @@ class Parser {
 
 		foreach ($this->classicPropertyMap as $oldRoot => $properties) {
 			$newRoot = $this->classicRootMap[$oldRoot];
-			foreach ($properties as $old => $new) {
-				foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
-					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
+			foreach ($properties as $old => $data) {
+				foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $data['replace'] . ' "))]') as $el) {
+					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $data['replace']);
 				}
 			}
 		}
@@ -1274,6 +1512,7 @@ class Parser {
 
 	/**
 	 * Classic Root Classname map
+	 * @var array
 	 */
 	public $classicRootMap = array(
 		'vcard' => 'h-card',
@@ -1286,107 +1525,339 @@ class Parser {
 		'hproduct' => 'h-product'
 	);
 
+	/**
+	 * Mapping of mf1 properties to mf2 and the context they're parsed with
+	 * @var array
+	 */
 	public $classicPropertyMap = array(
 		'vcard' => array(
-			'fn' => 'p-name',
-			'url' => 'u-url',
-			'honorific-prefix' => 'p-honorific-prefix',
-			'given-name' => 'p-given-name',
-			'additional-name' => 'p-additional-name',
-			'family-name' => 'p-family-name',
-			'honorific-suffix' => 'p-honorific-suffix',
-			'nickname' => 'p-nickname',
-			'email' => 'u-email',
-			'logo' => 'u-logo',
-			'photo' => 'u-photo',
-			'url' => 'u-url',
-			'uid' => 'u-uid',
-			'category' => 'p-category',
-			'adr' => 'p-adr h-adr',
-			'extended-address' => 'p-extended-address',
-			'street-address' => 'p-street-address',
-			'locality' => 'p-locality',
-			'region' => 'p-region',
-			'postal-code' => 'p-postal-code',
-			'country-name' => 'p-country-name',
-			'label' => 'p-label',
-			'geo' => 'p-geo h-geo',
-			'latitude' => 'p-latitude',
-			'longitude' => 'p-longitude',
-			'tel' => 'p-tel',
-			'note' => 'p-note',
-			'bday' => 'dt-bday',
-			'key' => 'u-key',
-			'org' => 'p-org',
-			'organization-name' => 'p-organization-name',
-			'organization-unit' => 'p-organization-unit',
+			'fn' => array(
+				'replace' => 'p-name'
+			),
+			'honorific-prefix' => array(
+				'replace' => 'p-honorific-prefix'
+			),
+			'given-name' => array(
+				'replace' => 'p-given-name'
+			),
+			'additional-name' => array(
+				'replace' => 'p-additional-name'
+			),
+			'family-name' => array(
+				'replace' => 'p-family-name'
+			),
+			'honorific-suffix' => array(
+				'replace' => 'p-honorific-suffix'
+			),
+			'nickname' => array(
+				'replace' => 'p-nickname'
+			),
+			'email' => array(
+				'replace' => 'u-email'
+			),
+			'logo' => array(
+				'replace' => 'u-logo'
+			),
+			'photo' => array(
+				'replace' => 'u-photo'
+			),
+			'url' => array(
+				'replace' => 'u-url'
+			),
+			'uid' => array(
+				'replace' => 'u-uid'
+			),
+			'category' => array(
+				'replace' => 'p-category'
+			),
+			'adr' => array(
+				'replace' => 'p-adr h-adr',
+				'context' => 'adr',
+			),
+			'extended-address' => array(
+				'replace' => 'p-extended-address'
+			),
+			'street-address' => array(
+				'replace' => 'p-street-address'
+			),
+			'locality' => array(
+				'replace' => 'p-locality'
+			),
+			'region' => array(
+				'replace' => 'p-region'
+			),
+			'postal-code' => array(
+				'replace' => 'p-postal-code'
+			),
+			'country-name' => array(
+				'replace' => 'p-country-name'
+			),
+			'label' => array(
+				'replace' => 'p-label'
+			),
+			'geo' => array(
+				'replace' => 'p-geo h-geo'
+			),
+			'latitude' => array(
+				'replace' => 'p-latitude'
+			),
+			'longitude' => array(
+				'replace' => 'p-longitude'
+			),
+			'tel' => array(
+				'replace' => 'p-tel'
+			),
+			'note' => array(
+				'replace' => 'p-note'
+			),
+			'bday' => array(
+				'replace' => 'dt-bday'
+			),
+			'key' => array(
+				'replace' => 'u-key'
+			),
+			'org' => array(
+				'replace' => 'p-org'
+			),
+			'organization-name' => array(
+				'replace' => 'p-organization-name'
+			),
+			'organization-unit' => array(
+				'replace' => 'p-organization-unit'
+			),
+			'title' => array(
+				'replace' => 'p-job-title'
+			),
+			'role' => array(
+				'replace' => 'p-role'
+			),
+			'tz' => array(
+				'replace' => 'p-tz'
+			),
+			'rev' => array(
+				'replace' => 'dt-rev'
+			),
+		),
+		'hfeed' => array(
+			# nothing currently
 		),
 		'hentry' => array(
-			'entry-title' => 'p-name',
-			'entry-summary' => 'p-summary',
-			'entry-content' => 'e-content',
-			'published' => 'dt-published',
-			'updated' => 'dt-updated',
-			'author' => 'p-author h-card',
-			'category' => 'p-category',
-			'geo' => 'p-geo h-geo',
-			'latitude' => 'p-latitude',
-			'longitude' => 'p-longitude',
+			'entry-title' => array(
+				'replace' => 'p-name'
+			),
+			'entry-summary' => array(
+				'replace' => 'p-summary'
+			),
+			'entry-content' => array(
+				'replace' => 'e-content'
+			),
+			'published' => array(
+				'replace' => 'dt-published'
+			),
+			'updated' => array(
+				'replace' => 'dt-updated'
+			),
+			'author' => array(
+				'replace' => 'p-author h-card',
+				'context' => 'vcard',
+			),
+			'category' => array(
+				'replace' => 'p-category'
+			),
 		),
 		'hrecipe' => array(
-			'fn' => 'p-name',
-			'ingredient' => 'p-ingredient',
-			'yield' => 'p-yield',
-			'instructions' => 'e-instructions',
-			'duration' => 'dt-duration',
-			'nutrition' => 'p-nutrition',
-			'photo' => 'u-photo',
-			'summary' => 'p-summary',
-			'author' => 'p-author h-card'
+			'fn' => array(
+				'replace' => 'p-name'
+			),
+			'ingredient' =>  array(
+				'replace' => 'p-ingredient'
+				/**
+				 * TODO: hRecipe 'value' and 'type' child mf not parsing correctly currently.
+				 * Per http://microformats.org/wiki/hRecipe#Property_details, they're experimental.
+				 */
+			),
+			'yield' =>  array(
+				'replace' => 'p-yield'
+			),
+			'instructions' =>  array(
+				'replace' => 'e-instructions'
+			),
+			'duration' =>  array(
+				'replace' => 'dt-duration'
+			),
+			'photo' =>  array(
+				'replace' => 'u-photo'
+			),
+			'summary' =>  array(
+				'replace' => 'p-summary'
+			),
+			'author' =>  array(
+				'replace' => 'p-author h-card',
+				'context' => 'vcard',
+			),
+			'nutrition' =>  array(
+				'replace' => 'p-nutrition'
+			),
+			'category' =>  array(
+				'replace' => 'p-category'
+			),
 		),
 		'hresume' => array(
-			'summary' => 'p-summary',
-			'contact' => 'h-card p-contact',
-			'education' => 'h-event p-education',
-			'experience' => 'h-event p-experience',
-			'skill' => 'p-skill',
-			'affiliation' => 'p-affiliation h-card',
+			'summary' => array(
+				'replace' => 'p-summary'
+			),
+			'contact' => array(
+				'replace' => 'p-contact h-card',
+				'context' => 'vcard',
+			),
+			'education' => array(
+				'replace' => 'p-education h-event',
+				'context' => 'vevent',
+			),
+			'experience' => array(
+				'replace' => 'p-experience h-event',
+				'context' => 'vevent',
+			),
+			'skill' => array(
+				'replace' => 'p-skill'
+			),
+			'affiliation' => array(
+				'replace' => 'p-affiliation h-card',
+				'context' => 'vcard',
+			),
 		),
 		'vevent' => array(
-			'dtstart' => 'dt-start',
-			'dtend' => 'dt-end',
-			'duration' => 'dt-duration',
-			'description' => 'p-description',
-			'summary' => 'p-name',
-			'description' => 'p-description',
-			'url' => 'u-url',
-			'category' => 'p-category',
-			'location' => 'h-card',
-			'geo' => 'p-location h-geo'
+			'summary' => array(
+				'replace' => 'p-name'
+			),
+			'dtstart' => array(
+				'replace' => 'dt-start'
+			),
+			'dtend' => array(
+				'replace' => 'dt-end'
+			),
+			'duration' => array(
+				'replace' => 'dt-duration'
+			),
+			'description' => array(
+				'replace' => 'p-description'
+			),
+			'url' => array(
+				'replace' => 'u-url'
+			),
+			'category' => array(
+				'replace' => 'p-category'
+			),
+			'location' => array(
+				'replace' => 'h-card',
+				'context' => 'vcard'
+			),
+			'geo' => array(
+				'replace' => 'p-location h-geo'
+			),
 		),
 		'hreview' => array(
-			'summary' => 'p-name',
-			'fn' => 'p-item h-item p-name', // doesn’t work properly, see spec
-			'photo' => 'u-photo', // of the item being reviewed (p-item h-item u-photo)
-			'url' => 'u-url', // of the item being reviewed (p-item h-item u-url)
-			'reviewer' => 'p-reviewer p-author h-card',
-			'dtreviewed' => 'dt-reviewed',
-			'rating' => 'p-rating',
-			'best' => 'p-best',
-			'worst' => 'p-worst',
-			'description' => 'p-description'
+			'summary' => array(
+				'replace' => 'p-summary'
+			),
+			# fn: see item.fn below
+			# photo: see item.photo below
+			# url: see item.url below
+			'item' => array(
+				'replace' => 'p-item h-item',
+				'context' => 'item'
+			),
+			'reviewer' => array(
+				'replace' => 'p-author h-card',
+				'context' => 'vcard',
+			),
+			'dtreviewed' => array(
+				'replace' => 'dt-published'
+			),
+			'rating' => array(
+				'replace' => 'p-rating'
+			),
+			'best' => array(
+				'replace' => 'p-best'
+			),
+			'worst' => array(
+				'replace' => 'p-worst'
+			),
+			'description' => array(
+				'replace' => 'e-content'
+			),
 		),
 		'hproduct' => array(
-			'fn' => 'p-name',
-			'photo' => 'u-photo',
-			'brand' => 'p-brand',
-			'category' => 'p-category',
-			'description' => 'p-description',
-			'identifier' => 'u-identifier',
-			'url' => 'u-url',
-			'review' => 'p-review h-review',
-			'price' => 'p-price'
-		)
+			'fn' => array(
+				'replace' => 'p-name',
+			),
+			'photo' => array(
+				'replace' => 'u-photo',
+			),
+			'brand' => array(
+				'replace' => 'p-brand',
+			),
+			'category' => array(
+				'replace' => 'p-category',
+			),
+			'description' => array(
+				'replace' => 'p-description',
+			),
+			'identifier' => array(
+				'replace' => 'u-identifier',
+			),
+			'url' => array(
+				'replace' => 'u-url',
+			),
+			'review' => array(
+				'replace' => 'p-review h-review',
+			),
+			'price' => array(
+				'replace' => 'p-price'
+			),
+		),
+		'item' => array(
+			'fn' => array(
+				'replace' => 'p-name'
+			),
+			'url' => array(
+				'replace' => 'u-url'
+			),
+			'photo' => array(
+				'replace' => 'u-photo'
+			),
+		),
+		'adr' => array(
+			'post-office-box' => array(
+				'replace' => 'p-post-office-box'
+			),
+			'extended-address' => array(
+				'replace' => 'p-extended-address'
+			),
+			'street-address' => array(
+				'replace' => 'p-street-address'
+			),
+			'locality' => array(
+				'replace' => 'p-locality'
+			),
+			'region' => array(
+				'replace' => 'p-region'
+			),
+			'postal-code' => array(
+				'replace' => 'p-postal-code'
+			),
+			'country-name' => array(
+				'replace' => 'p-country-name'
+			),
+		),
+		'geo' => array(
+			'latitude' => array(
+				'replace' => 'p-latitude'
+			),
+			'longitude' => array(
+				'replace' => 'p-longitude'
+			),
+		),
 	);
 }
 
