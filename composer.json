@@ -21,7 +21,8 @@
         "microformats/test": "@dev"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.8.*"
+        "phpunit/phpunit": "4.8.*",
+        "phpdocumentor/phpdocumentor": "v2.8.4"
     },
     "autoload": {
         "files": ["Mf2/Parser.php"]
