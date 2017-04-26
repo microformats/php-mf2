@@ -1317,19 +1317,6 @@ class Parser {
 			// special handling for specific properties
 			switch ( $classname )
 			{
-				case 'vcard':
-					$adr = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " adr ")]', $el);
-
-					if ( $adr->length ) {
-						foreach ( $adr as $tempEl ) {
-							if ( !$this->hasRootMf2($tempEl) ) {
-								$this->backcompat($tempEl, 'adr');
-								$this->addMfClasses($tempEl, 'p-adr h-adr');
-							}
-						}
-					}
-				break;
-
 				case 'hreview':
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
@@ -1405,7 +1392,7 @@ class Parser {
 				}
 			}
 
-			if ( empty($context) && isset($this->classicRootMap[$classname]) ) {
+			if ( empty($context) && isset($this->classicRootMap[$classname]) && !$this->hasRootMf2($el) ) {
 				$this->addMfClasses($el, $this->classicRootMap[$classname]);
 			}
 		}
@@ -1522,7 +1509,8 @@ class Parser {
 		'hresume' => 'h-resume',
 		'vevent' => 'h-event',
 		'hreview' => 'h-review',
-		'hproduct' => 'h-product'
+		'hproduct' => 'h-product',
+		'adr' => 'h-adr',
 	);
 
 	/**
@@ -1571,8 +1559,7 @@ class Parser {
 				'replace' => 'p-category'
 			),
 			'adr' => array(
-				'replace' => 'p-adr h-adr',
-				'context' => 'adr',
+				'replace' => 'p-adr',
 			),
 			'extended-address' => array(
 				'replace' => 'p-extended-address'

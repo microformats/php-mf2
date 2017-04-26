@@ -240,21 +240,58 @@ END;
 
 
 	/**
+	 * @see http://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
+	 */
+	public function testMf2RootStopsBackcompatRoot() {
+		$input = '<div class="adr h-adr">
+  <div class="locality">MF1 adr locality</div>
+  <div class="p-locality">MF2 adr locality</div>
+</div>';
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['type']);
+		$this->assertEquals('h-adr', $result['items'][0]['type'][0]);
+		$this->assertCount(1, $result['items'][0]['properties']['locality']);
+		$this->assertEquals('MF2 adr locality', $result['items'][0]['properties']['locality'][0]);
+	}
+
+
+	/**
+	 * @see http://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
+	 */
+	public function testMf2CustomRootStopsBackcompatRoot() {
+		$input = '<div class="adr h-acme-address">
+  <div class="locality">MF1 acme locality</div>
+  <div class="p-locality">MF2 acme locality</div>
+</div>';
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['type']);
+		$this->assertEquals('h-acme-address', $result['items'][0]['type'][0]);
+		$this->assertCount(1, $result['items'][0]['properties']['locality']);
+		$this->assertEquals('MF2 acme locality', $result['items'][0]['properties']['locality'][0]);
+	}
+
+
+	/**
 	 * @see http://microformats.org/wiki/microformats2-parsing-issues#uf2_children_on_backcompat_properties
 	 */
-	public function testMf2ChildrenOnBackcompatProperties()
-	{
+	public function testMf2ChildrenOnBackcompatProperties() {
 		$input = '<div class="vcard">
-  <div class="adr h-custom">
-    <div class="locality">MF1</div>
-    <div class="p-locality">MF2</div>
+  <div class="adr h-acme-some-acme-object">
+    <div class="locality">MF1 some acme locality</div>
+    <div class="p-locality">MF2 some acme locality</div>
   </div>
 </div>';
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
+		$this->assertCount(1, $result['items'][0]['properties']['adr'][0]['type']);
+		$this->assertEquals('h-acme-some-acme-object', $result['items'][0]['properties']['adr'][0]['type'][0]);
 		$this->assertCount(1, $result['items'][0]['properties']['adr'][0]['properties']['locality']);
-		$this->assertEquals('MF2', $result['items'][0]['properties']['adr'][0]['properties']['locality'][0]);
+		$this->assertEquals('MF2 some acme locality', $result['items'][0]['properties']['adr'][0]['properties']['locality'][0]);
 	}
 
 
