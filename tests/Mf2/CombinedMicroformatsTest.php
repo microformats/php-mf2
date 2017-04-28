@@ -195,8 +195,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 			"properties": {
 				"name": ["Mozilla Foundation"],
 				"url": ["http://mozilla.org/"]
-			},
-			"value": "Mozilla Foundation"
+			}
 		}]
 	}]
 }';
@@ -230,6 +229,9 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
 		$mf = Mf2\parse($input);
 		
+		$this->assertArrayHasKey('value', $mf['items'][0]['properties']['content'][0]);
+		$this->assertEquals($mf['items'][0]['properties']['content'][0]['value'], 'Hello');
+		$this->assertArrayHasKey('html', $mf['items'][0]['properties']['content'][0]);
 		$this->assertEquals($mf['items'][0]['properties']['content'][0]['html'], '<p>Hello</p>');
 	}
 	
@@ -299,4 +301,19 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertEquals($mf['items'][0]['properties']['author'][0]['value'], 'Zoe');
 	}
+
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/98
+	 * @see https://github.com/microformats/tests/issues/58
+	 */
+	public function testNoValueForNestedMicroformatWithoutProperty() {
+		$input = '<div class="h-card" ><a class="h-card" href="jane.html">Jane Doe</a><p></p></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('children', $output['items'][0]);
+		$this->assertArrayNotHasKey('value', $output['items'][0]['children'][0]);
+	}
+
 }
