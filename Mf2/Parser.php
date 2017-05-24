@@ -615,6 +615,8 @@ class Parser {
 			$uValue = $u->getAttribute('href');
 		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->getAttribute('src') !== null) {
 			$uValue = $u->getAttribute('src');
+		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
+			$uValue = $u->getAttribute('poster');
 		} elseif ($u->tagName == 'object' and $u->getAttribute('data') !== null) {
 			$uValue = $u->getAttribute('data');
 		}
