@@ -25,10 +25,16 @@ $mf = Mf2\fetch('https://waterpigs.co.uk');
 
 ### Signed Code Verification
 
-From v0.2.9, php-mf2’s version tags are signed using GPG by barnaby@waterpigs.co.uk. This allows you to cryptographically verify that you’re using the right code. To do so you will need my key — you don’t have it, get it like this:
+From v0.2.9, php-mf2’s version tags are signed using GPG, allowing you to cryptographically verify that you’re using code which hasn’t been tampered with. To verify the code you will need the GPG keys for one of the people in the list of code signers:
+
+* Barnaby Walters barnaby@waterpigs.co.uk 1C00 430B 19C6 B426 922F E534 BEF8 CE58 118A D524
+* Aaron Parecki aaron@parecki.com F384 12A1 55FB 8B15 B7DD 8E07 4225 2B5E 65CE 0ADD
+* Bear bear@bear.im 0A93 9BA7 8203 FCBC 58A9 E8B5 9D1E 0661 8EE5 B4D8
+
+To import the relevant keys into your GPG keychain, execute the following command:
 
 ```bash
-gpg --recv-keys 7D49834B0416CFA3
+gpg --recv-keys 1C00430B19C6B426922FE534BEF8CE58118AD524 F38412A155FB8B15B7DD8E0742252B5E65CE0ADD 0A939BA78203FCBC58A9E8B59D1E06618EE5B4D8
 ```
 
 Then verify the installed files like this:
