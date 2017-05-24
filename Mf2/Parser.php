@@ -588,13 +588,13 @@ class Parser {
 
 		$this->resolveChildUrls($p);
 		
-		if ($p->tagName == 'img' and $p->getAttribute('alt') !== '') {
+		if ($p->tagName == 'img' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
-		} elseif ($p->tagName == 'area' and $p->getAttribute('alt') !== '') {
+		} elseif ($p->tagName == 'area' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
-		} elseif ($p->tagName == 'abbr' and $p->getAttribute('title') !== '') {
+		} elseif ($p->tagName == 'abbr' and $p->hasAttribute('title')) {
 			$pValue = $p->getAttribute('title');
-		} elseif (in_array($p->tagName, array('data', 'input')) and $p->getAttribute('value') !== '') {
+		} elseif (in_array($p->tagName, array('data', 'input')) and $p->hasAttribute('value')) {
 			$pValue = $p->getAttribute('value');
 		} else {
 			$pValue = unicodeTrim($this->innerText($p));
@@ -611,11 +611,11 @@ class Parser {
 	 * @todo make this adhere to value-class
 	 */
 	public function parseU(\DOMElement $u) {
-		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->getAttribute('href') !== null) {
+		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
-		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->getAttribute('src') !== null) {
+		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
-		} elseif ($u->tagName == 'object' and $u->getAttribute('data') !== null) {
+		} elseif ($u->tagName == 'object' and $u->hasAttribute('data')) {
 			$uValue = $u->getAttribute('data');
 		}
 
@@ -627,9 +627,9 @@ class Parser {
 
 		if ($classTitle !== null) {
 			return $classTitle;
-		} elseif ($u->tagName == 'abbr' and $u->getAttribute('title') !== null) {
+		} elseif ($u->tagName == 'abbr' and $u->hasAttribute('title')) {
 			return $u->getAttribute('title');
-		} elseif (in_array($u->tagName, array('data', 'input')) and $u->getAttribute('value') !== null) {
+		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
 			return $u->getAttribute('value');
 		} else {
 			return unicodeTrim($this->textContent($u));
@@ -1128,7 +1128,7 @@ class Parser {
 
 					if ($el->tagName == 'img') {
 						return $el->getAttribute('src');
-					} else if ($el->tagName == 'object' && $el->getAttribute('data') != '') {
+					} else if ($el->tagName == 'object' && $el->hasAttribute('data')) {
 						return $el->getAttribute('data');
 					}
 
