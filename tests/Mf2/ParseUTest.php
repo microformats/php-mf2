@@ -25,7 +25,31 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
 	}
-	
+
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesEmptyHrefAttribute() {
+		$input = '<div class="h-card"><a class="u-url" href="">Awesome example website</a></div>';
+		$parser = new Parser($input, "http://example.com/");
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+	}
+
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesMissingHrefAttribute() {
+		$input = '<div class="h-card"><a class="u-url">Awesome example website</a></div>';
+		$parser = new Parser($input, "http://example.com/");
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('Awesome example website', $output['items'][0]['properties']['url'][0]);
+	}
+
 	/**
 	 * @group parseU
 	 */
@@ -72,6 +96,18 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+	}
+
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesAbbrNoTitle() {
+		$input = '<div class="h-card"><abbr class="u-photo">no title attribute</abbr></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('no title attribute', $output['items'][0]['properties']['photo'][0]);
 	}
 	
 	/**
@@ -161,6 +197,17 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 	}
 
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesVideoNoSrc() {
+		$input = '<div class="h-entry"><video class="u-video">no video support</video></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
+		$this->assertEquals('no video support', $output['items'][0]['properties']['video'][0]);
+	}
 
 	/**
 	 * @group parseU
@@ -173,6 +220,19 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 		$this->assertEquals('http://example.com/video.ogg', $output['items'][0]['properties']['video'][1]);
+	}
+
+	/**
+	 * @group parseU
+	 */
+	public function testParseUHandlesVideoPoster() {
+		$input = '<div class="h-entry"><video class="u-photo" poster="http://example.com/posterimage.jpg"><source class="u-video" src="http://example.com/video.mp4" type="video/mp4"></video></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
+		$this->assertEquals('http://example.com/posterimage.jpg', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
