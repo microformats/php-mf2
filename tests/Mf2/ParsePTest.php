@@ -70,6 +70,18 @@ class ParsePTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @group parseP
 	 */
+	public function testParsePHandlesDataWithBlankValueAttribute() {
+		$input = '<div class="h-card"><data class="p-name" value="">Example User</data></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
+	}
+
+	/**
+	 * @group parseP
+	 */
 	public function testParsePReturnsEmptyStringForBrHr() {
 		$input = '<div class="h-card"><br class="p-name"/></div><div class="h-card"><hr class="p-name"/></div>';
 		$parser = new Parser($input);
