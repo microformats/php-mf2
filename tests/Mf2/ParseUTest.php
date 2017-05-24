@@ -225,19 +225,6 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesVideoPoster() {
-		$input = '<div class="h-entry"><video class="u-photo" poster="http://example.com/posterimage.jpg"><source class="u-video" src="http://example.com/video.mp4" type="video/mp4"></video></div>';
-		$parser = new Parser($input);
-		$output = $parser->parse();
-
-		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
-		$this->assertEquals('http://example.com/posterimage.jpg', $output['items'][0]['properties']['photo'][0]);
-	}
-
-	/**
-	 * @group parseU
-	 */
 	public function testParseUWithSpaces() {
 		$input = '<div class="h-card"><a class="u-url" href=" http://example.com ">Awesome example website</a></div>';
 		$parser = new Parser($input);
