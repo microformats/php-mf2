@@ -31,9 +31,7 @@ if (!file_exists($url)) {
 	}
 }
 
-$html = file_get_contents($url);
-
-$result = Mf2\parse($html, $url);
+$result = Mf2\fetch($url);
 
 if (defined('JSON_PRETTY_PRINT')) {
 	echo json_encode($result, JSON_PRETTY_PRINT);
