@@ -67,7 +67,7 @@ php-mf2 is PSR-0 autoloadable, so simply include Composer’s auto-generated aut
 
 ## Examples
 
-### Fetching microformats from a page
+### Fetching microformats from a URL
 
 ```php
 <?php
@@ -83,7 +83,7 @@ use Mf2;
 $mf = Mf2\fetch('http://microformats.org');
 
 foreach ($mf['items'] as $microformat) {
-	echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+  echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
 }
 
 ```
@@ -95,21 +95,24 @@ Here we demonstrate parsing of microformats2 implied property parsing, where an 
 ```php
 <?php
 
-$output = Mf2\parse('<a class="h-card" href="https://waterpigs.co.uk/">Barnaby Walters</a>');
+$html = '<a class="h-card" href="https://waterpigs.co.uk/">Barnaby Walters</a>';
+$output = Mf2\parse($html, 'https://waterpigs.co.uk/');
 ```
 
 `$output` is a canonical microformats2 array structure like:
 
 ```json
 {
-	"items": [{
-		"type": ["h-card"],
-		"properties": {
-			"name": ["Barnaby Walters"],
-			"url": ["https://waterpigs.co.uk/"]
-		}
-	}],
-	"rels": {}
+  "items": [
+    {
+      "type": ["h-card"],
+      "properties": {
+        "name": ["Barnaby Walters"],
+        "url": ["https://waterpigs.co.uk/"]
+      }
+    }
+  ],
+  "rels": {}
 }
 ```
 
@@ -123,8 +126,8 @@ Most of the time you’ll be getting your input HTML from a URL. You should pass
 
 ```html
 <div class="h-card">
-	<h1 class="p-name">Mr. Example</h1>
-	<img class="u-photo" alt="" src="/photo.png" />
+  <h1 class="p-name">Mr. Example</h1>
+  <img class="u-photo" alt="" src="/photo.png" />
 </div>
 ```
 
@@ -138,13 +141,13 @@ will result in the following output, with relative URLs made absolute:
 
 ```json
 {
-	"items": [{
-		"type": ["h-card"],
-		"properties": {
-			"photo": ["http://example.org/photo.png"]
-		}
-	}],
-	"rels": {}
+  "items": [{
+    "type": ["h-card"],
+    "properties": {
+      "photo": ["http://example.org/photo.png"]
+    }
+  }],
+  "rels": {}
 }
 ```
 
@@ -163,14 +166,14 @@ parsing will result in the following keys:
 
 ```json
 {
-	"items": [],
-	"rels": {
-		"me": ["https://twitter.com/barnabywalters"]
-	},
-	"alternates": [{
-		"url": "http://example.com/notes.atom",
-		"rel": "etc"
-	}]
+  "items": [],
+  "rels": {
+    "me": ["https://twitter.com/barnabywalters"]
+  },
+  "alternates": [{
+    "url": "http://example.com/notes.atom",
+    "rel": "etc"
+  }]
 }
 ```
 
@@ -195,7 +198,7 @@ To learn what the HTTP status code for any request was, or learn more about the 
 
 $mf = Mf2\fetch('http://waterpigs.co.uk/this-page-doesnt-exist', true, $curlInfo);
 if ($curlInfo['http_code'] == '404') {
-	// This page doesn’t exist.
+  // This page doesn’t exist.
 }
 
 ```
@@ -222,7 +225,7 @@ $parser->parseFromId('parse-from-here'); // returns a document with only the h-c
 
 $elementIWant = $parser->query('an xpath query')[0];
 
-$parser->parse(true, $elementIWant); // returns a document with only mfs under the selected element
+$parser->parse(true, $elementIWant); // returns a document with only the Microformats under the selected element
 
 ```
 
@@ -285,6 +288,25 @@ The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf
 Currently php-mf2 passes the majority of it’s own test case, and a good percentage of the cross-platform tests. Contributors should ALWAYS test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
 ### Changelog
+
+#### v0.3.1
+
+2017-05-24
+
+* [#89](https://github.com/indieweb/php-mf2/issues/89) - Fixed parsing empty `img alt=""` attributes
+* [#91](https://github.com/indieweb/php-mf2/issues/91) - Ignore rel values from HTML tags that don't allow rel values
+* [#57](https://github.com/indieweb/php-mf2/issues/57) - Implement hAtom rel=bookmark backcompat
+* [#94](https://github.com/indieweb/php-mf2/pull/94) - Fixed HTML output when parsing e-* properties
+* [#97](https://github.com/indieweb/php-mf2/pull/97) - Experimental language parsing
+* [#88](https://github.com/indieweb/php-mf2/issues/88) - Fix for implied photo parsing
+* [#102](https://github.com/indieweb/php-mf2/pull/102) - Ignore classes with numbers or capital letters
+* [#111](https://github.com/indieweb/php-mf2/pull/111) - Improved backcompat parsing
+* [#106](https://github.com/indieweb/php-mf2/issues/106) - Send `Accept: text/html` header when using the `fetch` method
+* [#114](https://github.com/indieweb/php-mf2/issues/114) - Parse `poster` attribute for `video` tags
+* [#118](https://github.com/indieweb/php-mf2/issues/118) - Fixes parsing elements with missing attributes
+* Tests now use [microformats/tests](https://github.com/microformats/tests) repo
+
+Many thanks to @gRegorLove for the major overhaul of the backcompat parsing!
 
 #### v0.3.0
 
@@ -378,8 +400,8 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
 * Updated e-* property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like <pre><code>
 {
-	"html": "<b>The Content</b>",
-	"value: "The Content"
+  "html": "<b>The Content</b>",
+  "value: "The Content"
 }
 </code></pre>
 * Removed `htmlSafe` options as new e-* parsing rules make them redundant
