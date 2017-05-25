@@ -508,7 +508,7 @@ class Parser {
 					return unicodeTrim($node->getAttribute('content'));
 				}
 			}
-		} else {
+		} elseif ($el->parentNode instanceof DOMElement) {
 			// check the parent node
 			return $this->language($el->parentNode);			
 		}
