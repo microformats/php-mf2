@@ -52,6 +52,43 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('es', $result['items'][0]['properties']['html-lang']);
 	} # end method testHtmlAndHEntryLang()
 
+    /**
+     * Test HTML fragment with only h-entry lang
+     */
+    public function testFragmentHEntryLangOnly()
+    {
+        $input = '<div class="h-entry" lang="en">This test is in English.</div>';
+        $parser = new Parser($input);
+        $result = $parser->parse();
+
+        $this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
+    } # end method testFragmentHEntryLangOnly()
+
+    /**
+     * Test HTML fragment with no lang
+     */
+    public function testFragmentHEntryNoLang()
+    {
+        $input = '<div class="h-entry">This test is in English.</div>';
+        $parser = new Parser($input);
+        $result = $parser->parse();
+
+        $this->assertFalse(isset($result['items'][0]['properties']['html-lang']));
+    } # end method testFragmentHEntryNoLang()
+
+    /**
+     * Test HTML fragment with no lang, loaded with loadXML()
+     */
+    public function testFragmentHEntryNoLangXML()
+    {
+        $input = new \DOMDocument();
+        $input->loadXML('<div class="h-entry">This test is in English.</div>');
+        $parser = new Parser($input);
+        $result = $parser->parse();
+
+        $this->assertFalse(isset($result['items'][0]['properties']['html-lang']));
+    } # end method testFragmentHEntryNoLangXML()
+
 	/**
 	 * Test with different <html lang>, h-entry lang, and h-entry without lang,
 	 * which should inherit from the <html lang>
