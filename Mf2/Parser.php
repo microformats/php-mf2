@@ -277,6 +277,9 @@ class Parser {
 
 	public $jsonMode;
 
+	/** @var boolean Whether to include experimental language parsing in the result */
+	public $lang = false;
+
 	/**
 	 * Elements upgraded to mf2 during backcompat
 	 * @var SplObjectStorage
@@ -811,9 +814,11 @@ class Parser {
 			'value' => unicodeTrim($this->innerText($e)),
 		);
 
-		// Language
-		if ( $html_lang = $this->language($e) ) {
-			$return['html-lang'] = $html_lang;
+		if($this->lang) {
+			// Language
+			if ( $html_lang = $this->language($e) ) {
+				$return['html-lang'] = $html_lang;
+			}
 		}
 
 		return $return;
@@ -1073,9 +1078,11 @@ class Parser {
 			}
 		}
 
-		// Language
-		if ( $html_lang = $this->language($e) ) {
-			$return['html-lang'] = $html_lang;
+		if($this->lang) {
+			// Language
+			if ( $html_lang = $this->language($e) ) {
+				$return['html-lang'] = $html_lang;
+			}
 		}
 
 		// Make sure things are in alphabetical order

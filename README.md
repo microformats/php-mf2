@@ -229,6 +229,24 @@ $parser->parse(true, $elementIWant); // returns a document with only the Microfo
 
 ```
 
+### Experimental Language Parsing
+
+There is still [ongoing brainstorming](http://microformats.org/wiki/microformats2-parsing-brainstorming#Parse_language_information) around how HTML language attributes should be added to the parsed result. In order to use this feature, you will need to set a flag to opt in.
+
+```php
+$doc = '<div class="h-entry" lang="sv" id="postfrag123">
+  <h1 class="p-name">En svensk titel</h1>
+  <div class="e-content" lang="en">With an <em>english</em> summary</div>
+  <div class="e-content">Och <em>svensk</em> huvudtext</div>
+</div>';
+$parser = new Mf2\Parser($doc);
+$parser->lang = true;
+$result = $parser->parse();
+```
+
+Note that this option is still considered experimental and in development, and the parsed output may change between minor releases.
+
+
 ### Generating output for JSON serialization with JSON-mode
 
 Due to a quirk with the way PHP arrays work, there is an edge case ([reported](https://github.com/indieweb/php-mf2/issues/29) by Tom Morris) in which a document with no rel values, when serialised as JSON, results in an empty object as the rels value rather than an empty array. Replacing this in code with a stdClass breaks PHP iteration over the values.
