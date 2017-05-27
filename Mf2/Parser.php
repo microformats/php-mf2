@@ -817,7 +817,7 @@ class Parser {
 		if($this->lang) {
 			// Language
 			if ( $html_lang = $this->language($e) ) {
-				$return['html-lang'] = $html_lang;
+				$return['lang'] = $html_lang;
 			}
 		}
 
@@ -1078,13 +1078,6 @@ class Parser {
 			}
 		}
 
-		if($this->lang) {
-			// Language
-			if ( $html_lang = $this->language($e) ) {
-				$return['html-lang'] = $html_lang;
-			}
-		}
-
 		// Make sure things are in alphabetical order
 		sort($mfTypes);
 
@@ -1093,6 +1086,13 @@ class Parser {
 			'type' => $mfTypes,
 			'properties' => $return
 		);
+
+		if($this->lang) {
+			// Language
+			if ( $html_lang = $this->language($e) ) {
+				$parsed['lang'] = $html_lang;
+			}
+		}
 
 		if (!empty($shape)) {
 			$parsed['shape'] = $shape;

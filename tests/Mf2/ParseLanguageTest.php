@@ -26,7 +26,8 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('en', $result['items'][0]['lang']);
 	} # end method testHtmlLangOnly()
 
 	/**
@@ -39,7 +40,8 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('en', $result['items'][0]['lang']);
 	} # end method testHEntryLangOnly()
 
 	/**
@@ -52,7 +54,8 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('es', $result['items'][0]['properties']['html-lang']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('es', $result['items'][0]['lang']);
 	} # end method testHtmlAndHEntryLang()
 
     /**
@@ -65,7 +68,8 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
         $parser->lang = true;
         $result = $parser->parse();
 
-        $this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
+        $this->assertArrayHasKey('lang', $result['items'][0]);
+        $this->assertEquals('en', $result['items'][0]['lang']);
     } # end method testFragmentHEntryLangOnly()
 
     /**
@@ -78,7 +82,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
         $parser->lang = true;
         $result = $parser->parse();
 
-        $this->assertFalse(isset($result['items'][0]['properties']['html-lang']));
+        $this->assertArrayNotHasKey('lang', $result['items'][0]);
     } # end method testFragmentHEntryNoLang()
 
     /**
@@ -91,7 +95,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
         $parser = new Parser($input);
         $result = $parser->parse();
 
-        $this->assertFalse(isset($result['items'][0]['properties']['html-lang']));
+        $this->assertArrayNotHasKey('lang', $result['items'][0]);
     } # end method testFragmentHEntryNoLangXML()
 
 	/**
@@ -105,8 +109,10 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
-		$this->assertEquals('es', $result['items'][1]['properties']['html-lang']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertArrayHasKey('lang', $result['items'][1]);
+		$this->assertEquals('en', $result['items'][0]['lang']);
+		$this->assertEquals('es', $result['items'][1]['lang']);
 	} # end method testMultiLanguageInheritance()
 
 	/**
@@ -120,10 +126,17 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
-		$this->assertEquals('en', $result['items'][0]['children'][0]['properties']['html-lang']);
-		$this->assertEquals('es', $result['items'][0]['children'][1]['properties']['html-lang']);
-		$this->assertEquals('fr', $result['items'][0]['children'][2]['properties']['html-lang']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('en', $result['items'][0]['lang']);
+
+		$this->assertArrayHasKey('lang', $result['items'][0]['children'][0]);
+		$this->assertEquals('en', $result['items'][0]['children'][0]['lang']);
+
+		$this->assertArrayHasKey('lang', $result['items'][0]['children'][1]);
+		$this->assertEquals('es', $result['items'][0]['children'][1]['lang']);
+
+		$this->assertArrayHasKey('lang', $result['items'][0]['children'][2]);
+		$this->assertEquals('fr', $result['items'][0]['children'][2]['lang']);
 	} # end method testMultiLanguageFeed()
 
 	/**
@@ -136,7 +149,8 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('es', $result['items'][0]['properties']['html-lang']);	
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('es', $result['items'][0]['lang']);
 	} # end method testMetaContentLanguage()
 
 	/**
@@ -230,7 +244,26 @@ END;
 		$parser->lang = true;
 		$result = $parser->parse();
 
-		$this->assertEquals('sv', $result['items'][0]['properties']['html-lang']);	
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('sv', $result['items'][0]['lang']);
 	} # end method testVoxpelliCom()
+
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/96#issuecomment-304457341
+	 */
+	public function testNoLangInParsedProperties() {
+		$input = '<div class="h-entry" lang="sv" id="postfrag123">
+  <h1 class="p-name">En svensk titel</h1>
+  <div class="e-content" lang="en">With an <em>english</em> summary</div>
+  <div class="e-content">Och <em>svensk</em> huvudtext</div>
+</div>';
+		$parser = new Parser($input);
+		$parser->lang = true;
+		$result = $parser->parse();
+
+		$this->assertArrayNotHasKey('lang', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+	}
 
 }
