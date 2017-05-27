@@ -23,6 +23,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html lang="en"> <div class="h-entry">This test is in English.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
@@ -35,6 +36,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html> <div class="h-entry" lang="en">This test is in English.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
@@ -47,6 +49,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html lang="en"> <div class="h-entry" lang="es">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('es', $result['items'][0]['properties']['html-lang']);
@@ -59,6 +62,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
     {
         $input = '<div class="h-entry" lang="en">This test is in English.</div>';
         $parser = new Parser($input);
+        $parser->lang = true;
         $result = $parser->parse();
 
         $this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
@@ -71,6 +75,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
     {
         $input = '<div class="h-entry">This test is in English.</div>';
         $parser = new Parser($input);
+        $parser->lang = true;
         $result = $parser->parse();
 
         $this->assertFalse(isset($result['items'][0]['properties']['html-lang']));
@@ -97,6 +102,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html lang="en"> <div class="h-entry">This test is in English.</div> <div class="h-entry" lang="es">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
@@ -111,6 +117,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html> <div class="h-feed" lang="en"> <h1 class="p-name">Test Feed</h1> <div class="h-entry">This test is in English.</div> <div class="h-entry" lang="es">Esta prueba está en español.</div> <div class="h-entry" lang="fr">Ce test est en français.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('en', $result['items'][0]['properties']['html-lang']);
@@ -126,6 +133,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	{
 		$input = '<html> <meta http-equiv="Content-Language" content="es"/> <div class="h-entry">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('es', $result['items'][0]['properties']['html-lang']);	
@@ -219,6 +227,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 </html>
 END;
 		$parser = new Parser($input);
+		$parser->lang = true;
 		$result = $parser->parse();
 
 		$this->assertEquals('sv', $result['items'][0]['properties']['html-lang']);	
