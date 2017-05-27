@@ -307,6 +307,14 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.3.2
+
+2017-05-27
+
+* Fixed how the Microformats tests repo is loaded via composer
+* Moved experimental language parsing feature behind an opt-in flag
+* [#121](https://github.com/indieweb/php-mf2/pull/121) Fixed language detection to support parsing of HTML fragments
+
 #### v0.3.1
 
 2017-05-24
