@@ -164,6 +164,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	public function testParsesRelAlternateValues() {
 		$input = '<a rel="alternate home" href="http://example.org" hreflang="de", media="screen" type="text/html" title="German Homepage Link">German Homepage</a>';
 		$parser = new Parser($input);
+		$parser->enableAlternates = true;
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('alternates', $output);

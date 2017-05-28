@@ -94,4 +94,86 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertArrayNotHasKey('webmention', $output['rels']);
   }
 
+  public function testEnableAlternatesFlagTrue() {
+    $input = '<a rel="author" href="http://example.com/a">author a</a>
+<a rel="author" href="http://example.com/b">author b</a>
+<a rel="in-reply-to" href="http://example.com/1">post 1</a>
+<a rel="in-reply-to" href="http://example.com/2">post 2</a>
+<a rel="alternate home"
+   href="http://example.com/fr"
+   media="handheld"
+   hreflang="fr">French mobile homepage</a>';
+    $parser = new Parser($input);
+    $parser->enableAlternates = true;
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('alternates', $output);
+  }
+
+  public function testEnableAlternatesFlagFalse() {
+    $input = '<a rel="author" href="http://example.com/a">author a</a>
+<a rel="author" href="http://example.com/b">author b</a>
+<a rel="in-reply-to" href="http://example.com/1">post 1</a>
+<a rel="in-reply-to" href="http://example.com/2">post 2</a>
+<a rel="alternate home"
+   href="http://example.com/fr"
+   media="handheld"
+   hreflang="fr">French mobile homepage</a>';
+    $parser = new Parser($input);
+    $parser->enableAlternates = false;
+    $output = $parser->parse();
+
+    $this->assertArrayNotHasKey('alternates', $output);
+  }
+
+  /**
+   * @see https://github.com/indieweb/php-mf2/issues/112
+   * @see http://microformats.org/wiki/microformats2-parsing#rel_parse_examples
+   */
+  public function testRelURLs() {
+    $input = '<a rel="author" href="http://example.com/a">author a</a>
+<a rel="author" href="http://example.com/b">author b</a>
+<a rel="in-reply-to" href="http://example.com/1">post 1</a>
+<a rel="in-reply-to" href="http://example.com/2">post 2</a>
+<a rel="alternate home"
+   href="http://example.com/fr"
+   media="handheld"
+   hreflang="fr">French mobile homepage</a>
+<link rel="alternate" type="application/atom+xml" href="http://example.com/articles.atom" title="Atom Feed" />';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('rels', $output);
+    $this->assertCount(4, $output['rels']);
+    $this->assertArrayHasKey('author', $output['rels']);
+    $this->assertArrayHasKey('in-reply-to', $output['rels']);
+    $this->assertArrayHasKey('alternate', $output['rels']);
+    $this->assertArrayHasKey('home', $output['rels']);
+
+    $this->assertArrayHasKey('rel-urls', $output);
+    $this->assertCount(6, $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/a', $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/b', $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/1', $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/2', $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/fr', $output['rel-urls']);
+    $this->assertArrayHasKey('http://example.com/articles.atom', $output['rel-urls']);
+
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/a']);
+    $this->assertArrayHasKey('text', $output['rel-urls']['http://example.com/a']);
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/b']);
+    $this->assertArrayHasKey('text', $output['rel-urls']['http://example.com/b']);
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/1']);
+    $this->assertArrayHasKey('text', $output['rel-urls']['http://example.com/1']);
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/2']);
+    $this->assertArrayHasKey('text', $output['rel-urls']['http://example.com/2']);
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/fr']);
+    $this->assertArrayHasKey('text', $output['rel-urls']['http://example.com/fr']);
+    $this->assertArrayHasKey('media', $output['rel-urls']['http://example.com/fr']);
+    $this->assertArrayHasKey('hreflang', $output['rel-urls']['http://example.com/fr']);
+    $this->assertArrayHasKey('title', $output['rel-urls']['http://example.com/articles.atom']);
+    $this->assertArrayHasKey('type', $output['rel-urls']['http://example.com/articles.atom']);
+    $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/articles.atom']);
+  }
+
 }

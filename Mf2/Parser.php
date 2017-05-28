@@ -280,6 +280,9 @@ class Parser {
 	/** @var boolean Whether to include experimental language parsing in the result */
 	public $lang = false;
 
+	/** @var bool Whether to include alternates object (dropped from spec in favor of rel-urls) */
+	public $enableAlternates = false;
+
 	/**
 	 * Elements upgraded to mf2 during backcompat
 	 * @var SplObjectStorage
@@ -1153,21 +1156,25 @@ class Parser {
 	}
 
 	/**
-	 * Parse Rels and Alternatives
+	 * Parse rels and alternates
 	 *
-	 * Returns [$rels, $alternatives]. If the $rels value is to be empty, i.e. there are no links on the page
-	 * with a rel value *not* containing `alternate`, then the type of $rels depends on $this->jsonMode. If set
-	 * to true, it will be a stdClass instance, optimising for JSON serialisation. Otherwise (the default case),
-	 * it will be an empty array.
+	 * Returns [$rels, $rel_urls, $alternates].
+	 * For $rels and $rel_urls, if they are empty and $this->jsonMode = true, they will be returned as stdClass,
+	 * optimizing for JSON serialization. Otherwise they will be returned as an empty array.
+	 * Note that $alternates is deprecated in the microformats spec in favor of $rel_urls. $alternates only appears
+	 * in parsed results if $this->enableAlternates = true.
+	 * @return array|stdClass
 	 */
 	public function parseRelsAndAlternates() {
 		$rels = array();
+		$rel_urls = array();
 		$alternates = array();
 
 		// Iterate through all a, area and link elements with rel attributes
 		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') as $hyperlink) {
-			if ($hyperlink->getAttribute('rel') == '')
+			if ($hyperlink->getAttribute('rel') == '') {
 				continue;
+			}
 
 			// Resolve the href
 			$href = $this->resolveUrl($hyperlink->getAttribute('href'));
@@ -1175,40 +1182,63 @@ class Parser {
 			// Split up the rel into space-separated values
 			$linkRels = array_filter(explode(' ', $hyperlink->getAttribute('rel')));
 
-			// If alternate in rels, create alternate structure, append
-			if (in_array('alternate', $linkRels)) {
-				$alt = array(
-					'url' => $href,
-					'rel' => implode(' ', array_diff($linkRels, array('alternate')))
-				);
-				if ($hyperlink->hasAttribute('media'))
-					$alt['media'] = $hyperlink->getAttribute('media');
+			$rel_attributes = array();
 
-				if ($hyperlink->hasAttribute('hreflang'))
-					$alt['hreflang'] = $hyperlink->getAttribute('hreflang');
+			if ($hyperlink->hasAttribute('media')) {
+				$rel_attributes['media'] = $hyperlink->getAttribute('media');
+			}
 
-				if ($hyperlink->hasAttribute('title'))
-					$alt['title'] = $hyperlink->getAttribute('title');
+			if ($hyperlink->hasAttribute('hreflang')) {
+				$rel_attributes['hreflang'] = $hyperlink->getAttribute('hreflang');
+			}
 
-				if ($hyperlink->hasAttribute('type'))
-					$alt['type'] = $hyperlink->getAttribute('type');
+			if ($hyperlink->hasAttribute('title')) {
+				$rel_attributes['title'] = $hyperlink->getAttribute('title');
+			}
 
-				if ($hyperlink->nodeValue)
-					$alt['text'] = $hyperlink->nodeValue;
+			if ($hyperlink->hasAttribute('type')) {
+				$rel_attributes['type'] = $hyperlink->getAttribute('type');
+			}
 
-				$alternates[] = $alt;
-			} else {
-				foreach ($linkRels as $rel) {
-					$rels[$rel][] = $href;
+			if ($hyperlink->nodeValue) {
+				$rel_attributes['text'] = $hyperlink->nodeValue;
+			}
+
+			if ($this->enableAlternates) {
+				// If 'alternate' in rels, create 'alternates' structure, append
+				if (in_array('alternate', $linkRels)) {
+					$alternates[] = array_merge(
+						$rel_attributes,
+						array(
+							'url' => $href,
+							'rel' => implode(' ', array_diff($linkRels, array('alternate')))
+						)
+					);
 				}
 			}
+
+			foreach ($linkRels as $rel) {
+				$rels[$rel][] = $href;
+			}
+
+			if (!in_array($href, $rel_urls)) {
+				$rel_urls[$href] = array_merge(
+					$rel_attributes, 
+					array('rels' => $linkRels)
+				);
+			}
+
 		}
 
 		if (empty($rels) and $this->jsonMode) {
 			$rels = new stdClass();
 		}
 
-		return array($rels, $alternates);
+		if (empty($rel_urls) and $this->jsonMode) {
+			$rel_urls = new stdClass();
+		}		
+		
+		return array($rels, $rel_urls, $alternates);
 	}
 
 	/**
@@ -1239,14 +1269,15 @@ class Parser {
 		}
 
 		// Parse rels
-		list($rels, $alternates) = $this->parseRelsAndAlternates();
+		list($rels, $rel_urls, $alternates) = $this->parseRelsAndAlternates();
 
 		$top = array(
 			'items' => array_values(array_filter($mfs)),
-			'rels' => $rels
+			'rels' => $rels,
+			'rel-urls' => $rel_urls,
 		);
 
-		if (count($alternates)) {
+		if ($this->enableAlternates && count($alternates)) {
 			$top['alternates'] = $alternates;
 		}
 
