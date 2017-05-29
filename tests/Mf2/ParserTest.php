@@ -493,6 +493,31 @@ EOT;
 	}
 
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/127
+	 */
+	public function testCamelCaseRootClassNames() {
+		$input = '<div class="h-Entry"> <a href="https://example.com" class="u-url">content</a> </div>';
+		$output = Mf2\parse($input);
+
+		$this->assertEmpty($output['items']);
+	}
+
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/127
+	 */
+	public function testMisTypedRootClassNames() {
+		$input = '<div class="h-entry>"> <a href="https://example.com" class="u-url">content</a></div>
+		<div class="h-entry1>"> <a href="https://example.com" class="u-url">content</a></div>
+		<div class="h-👍"> <a href="https://example.com" class="u-url">content</a></div>
+		<div class="h-hentry_"> <a href="https://example.com" class="u-url">content</a></div>
+		<div class="h-"> <a href="https://example.com" class="u-url">content</a></div>';
+		$output = Mf2\parse($input);
+
+		$this->assertEmpty($output['items']);
+	}
+
 	public function testClassNameNumbers() {
 		$input = '<div class="h-entry"> <div class="u-column1"> <p class="p-title">Test</p> </div> </div>';
 		$output = Mf2\parse($input);
