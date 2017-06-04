@@ -127,7 +127,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:18', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07 21:18', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:18', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07 21:18', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -153,7 +153,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07 21:00', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -166,7 +166,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:00', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07 21:00', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -179,7 +179,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2012-10-07T21:00:00', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2012-10-07 21:00:00', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -194,8 +194,8 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
-		$this->assertEquals('2014-06-04T18:30', $output['items'][0]['properties']['start'][0]);
-		$this->assertEquals('2014-06-04T19:30', $output['items'][0]['properties']['end'][0]);
+		$this->assertEquals('2014-06-04 18:30', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-06-04 19:30', $output['items'][0]['properties']['end'][0]);
 	}
 
 	/**
@@ -211,8 +211,8 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
-		$this->assertEquals('2014-06-05T18:31', $output['items'][0]['properties']['start'][0]);
-		$this->assertEquals('2014-06-05T19:31', $output['items'][0]['properties']['end'][0]);
+		$this->assertEquals('2014-06-05 18:31', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-06-05 19:31', $output['items'][0]['properties']['end'][0]);
 	}
 
 	/**
@@ -229,7 +229,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-05T18:31', $output['items'][0]['properties']['start'][0]);
-		$this->assertEquals('2014-06-05T19:31', $output['items'][0]['properties']['end'][0]);
+		$this->assertEquals('2014-06-05 19:31', $output['items'][0]['properties']['end'][0]);
 	}
 
 	/**
@@ -242,7 +242,8 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
-		$this->assertEquals('2014-06-06T18:32', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-06-06 18:32', $output['items'][0]['properties']['start'][0]);
+		$this->assertArrayNotHasKey('end', $output['items'][0]['properties']);
 	}
 
 	/**
@@ -256,6 +257,88 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-07', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
+	 * 
+	 */
+	public function testNormalizeTZOffset() {
+		$input = '<div class="h-event">
+            <span class="dt-start"> <time class="value" datetime="2017-05-27">May 27</time>, from
+            <time class="value">20:57-07:00</time> </span>
+        </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-05-27 20:57-0700', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/115
+	 */
+	public function testDoNotAddT() {
+		$input = '<div class="h-entry">
+  <span class="dt-start">
+    <time class="value" datetime="2009-06-26">26 July</time>, from
+    <time class="value">19:00:00-08:00</time>
+  </span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2009-06-26 19:00:00-0800', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/115
+	 */
+	public function testPreserrveTIfAuthored() {
+		$input = '<div class="h-entry"> <time class="dt-start" datetime="2009-06-26T19:01-08:00">26 July, 7:01pm</time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2009-06-26T19:01-0800', $output['items'][0]['properties']['start'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/126
+	 */
+	public function testDtVCPTimezone() {
+		$input = '<div class="h-event">
+ <span class="e-summary">HomebrewWebsiteClub Berlin</span> will be next on
+ <span class="dt-start">
+  <span class="value">2017-05-31</span>, from
+  <span class="value">19:00</span> (UTC<span class="value">+02:00</span>)
+</span> to  <span class="dt-end">21:00</span>.</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-05-31 19:00+0200', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-05-31 21:00+0200', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/4
+	 */
+	public function testImplyTimezoneFromStart() {
+		$input = '<div class="h-event"> <time class="dt-start" datetime="2014-09-11 13:30-0700">13:30</time> to <time class="dt-end">15:30</time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2014-09-11 13:30-0700', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-09-11 15:30-0700', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/4
+	 */
+	public function testImplyTimezoneFromEnd() {
+		$input = '<div class="h-event"> <time class="dt-start" datetime="2014-09-11 13:30">13:30</time> to <time class="dt-end">15:30-0700</time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2014-09-11 13:30-0700', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-09-11 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
 
 }

@@ -167,8 +167,8 @@ EOT;
 		$this->assertEquals('XYZ Project Review', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('Project XYZ Review Meeting', $output['items'][0]['properties']['description'][0]);
 		$this->assertEquals('http://example.com/xyz-meeting', $output['items'][0]['properties']['url'][0]);
-		$this->assertEquals('1998-03-12T08:30', $output['items'][0]['properties']['start'][0]);
-		$this->assertEquals('1998-03-12T09:30', $output['items'][0]['properties']['end'][0]);
+		$this->assertEquals('1998-03-12 08:30-0500', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('1998-03-12 09:30-0500', $output['items'][0]['properties']['end'][0]);
 	}
 
 

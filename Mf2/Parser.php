@@ -238,6 +238,24 @@ function convertTimeFormat($time) {
 	}
 }
 
+/**
+ * If a date value has a timezone offset, normalize it.
+ * @param string $dtValue
+ * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
+ */
+function normalizeTimezoneOffset(&$dtValue) {
+	preg_match('/Z?[+|-]\d{2}:?\d{2}?/i', $dtValue, $matches);
+
+	if (empty($matches)) {
+		return null;
+	}
+
+	$timezoneOffset = str_replace(':', '', $matches[0]);
+	$dtValue = preg_replace('/Z?[+|-]\d{2}:?\d{2}?/i', $timezoneOffset, $dtValue);
+
+	return $timezoneOffset;
+}
+
 function applySrcsetUrlTransformation($srcset, $transformation) {
 	return implode(', ', array_filter(array_map(function ($srcsetPart) use ($transformation) {
 		$parts = explode(" \t\n\r\0\x0B", trim($srcsetPart), 2);
@@ -649,9 +667,10 @@ class Parser {
 	 *
 	 * @param DOMElement $dt The element to parse
 	 * @param array $dates Array of dates processed so far
+	 * @param string $impliedTimezone
 	 * @return string The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt, &$dates = array()) {
+	public function parseDT(\DOMElement $dt, &$dates = array(), &$impliedTimezone = null) {
 		// Check for value-class pattern
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
 		$dtValue = false;
@@ -663,45 +682,52 @@ class Parser {
 			foreach ($valueClassChildren as $e) {
 				if (strstr(' ' . $e->getAttribute('class') . ' ', ' value-title ')) {
 					$title = $e->getAttribute('title');
-					if (!empty($title))
+					if (!empty($title)) {
 						$dateParts[] = $title;
+					}
 				}
 				elseif ($e->tagName == 'img' or $e->tagName == 'area') {
 					// Use @alt
 					$alt = $e->getAttribute('alt');
-					if (!empty($alt))
+					if (!empty($alt)) {
 						$dateParts[] = $alt;
+					}
 				}
 				elseif ($e->tagName == 'data') {
 					// Use @value, otherwise innertext
 					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->nodeValue);
-					if (!empty($value))
+					if (!empty($value)) {
 						$dateParts[] = $value;
+					}
 				}
 				elseif ($e->tagName == 'abbr') {
 					// Use @title, otherwise innertext
 					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->nodeValue);
-					if (!empty($title))
+					if (!empty($title)) {
 						$dateParts[] = $title;
+					}
 				}
 				elseif ($e->tagName == 'del' or $e->tagName == 'ins' or $e->tagName == 'time') {
 					// Use @datetime if available, otherwise innertext
 					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->nodeValue);
-					if (!empty($dtAttr))
+					if (!empty($dtAttr)) {
 						$dateParts[] = $dtAttr;
+					}
 				}
 				else {
-					if (!empty($e->nodeValue))
+					if (!empty($e->nodeValue)) {
 						$dateParts[] = unicodeTrim($e->nodeValue);
+					}
 				}
 			}
 
 			// Look through dateParts
 			$datePart = '';
 			$timePart = '';
+			$timezonePart = '';
 			foreach ($dateParts as $part) {
 				// Is this part a full ISO8601 datetime?
-				if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
+				if (preg_match('/^\d{4}-\d{2}-\d{2}T?\d{2}:\d{2}(?::\d{2})?(?:Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
 					// Break completely, we’ve got our value.
 					$dtValue = $part;
 					break;
@@ -709,27 +735,43 @@ class Parser {
 					// Is the current part a valid time(+TZ?) AND no other time representation has been found?
 					if ((preg_match('/\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart)) {
 						$timePart = $part;
+
+						$timezoneOffset = normalizeTimezoneOffset($timePart);
+						if (!$impliedTimezone && $timezoneOffset) {
+							$impliedTimezone = $timezoneOffset;
+						}
 					} elseif (preg_match('/\d{4}-\d{2}-\d{2}/', $part) and empty($datePart)) {
 						// Is the current part a valid date AND no other date representation has been found?
 						$datePart = $part;
+					} elseif (preg_match('/(Z?[+|-]\d{2}:?\d{2})/', $part) and empty($timezonePart)) {
+						$timezonePart = $part;
+
+						$timezoneOffset = normalizeTimezoneOffset($timezonePart);
+						if (!$impliedTimezone && $timezoneOffset) {
+							$impliedTimezone = $timezoneOffset;
+						}
 					}
 
 					if ( !empty($datePart) && !in_array($datePart, $dates) ) {
 						$dates[] = $datePart;
 					}
 
+					if (!empty($timezonePart) && !empty($timePart)) {
+						$timePart .= $timezonePart;
+					}
+
 					$dtValue = '';
 
 					if ( empty($datePart) && !empty($timePart) ) {
 						$timePart = convertTimeFormat($timePart);
-						$dtValue = unicodeTrim($timePart, 'T');
+						$dtValue = unicodeTrim($timePart);
 					}
 					else if ( !empty($datePart) && empty($timePart) ) {
 						$dtValue = rtrim($datePart, 'T');
 					}
 					else {
 						$timePart = convertTimeFormat($timePart);
-						$dtValue = rtrim($datePart, 'T') . 'T' . unicodeTrim($timePart, 'T');
+						$dtValue = rtrim($datePart, 'T') . ' ' . unicodeTrim($timePart);
 					}
 				}
 			}
@@ -739,35 +781,50 @@ class Parser {
 				// Use @alt
 				// Is it an entire dt?
 				$alt = $dt->getAttribute('alt');
-				if (!empty($alt))
+				if (!empty($alt)) {
 					$dtValue = $alt;
+				}
 			} elseif (in_array($dt->tagName, array('data'))) {
 				// Use @value, otherwise innertext
 				// Is it an entire dt?
 				$value = $dt->getAttribute('value');
-				if (!empty($value))
+				if (!empty($value)) {
 					$dtValue = $value;
-				else
+				}
+				else {
 					$dtValue = $this->textContent($dt);
+				}
 			} elseif ($dt->tagName == 'abbr') {
 				// Use @title, otherwise innertext
 				// Is it an entire dt?
 				$title = $dt->getAttribute('title');
-				if (!empty($title))
+				if (!empty($title)) {
 					$dtValue = $title;
-				else
+				}
+				else {
 					$dtValue = $this->textContent($dt);
+				}
 			} elseif ($dt->tagName == 'del' or $dt->tagName == 'ins' or $dt->tagName == 'time') {
 				// Use @datetime if available, otherwise innertext
 				// Is it an entire dt?
 				$dtAttr = $dt->getAttribute('datetime');
-				if (!empty($dtAttr))
+				if (!empty($dtAttr)) {
 					$dtValue = $dtAttr;
-				else
+				}
+				else {
 					$dtValue = $this->textContent($dt);
+				}
+
 			} else {
 				$dtValue = $this->textContent($dt);
 			}
+
+			$timezoneOffset = normalizeTimezoneOffset($dtValue);
+			if (!$impliedTimezone && $timezoneOffset) {
+				$impliedTimezone = $timezoneOffset;
+			}
+
+			$dtValue = unicodeTrim($dtValue);
 
 			if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches)) {
 				$dates[] = $matches[0];
@@ -778,9 +835,14 @@ class Parser {
 		 * if $dtValue is only a time and there are recently parsed dates,
 		 * form the full date-time using the most recently parsed dt- value
 		 */
-		if ((preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates)) {
+		if ((preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2}?)?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates)) {
+			$timezoneOffset = normalizeTimezoneOffset($dtValue);
+			if (!$impliedTimezone && $timezoneOffset) {
+				$impliedTimezone = $timezoneOffset;
+			}
+
 			$dtValue = convertTimeFormat($dtValue);
-			$dtValue = end($dates) . 'T' . unicodeTrim($dtValue, 'T');
+			$dtValue = end($dates) . ' ' . unicodeTrim($dtValue);
 		}
 
 		return $dtValue;
@@ -850,6 +912,7 @@ class Parser {
 		$return = array();
 		$children = array();
 		$dates = array();
+		$impliedTimezone = null;
 
 		// each rel-bookmark with an href attribute
 		foreach ( $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $e) as $el )
@@ -949,23 +1012,35 @@ class Parser {
 			$this->elementPrefixParsed($u, 'u');
 		}
 
+		$temp_dates = array();
+
 		// Handle dt-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
 			if ($this->isElementParsed($dt, 'dt')) {
 				continue;
 			}
 
-			$dtValue = $this->parseDT($dt, $dates);
+			$dtValue = $this->parseDT($dt, $dates, $impliedTimezone);
 
 			if ($dtValue) {
 				// Add the value to the array for dt- properties
 				foreach (mfNamesFromElement($dt, 'dt-') as $propName) {
-					$return[$propName][] = $dtValue;
+					$temp_dates[$propName][] = $dtValue;
 				}
 			}
-
 			// Make sure this sub-mf won’t get parsed as a top level mf
 			$this->elementPrefixParsed($dt, 'dt');
+		}
+
+		foreach ($temp_dates as $propName => $data) {
+			foreach ( $data as $dtValue ) {
+
+				if ( $impliedTimezone && preg_match('/[+|-]\d{2}\d{2}/i', $dtValue, $matches) == 0 ) {
+					$dtValue .= $impliedTimezone;
+				}
+
+				$return[$propName][] = $dtValue;
+			}
 		}
 
 		// Handle e-*
