@@ -1050,6 +1050,7 @@ class Parser {
 
 		// Check for u-url
 		if (!array_key_exists('url', $return) && !$is_backcompat) {
+			$url = null;
 			// Look for img @src
 			if ($e->tagName == 'a' or $e->tagName == 'area') {
 				$url = $e->getAttribute('href');
@@ -1073,7 +1074,7 @@ class Parser {
 				}
 			}
 
-			if (!empty($url)) {
+			if (!is_null($url)) {
 				$return['url'][] = $this->resolveUrl($url);
 			}
 		}

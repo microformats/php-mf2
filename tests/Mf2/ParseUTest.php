@@ -246,6 +246,33 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
 	}
-	
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/130
+	 */
+	public function testImpliedUWithEmptyHref() {
+		$input = '<a class="h-card" href="">Jane Doe</a>
+<area class="h-card" href="" alt="Jane Doe"/ >
+<div class="h-card" ><a href="">Jane Doe</a><p></p></div> 
+<div class="h-card" ><area href="">Jane Doe</area><p></p></div>
+<div class="h-card" ><a class="h-card" href="">Jane Doe</a><p></p></div>';
+		$parser = new Parser($input, 'http://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+
+		$this->assertArrayHasKey('url', $output['items'][1]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][1]['properties']['url'][0]);
+
+		$this->assertArrayHasKey('url', $output['items'][2]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][2]['properties']['url'][0]);
+
+		$this->assertArrayHasKey('url', $output['items'][3]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][3]['properties']['url'][0]);
+
+		$this->assertArrayHasKey('url', $output['items'][4]['children'][0]['properties']);
+		$this->assertEquals('http://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
+	}
 
 }
