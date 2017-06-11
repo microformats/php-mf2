@@ -849,6 +849,10 @@ class Parser {
 		// Get current µf name
 		$mfTypes = mfNamesFromElement($e, 'h-');
 
+		if (!$mfTypes) {
+			return null;
+		}
+
 		// Initalise var to store the representation in
 		$return = array();
 		$children = array();
