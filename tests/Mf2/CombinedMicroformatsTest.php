@@ -37,6 +37,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
 	"items": [{ 
 		"type": ["h-event"],
 		"properties": {
@@ -79,6 +80,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -110,6 +112,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -148,6 +151,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -184,6 +188,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 </div>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 		"type": ["h-card"],
 		"properties": {
@@ -286,7 +291,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
           }]
 	      }
 	    }],
-	    "rels":[]
+	    "rels":[],
+	    "rel-urls": []
 	  }';
 	  	$mf = Mf2\parse($input);
 

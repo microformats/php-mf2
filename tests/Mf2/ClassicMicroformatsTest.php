@@ -24,14 +24,14 @@ class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 	
 	public function testParsesClassicHcard() {
 		$input = '<div class="vcard"><span class="fn n">Barnaby Walters</span> is a person.</div>';
-		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}}';
+		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
 	
 	public function testParsesClassicHEntry() {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
-		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}}';
+		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}

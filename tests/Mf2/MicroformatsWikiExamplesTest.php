@@ -29,6 +29,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
 	"items": []
 }';
 		
@@ -42,6 +43,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = Null;
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
 	"items": []
 }';
 		
@@ -59,6 +61,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '<span class="h-card">Frances Berriman</span>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -79,6 +82,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
   "items": [{ 
 	"type": ["h-card"],
 	"properties": {
@@ -101,6 +105,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		// Added root items key
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
 	"items": [{ 
   "type": ["h-card"],
   "properties": {
@@ -125,6 +130,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		// Added root items key
 		$expected = '{
 	"rels": {},
+	"rel-urls": {},
 	"items": [{ 
   "type": ["h-card"],
   "properties": {
@@ -162,6 +168,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 
 		$expected = '{
   "rels": {},
+  "rel-urls": {},
 	"items": [{ 
 	"type": ["h-card"],
 	"properties": {
