@@ -318,6 +318,44 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/126
+	 */
+	public function testDtVCPTimezoneShort() {
+		$input = '<div class="h-event">
+ <span class="e-summary">HomebrewWebsiteClub Berlin</span> will be next on
+ <span class="dt-start">
+  <span class="value">2017-05-31</span>, from
+  <span class="value">19:00</span> (UTC<span class="value">+2</span>)
+</span> to  <span class="dt-end">21:00</span>.</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-05-31 19:00+0200', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-05-31 21:00+0200', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/126
+	 */
+	public function testDtVCPTimezoneNoLeadingZero() {
+		$input = '<div class="h-event"> 
+	<span class="dt-start">
+		<span class="value">2017-06-17</span>
+		<span class="value">22:00-700</span>
+	</span>
+	<span class="dt-end">
+		<span class="value">2017-06-17</span>
+		<span class="value">23:00-700</span>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-06-17 22:00-0700', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-06-17 23:00-0700', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
 	 * @see https://github.com/microformats/microformats2-parsing/issues/4
 	 */
 	public function testImplyTimezoneFromStart() {
@@ -339,6 +377,69 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('2014-09-11 13:30-0700', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2014-09-11 15:30-0700', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 *
+	 */
+	public function testAMPMWithPeriods() {
+		$input = '<div class="h-event"> 
+	<span class="dt-start">
+		<span class="value">2017-06-11</span>
+		<span class="value">10:00P.M.</span>
+	</span>
+	<span class="dt-end">
+		<span class="value">2017-06-12</span>
+		<span class="value">02:00a.m.</span>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-06-11 22:00', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-06-12 02:00', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 *
+	 */
+	public function testAMPMWithoutPeriods() {
+		$input = '<div class="h-event"> 
+	<span class="dt-start">
+		<span class="value">2017-06-17</span>
+		<span class="value">10:30pm</span>
+	</span>
+	<span class="dt-end">
+		<span class="value">2017-06-18</span>
+		<span class="value">02:30AM</span>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-06-17 22:30', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-06-18 02:30', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 *
+	 */
+	public function testDtVCPTimeAndTimezone() {
+		$input = '<div class="h-event"> 
+	<span class="dt-start">
+		<span class="value">2017-06-17</span>
+		<span class="value">13:30-07:00</span>
+	</span>
+	<span class="dt-end">
+		<span class="value">2017-06-17</span>
+		<span class="value">15:30-0700</span>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2017-06-17 13:30-0700', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2017-06-17 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
 
 }

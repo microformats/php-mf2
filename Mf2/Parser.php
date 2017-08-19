@@ -244,14 +244,23 @@ function convertTimeFormat($time) {
  * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
  */
 function normalizeTimezoneOffset(&$dtValue) {
-	preg_match('/Z?[+|-]\d{2}:?\d{2}?/i', $dtValue, $matches);
+	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);	
 
 	if (empty($matches)) {
 		return null;
 	}
 
-	$timezoneOffset = str_replace(':', '', $matches[0]);
-	$dtValue = preg_replace('/Z?[+|-]\d{2}:?\d{2}?/i', $timezoneOffset, $dtValue);
+	if ( $matches[0] != 'Z' ) {
+		$timezoneString = str_replace(':', '', $matches[0]);
+		$plus_minus = substr($timezoneString, 0, 1);
+		$timezoneOffset = substr($timezoneString, 1);
+		if ( strlen($timezoneOffset) <= 2 ) {
+			$timezoneOffset .= '00';
+		}
+		$timezoneOffset = str_pad($timezoneOffset, 4, 0, STR_PAD_LEFT);
+		$timezoneOffset = $plus_minus . $timezoneOffset;
+		$dtValue = preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue);
+	}
 
 	return $timezoneOffset;
 }
@@ -727,23 +736,23 @@ class Parser {
 			$timezonePart = '';
 			foreach ($dateParts as $part) {
 				// Is this part a full ISO8601 datetime?
-				if (preg_match('/^\d{4}-\d{2}-\d{2}T?\d{2}:\d{2}(?::\d{2})?(?:Z?[+|-]\d{2}:?\d{2})?$/', $part)) {
+				if (preg_match('/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2})?$/', $part)) {
 					// Break completely, we’ve got our value.
 					$dtValue = $part;
 					break;
 				} else {
 					// Is the current part a valid time(+TZ?) AND no other time representation has been found?
-					if ((preg_match('/\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2})?/', $part) or preg_match('/\d{1,2}[a|p]m/', $part)) and empty($timePart)) {
+					if ((preg_match('/^\d{1,2}:\d{2}(:\d{2})?(Z|[+-]\d{1,2}:?\d{2})?$/', $part) or preg_match('/^\d{1,2}(:\d{2})?(:\d{2})?[ap]\.?m\.?$/i', $part)) and empty($timePart)) {
 						$timePart = $part;
 
 						$timezoneOffset = normalizeTimezoneOffset($timePart);
 						if (!$impliedTimezone && $timezoneOffset) {
 							$impliedTimezone = $timezoneOffset;
 						}
-					} elseif (preg_match('/\d{4}-\d{2}-\d{2}/', $part) and empty($datePart)) {
+					} elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $part) and empty($datePart)) {
 						// Is the current part a valid date AND no other date representation has been found?
 						$datePart = $part;
-					} elseif (preg_match('/(Z?[+|-]\d{2}:?\d{2})/', $part) and empty($timezonePart)) {
+					} elseif (preg_match('/^(Z|[+-]\d{1,2}:?(\d{2})?)$/', $part) and empty($timezonePart)) {
 						$timezonePart = $part;
 
 						$timezoneOffset = normalizeTimezoneOffset($timezonePart);
@@ -819,9 +828,12 @@ class Parser {
 				$dtValue = $this->textContent($dt);
 			}
 
-			$timezoneOffset = normalizeTimezoneOffset($dtValue);
-			if (!$impliedTimezone && $timezoneOffset) {
-				$impliedTimezone = $timezoneOffset;
+			// if the dtValue is not just YYYY-MM-DD, normalize the timezone offset
+			if (!preg_match('/^(\d{4}-\d{2}-\d{2})$/', $dtValue)) {
+				$timezoneOffset = normalizeTimezoneOffset($dtValue);
+				if (!$impliedTimezone && $timezoneOffset) {
+					$impliedTimezone = $timezoneOffset;
+				}
 			}
 
 			$dtValue = unicodeTrim($dtValue);
@@ -835,7 +847,7 @@ class Parser {
 		 * if $dtValue is only a time and there are recently parsed dates,
 		 * form the full date-time using the most recently parsed dt- value
 		 */
-		if ((preg_match('/^\d{1,2}:\d{1,2}(Z?[+|-]\d{2}:?\d{2}?)?/', $dtValue) or preg_match('/^\d{1,2}[a|p]m/', $dtValue)) && !empty($dates)) {
+		if ((preg_match('/^\d{1,2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2}?)?$/', $dtValue) or preg_match('/^\d{1,2}(:\d{2})?(:\d{2})?[ap]\.?m\.?$/i', $dtValue)) && !empty($dates)) {
 			$timezoneOffset = normalizeTimezoneOffset($dtValue);
 			if (!$impliedTimezone && $timezoneOffset) {
 				$impliedTimezone = $timezoneOffset;
@@ -1034,8 +1046,8 @@ class Parser {
 
 		foreach ($temp_dates as $propName => $data) {
 			foreach ( $data as $dtValue ) {
-
-				if ( $impliedTimezone && preg_match('/[+|-]\d{2}\d{2}/i', $dtValue, $matches) == 0 ) {
+				// var_dump(preg_match('/[+-]\d{2}(\d{2})?$/i', $dtValue));
+				if ( $impliedTimezone && preg_match('/[+-]\d{2}(\d{2})?$/i', $dtValue, $matches) == 0 ) {
 					$dtValue .= $impliedTimezone;
 				}
 
