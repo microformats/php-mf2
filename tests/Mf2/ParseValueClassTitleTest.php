@@ -71,7 +71,7 @@ EOT;
 		$output = $parser->parse();
 		
 		$this->assertArrayHasKey('published', $output['items'][0]['properties']);
-		$this->assertEquals('2013-06-27T10:17', $output['items'][0]['properties']['published'][0]);
+		$this->assertEquals('2013-06-27 10:17', $output['items'][0]['properties']['published'][0]);
 	}
 	
 	/**
@@ -103,6 +103,6 @@ EOT;
 	public function testValueClassDtMatchesSingleDigitTimeComponent() {
 		$test = '<div class="h-entry"><span class="dt-published"><time class="value">6:01</time>, <time class="value">2013-02-01</time></span></div>';
 		$result = Mf2\parse($test);
-		$this->assertEquals('2013-02-01T6:01', $result['items'][0]['properties']['published'][0]);
+		$this->assertEquals('2013-02-01 6:01', $result['items'][0]['properties']['published'][0]);
 	}
 }
