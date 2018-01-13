@@ -677,6 +677,65 @@ END;
 
 
 	/**
+	 * Test mixed microformats2 with mf1 roots + properties
+	 * @see https://github.com/microformats/microformats2-parsing/issues/11#issue-246579526
+	 */
+	public function testMixedMf2andMf1Case3() {
+		$input = <<< END
+<span class="h-card vcard">
+<a href="http://cherryreds.com">
+  <span class="p-name fn p-org org">Cherry Red's</span>
+</a>, 
+<span class="adr">
+  <span class="street-address p-street-address">88-92 John Bright St</span>, 
+  <span class="p-locality locality">Birmingham</span>, 
+  <abbr class="p-country-name country-name">UK</abbr>
+</span></span>
+END;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertCount(3, $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('street-address', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('locality', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('country-name', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('children', $result['items'][0]);
+		$this->assertEquals('h-adr', $result['items'][0]['children'][0]['type'][0]);
+		$this->assertArrayHasKey('street-address', $result['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('locality', $result['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('country-name', $result['items'][0]['children'][0]['properties']);
+	}
+
+
+	/**
+	 * Test mixed microformats2 with mf1 roots + properties
+	 * @see https://github.com/microformats/microformats2-parsing/issues/11#issuecomment-352281134
+	 */
+	public function testMixedMf2andMf1Case4() {
+		$input = <<< END
+<body class="h-entry">
+  <div id="page" class="hfeed site wrap">
+    <h1 class="entry-title"><span class='p-name'>title</span></h1>
+    other content
+    <div class="entry-content">
+      <div class="e-content">this is a test for indieweb post </div> <span class="syn-text">Also on:</span>
+<!--syndication links -->
+    </div>
+  </div>
+</body>
+END;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertCount(1, $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('content', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('children', $result['items'][0]);
+		$this->assertEquals('h-feed', $result['items'][0]['children'][0]['type'][0]);
+		$this->assertEmpty($result['items'][0]['children'][0]['properties']);
+	}
+
+
+	/**
 	 * @see http://microformats.org/wiki/hReview#Examples
 	 */
 	public function testParsesClassicHreview() {
@@ -712,6 +771,68 @@ END;
 
 		$this->assertEquals('h-card', $result['items'][0]['properties']['item'][0]['type'][0]);
 		$this->assertEquals('h-card', $result['items'][0]['properties']['content'][0]['type'][0]);
+	}
+
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/137
+	 */
+	public function testIgnoreMf2PropertiesUnderClassicRoot()
+	{
+		$input = <<< END
+<div id="page" class="hfeed site wrap">
+	<h1 class="entry-title"><span class='p-name'>title</span></h1>
+	other content
+	<div class="entry-content">
+		<div class="e-content">this is a test for indieweb post </div> <span class="syn-text">Also on:</span>
+		<!--syndication links -->
+	</div>
+</div>
+END;
+		$parser = new Parser($input);
+		$result = $parser->parse();
+
+		$this->assertEmpty($result['items'][0]['properties']);
+	}
+
+
+	/**
+	 * 
+	 */
+	public function testParsesHfeed() {
+		$input = <<< END
+<div class="hfeed">
+	<article class="hentry">
+		<h1 class="entry-title">Microformats are amazing</h1>
+		<p>Published by <span class="author vcard"><span class="fn">W. Developer</span></span>
+		on <time class="published" datetime="2013-06-13 12:00:00">13<sup>th</sup> June 2013</time>
+
+		<p class="entry-summary">In which I extoll the virtues of using microformats.</p>
+
+		<div class="entry-content">
+			<p>Blah blah blah</p>
+		</div>
+	</article>
+</div>
+END;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('type', $output['items'][0]);
+		$this->assertEquals('h-feed', $output['items'][0]['type'][0]);
+		$this->assertArrayHasKey('children', $output['items'][0]);
+		$this->assertArrayHasKey('type', $output['items'][0]['children'][0]);
+		$this->assertEquals('h-entry', $output['items'][0]['children'][0]['type'][0]);
+		$this->assertArrayHasKey('properties', $output['items'][0]['children'][0]);
+		$this->assertArrayHasKey('name', $output['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('summary', $output['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('published', $output['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('content', $output['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('author', $output['items'][0]['children'][0]['properties']);
+		$this->assertArrayHasKey('type', $output['items'][0]['children'][0]['properties']['author'][0]);
+		$this->assertEquals('h-card', $output['items'][0]['children'][0]['properties']['author'][0]['type'][0]);
+		$this->assertArrayHasKey('properties', $output['items'][0]['children'][0]['properties']['author'][0]);
+		$this->assertArrayHasKey('value', $output['items'][0]['children'][0]['properties']['author'][0]);
 	}
 
 }

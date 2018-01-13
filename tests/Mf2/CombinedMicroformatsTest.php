@@ -322,4 +322,27 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayNotHasKey('value', $output['items'][0]['children'][0]);
 	}
 
+
+	/**
+	 * With the backcompat changes I worked on in this PR, I ran into a case where 
+	 * nested mf1 without properties were not added to the 'children' property properly. 
+	 * I fixed that but then wanted to ensure it worked beyond 1-level deep. This example 
+	 * is contrived, but lets me test to confirm 'children' is set correctly. - Gregor Morrill
+	 */
+	public function testNestedMf1() {
+		$input = '<div class="hentry"> <div class="vcard"><span class="fn">Jane Doe</span> and <div class="vcard"><span class="fn">John Doe</span></div> </div> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEmpty($result['items'][0]['properties']);
+		$this->assertArrayHasKey('children', $output['items'][0]);
+		$this->assertEquals('h-card', $output['items'][0]['children'][0]['type'][0]);
+		$this->assertEquals('Jane Doe', $output['items'][0]['children'][0]['properties']['name'][0]);
+		$child_mf = $output['items'][0]['children'][0];
+		$this->assertArrayHasKey('children', $child_mf);
+		$this->assertEquals('h-card', $child_mf['children'][0]['type'][0]);
+		$this->assertEquals('John Doe', $child_mf['children'][0]['properties']['name'][0]);
+	}
+
 }
+
