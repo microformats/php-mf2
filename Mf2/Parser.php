@@ -939,6 +939,7 @@ class Parser {
 		$return = array();
 		$children = array();
 		$dates = array();
+		$prefixes = array();
 		$impliedTimezone = null;
 
 		if($e->tagName == 'area') {
@@ -1347,8 +1348,8 @@ class Parser {
 		$result = array();
 
 		foreach ($mfElements as $node) {
-			$merge_properties = [];
-			$children = [];
+			$merge_properties = array();
+			$children = array();
 			
 			$is_backcompat = !$this->hasRootMf2($node);
 
