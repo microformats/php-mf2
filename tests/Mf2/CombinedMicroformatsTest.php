@@ -334,7 +334,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertEmpty($result['items'][0]['properties']);
+		$this->assertEmpty($output['items'][0]['properties']);
 		$this->assertArrayHasKey('children', $output['items'][0]);
 		$this->assertEquals('h-card', $output['items'][0]['children'][0]['type'][0]);
 		$this->assertEquals('Jane Doe', $output['items'][0]['children'][0]['properties']['name'][0]);
