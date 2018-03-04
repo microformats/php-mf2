@@ -21,7 +21,7 @@
     "autoload": {
         "files": ["Mf2/Parser.php"]
     },
-    "license": "CC0",
+    "license": "CC0-1.0",
     "suggest": {
         "barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"
     }
