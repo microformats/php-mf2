@@ -341,12 +341,12 @@ EOT;
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']['category'][0]['properties']);
 		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
-	
+
 	public function testApplyTransformationToSrcset() {
 		$transformation = function ($url) {
 			return 'https://example.com/' . ltrim($url, '/');
 		};
-		
+
 		// Example from https://developers.whatwg.org/edits.html#attr-img-srcset
 		$srcset = 'banner-HD.jpeg 2x, banner-phone.jpeg 100w, banner-phone-HD.jpeg 100w 2x';
 		$result = Mf2\applySrcsetUrlTransformation($srcset, $transformation);
@@ -362,7 +362,7 @@ EOT;
 
 		$this->assertEquals('https://aaronparecki.com/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	public function testScriptTagContentsRemovedFromTextValue() {
 		$input = <<<EOT
 <div class="h-entry">
@@ -380,7 +380,7 @@ EOT;
 		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
 		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
 	}
-	
+
 	public function testScriptElementContentsRemovedFromAllPlaintextValues() {
 		$input = <<<EOT
 <div class="h-entry">
@@ -391,7 +391,7 @@ EOT;
 
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertNotContains('not contained', $output['items'][0]['properties']['published'][0]);
 		$this->assertNotContains('not contained', $output['items'][0]['properties']['url'][0]);
 	}
@@ -423,7 +423,7 @@ EOT;
 		$this->assertContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
-	
+
 	public function testWhitespaceBetweenElements() {
 		$input = <<<EOT
 <div class="h-entry">
@@ -460,14 +460,14 @@ EOT;
 </span>
       <span class="u-hiddenInWideEnv"><a href="https://twitter.com/download" data-scribe="element:logo"><div class="Icon Icon--twitter " aria-label="Get Twitter app" title="Get Twitter app" role="img"></div></a></span>
     </div>
-    
+
 <div class="TweetAuthor" data-scribe="component:author">
   <a class="TweetAuthor-link Identity u-linkBlend" data-scribe="element:user_link" href="https://twitter.com/kevinmarks" aria-label="Kevin Marks (screen name: kevinmarks)">
     <span class="TweetAuthor-avatar Identity-avatar">
       <img class="Avatar" data-scribe="element:avatar" data-src-2x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_bigger.jpeg" alt="" data-src-1x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg" src="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg">
     </span>
     <span class="TweetAuthor-name Identity-name customisable-highlight" title="Kevin Marks" data-scribe="element:name">Kevin Marks</span>
-    
+
     <span class="TweetAuthor-screenName Identity-screenName" title="@kevinmarks" data-scribe="element:screen_name">@kevinmarks</span>
   </a>
 </div>
@@ -479,7 +479,7 @@ EOT;
 
 
     <div class="Tweet-metadata dateline">
-      
+
 
 <a class="u-linkBlend u-url customisable-highlight long-permalink" data-datetime="2016-02-19T18:43:33+0000" data-scribe="element:full_timestamp" href="https://twitter.com/kevinmarks/status/700752598123433985">
 <time class="dt-updated" datetime="2016-02-19T18:43:33+0000" pubdate="" title="Time posted: 19 Feb 2016, 18:43:33 (UTC)">10:43 AM - 19 Feb 2016</time></a>
@@ -597,6 +597,46 @@ EOT;
 
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
+
+  public function testChildObjects() {
+    $input = <<<END
+<html>
+  <head>
+    <title>Test</title>
+  </head>
+  <body>
+
+    <div class="h-feed">
+      <a href="/author" class="p-author h-card">Author Name</a>
+
+      <ul>
+        <li class="h-entry">
+          <a href="/1" class="u-url p-name">One</a>
+        </li>
+        <li class="h-entry">
+          <a href="/2" class="u-url p-name">Two</a>
+        </li>
+        <li class="h-entry">
+          <a href="/3" class="u-url p-name">Three</a>
+        </li>
+        <li class="h-entry">
+          <a href="/4" class="u-url p-name">Four</a>
+        </li>
+      </ul>
+    </div>
+
+  </body>
+</html>
+END;
+    $output = Mf2\parse($input);
+
+    $this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+    $this->assertEquals(4, count($output['items'][0]['children']));
+    $this->assertEquals('One', count($output['items'][0]['children'][0]['properties']['name'][0]));
+    $this->assertEquals('Two', count($output['items'][0]['children'][1]['properties']['name'][0]));
+    $this->assertEquals('Three', count($output['items'][0]['children'][2]['properties']['name'][0]));
+    $this->assertEquals('Four', count($output['items'][0]['children'][3]['properties']['name'][0]));
+  }
 
 }
 
