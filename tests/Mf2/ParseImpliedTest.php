@@ -254,4 +254,43 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
+	/**
+	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 */
+	public function testBackcompatNoImpliedName() {
+		$input = '<div class="hentry"> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
+	}
+
+
+	/**
+	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 */
+	public function testBackcompatNoImpliedPhoto() {
+		$input = '<div class="hentry"> <img src="https://example.com/photo.jpg" alt="photo" /> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertEmpty($result['items'][0]['properties']);
+	}
+
+
+	/**
+	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 */
+	public function testBackcompatNoImpliedUrl() {
+		$input = '<div class="hentry"> <a href="https://example.com/this-post" class="entry-title">Title</a> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
+	}
+
 }
+
