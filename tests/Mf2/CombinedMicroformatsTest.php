@@ -344,5 +344,20 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('John Doe', $child_mf['children'][0]['properties']['name'][0]);
 	}
 
+  public function testNoUrlFromRelOnMf2() {
+    $input = <<< END
+<div class="h-entry">
+<p> <a href="/article" rel="bookmark" class="p-name">Title of Post</a> </p>
+<div class="e-content"><p> This is the post </p> </div>
+</div>
+END;
+    $parser = new Parser($input);
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('name', $output['items'][0]['properties']);
+    $this->assertArrayHasKey('content', $output['items'][0]['properties']);
+    $this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
+  }
+
 }
 
