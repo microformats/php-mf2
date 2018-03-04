@@ -286,11 +286,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 </html>
 END;
 
-    $parser = new Parser($input, 'http://example.com');
+    $parser = new Parser($input, 'https://example.com');
     $output = $parser->parse();
 
     $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 
     $this->assertArrayHasKey('name', $output['items'][0]['properties']);
     $this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);

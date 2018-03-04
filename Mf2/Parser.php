@@ -623,12 +623,12 @@ class Parser {
 		}
 
 		$this->resolveChildUrls($p);
-		
+
 		if ($p->tagName == 'img' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
 		} elseif ($p->tagName == 'area' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
-		} elseif ($p->tagName == 'abbr' and $p->hasAttribute('title')) {
+		} elseif (($p->tagName == 'abbr' or $p->tagName == 'link') and $p->hasAttribute('title')) {
 			$pValue = $p->getAttribute('title');
 		} elseif (in_array($p->tagName, array('data', 'input')) and $p->hasAttribute('value')) {
 			$pValue = $p->getAttribute('value');
@@ -647,7 +647,7 @@ class Parser {
 	 * @todo make this adhere to value-class
 	 */
 	public function parseU(\DOMElement $u) {
-		if (($u->tagName == 'a' or $u->tagName == 'area') and $u->hasAttribute('href')) {
+		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
 		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
@@ -665,7 +665,7 @@ class Parser {
 
 		if ($classTitle !== null) {
 			return $classTitle;
-		} elseif ($u->tagName == 'abbr' and $u->hasAttribute('title')) {
+		} elseif (($u->tagName == 'abbr' or $u->tagName == 'link') and $u->hasAttribute('title')) {
 			return $u->getAttribute('title');
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
 			return $u->getAttribute('value');
