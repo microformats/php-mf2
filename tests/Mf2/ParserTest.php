@@ -106,6 +106,20 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Here is content with two lines.'."\n".'The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
+	public function testParseEWithWhitespace() {
+		$input = '<div class="h-entry">
+  <div class="e-content">
+    This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.
+  </div>
+</div>';
+		//$parser = new Parser($input);
+		$output = Mf2\parse($input);
+
+		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
+		$this->assertEquals('This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('This leading and trailing whitespace should be removed from the HTML and text values.', $output['items'][0]['properties']['content'][0]['value']);
+	}
+
 	/**
 	 * @group parseH
 	 */

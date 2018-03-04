@@ -887,7 +887,7 @@ class Parser {
 		}
 
 		$return = array(
-			'html' => $html,
+			'html' => unicodeTrim($html),
 			'value' => unicodeTrim($this->innerText($e)),
 		);
 
