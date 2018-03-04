@@ -124,7 +124,9 @@ EOT;
 		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['adr'][0]);
 		$this->assertEquals('Street Name 9', $result['items'][0]['properties']['street-address'][0]);
 		$this->assertEquals('12345 NY, USA', $result['items'][0]['properties']['locality'][0]);
-		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['name'][0]);
+		// p-name is no longer implied for this test due to other p-*
+		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
 	}
 
 	/**

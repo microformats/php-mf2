@@ -311,7 +311,9 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertEquals('Person Bee', $output['items'][0]['properties']['name'][0]);
+		// p-name is no longer implied for this test due to nested microformat
+		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('rect', $output['items'][0]['properties']['category'][0]['shape']);
 		$this->assertEquals('100,100,120,120', $output['items'][0]['properties']['category'][0]['coords']);
 		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);
@@ -435,7 +437,9 @@ EOT;
 		$output = $parser->parse();
 
 		$this->assertContains('h-entry', $output['items'][0]['type']);
-		$this->assertNotContains('attendingHomebrew', $output['items'][0]['properties']['name'][0]);
+		// p-name is no longer implied for this test due to other p-*
+		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
 
@@ -540,4 +544,59 @@ EOT;
 		$this->assertArrayNotHasKey('column1', $output['items'][0]['properties']);
 	}
 
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenE()
+	{
+		$input = '<article class="h-entry">
+  <div class="e-content">
+    <p>Wanted content.</p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenP()
+	{
+		$input = '<article class="h-entry">
+  <div class="p-content">
+    <p>Wanted content.</p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenNestedMicroformat()
+	{
+		$input = '<article class="h-entry">
+  <div class="u-like-of h-cite">
+    <p>I really like <a class="p-name u-url" href="http://microformats.org/">Microformats</a></p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
 }
+

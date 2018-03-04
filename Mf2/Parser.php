@@ -920,9 +920,10 @@ class Parser {
 	 *
 	 * @param DOMElement $e The element to parse
 	 * @param bool $is_backcompat Whether using backcompat parsing or not
+	 * @param bool $has_nested_mf Whether this microformat has a nested microformat
 	 * @return array A representation of the values contained within microformat $e
 	 */
-	public function parseH(\DOMElement $e, $is_backcompat = false) {
+	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
 		if ($this->parsed->contains($e)) {
 			return null;
@@ -958,6 +959,7 @@ class Parser {
 				continue;
 			}
 
+			$prefixes[] = 'p-';
 			$pValue = $this->parseP($p);
 
 			// Add the value to the array for it’s p- properties
@@ -982,6 +984,7 @@ class Parser {
 				continue;
 			}
 
+			$prefixes[] = 'u-';
 			$uValue = $this->parseU($u);
 
 			// Add the value to the array for it’s property types
@@ -1006,6 +1009,7 @@ class Parser {
 				continue;
 			}
 
+			$prefixes[] = 'dt-';
 			$dtValue = $this->parseDT($dt, $dates, $impliedTimezone);
 
 			if ($dtValue) {
@@ -1040,6 +1044,7 @@ class Parser {
 				continue;
 			}
 
+			$prefixes[] = 'e-';
 			$eValue = $this->parseE($em);
 
 			if ($eValue) {
@@ -1052,9 +1057,10 @@ class Parser {
 			$this->elementPrefixParsed($em, 'e');
 		}
 
-		// Implied Properties
-		// Check for p-name
-		if (!array_key_exists('name', $return) && !$is_backcompat) {
+		// Imply 'name' only under specific conditions
+		$imply_name = (!$has_nested_mf && !array_key_exists('name', $return) && !$is_backcompat && !in_array('p-', $prefixes) && !in_array('e-', $prefixes));
+
+		if ($imply_name) {
 			try {
 				// Look for img @alt
 				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '') {
@@ -1337,7 +1343,7 @@ class Parser {
 	 * Parse microformats recursively
 	 * Keeps track of whether inside a backcompat root or not
 	 * @param DOMElement $context: node to start with
-	 * @param int $depth: recusion depth
+	 * @param int $depth: recursion depth
 	 * @return array
 	 */
 	public function parse_recursive(DOMElement $context = null, $depth = 0) {
@@ -1380,8 +1386,11 @@ class Parser {
 
 			}
 
+			// set bool flag for nested mf
+			$has_nested_mf = ($children || $merge_properties);
+
 			// parse for root mf
-			$result = $this->parseH($node, $is_backcompat);
+			$result = $this->parseH($node, $is_backcompat, $has_nested_mf);
 
 			// merge nested mf properties
 			if ( $merge_properties && isset($result['properties']) ) {
@@ -1402,7 +1411,7 @@ class Parser {
 							// Note: handling microformat nesting under multiple conflicting prefixes is not currently specified by the mf2 parsing spec.
 							$prefixSpecificResult = $result;
 							if (in_array('p-', $prefixes)) {
-								$prefixSpecificResult['value'] = $prefixSpecificResult['properties']['name'][0];
+								$prefixSpecificResult['value'] = (empty($prefixSpecificResult['properties']['name'][0])) ? '' : $prefixSpecificResult['properties']['name'][0];
 							} elseif (in_array('e-', $prefixes)) {
 								$eParsedResult = $this->parseE($node);
 								$prefixSpecificResult['html'] = $eParsedResult['html'];
