@@ -275,4 +275,25 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
 	}
 
+  public function testValueFromLinkTag() {
+    $input = <<< END
+<!doctype html>
+<html class="h-entry">
+  <head>
+    <link rel="canonical" class="u-url p-name" href="https://example.com/" title="Example.com homepage">
+  </head>
+  <body></body>
+</html>
+END;
+
+    $parser = new Parser($input, 'https://example.com');
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
+    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
+
+    $this->assertArrayHasKey('name', $output['items'][0]['properties']);
+    $this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);
+  }
+
 }
