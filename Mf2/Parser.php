@@ -1411,7 +1411,7 @@ class Parser {
 							// Note: handling microformat nesting under multiple conflicting prefixes is not currently specified by the mf2 parsing spec.
 							$prefixSpecificResult = $result;
 							if (in_array('p-', $prefixes)) {
-								$prefixSpecificResult['value'] = $prefixSpecificResult['properties']['name'][0];
+								$prefixSpecificResult['value'] = (empty($prefixSpecificResult['properties']['name'][0])) ? '' : $prefixSpecificResult['properties']['name'][0];
 							} elseif (in_array('e-', $prefixes)) {
 								$eParsedResult = $this->parseE($node);
 								$prefixSpecificResult['html'] = $eParsedResult['html'];
