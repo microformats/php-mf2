@@ -540,4 +540,59 @@ EOT;
 		$this->assertArrayNotHasKey('column1', $output['items'][0]['properties']);
 	}
 
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenE()
+	{
+		$input = '<article class="h-entry">
+  <div class="e-content">
+    <p>Wanted content.</p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenP()
+	{
+		$input = '<article class="h-entry">
+  <div class="p-content">
+    <p>Wanted content.</p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
+	 */
+	public function testNoImpliedNameWhenNestedMicroformat()
+	{
+		$input = '<article class="h-entry">
+  <div class="u-like-of h-cite">
+    <p>I really like <a class="p-name u-url" href="http://microformats.org/">Microformats</a></p>
+  </div>
+  <footer>
+    <p>Footer to be ignored.</p>
+  </footer>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
+	}
+
 }
+
