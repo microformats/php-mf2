@@ -727,7 +727,9 @@ END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
-		$this->assertCount(1, $result['items'][0]['properties']);
+		// p-name is no longer implied for this test due to nested microformat
+		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('content', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('children', $result['items'][0]);
 		$this->assertEquals('h-feed', $result['items'][0]['children'][0]['type'][0]);
