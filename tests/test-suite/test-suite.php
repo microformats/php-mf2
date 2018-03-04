@@ -2,7 +2,7 @@
 
 /**
  * microformats test suite for php-mf2
- * 
+ *
  * Before running this test suite, ensure that you run composer install
  * to install the microformats/tests repository of tests.
  * @see https://github.com/microformats/tests
@@ -15,7 +15,7 @@
  * with the parsed output and the expected output, both in array format.
  *
  * Individual test suites may be run by specifying the relative path within the repo.
- * For example, to run only the 'microformats-v2' tests: 
+ * For example, to run only the 'microformats-v2' tests:
  *   php ./tests/test-suite/test-suite.php microformats-v2
  */
 
@@ -41,12 +41,12 @@ class TestSuite
 
 	/**
 	 * This method constructs the TestSuite
-	 * @param string $path: path to test-suite-data 
+	 * @param string $path: path to test-suite-data
 	 * @access public
 	 */
 	public function __construct($path = '')
 	{
-		$path = './vendor/microformats/test/tests/' . $path;
+		$path = './vendor/mf2/tests/tests/' . $path;
 
 		if ( !file_exists($path) )
 		{
@@ -60,7 +60,7 @@ class TestSuite
 
 	/**
 	 * This method runs the test suite
-	 * @param array 
+	 * @param array
 	 * @access public
 	 * @return bool
 	 */
@@ -164,7 +164,7 @@ class TestSuite
 					{
 						$difference[$key] = $recursive_diff;
 					}
-						
+
 				}
 
 			}
@@ -194,7 +194,7 @@ class TestSuite
 	/**
 	 * DEPRECATED
 	 * This method handles running a test suite
-	 * @param string $path: path to the suite's JSON file 
+	 * @param string $path: path to the suite's JSON file
 	 * @access public
 	 * @return bool
 	 */
@@ -207,7 +207,7 @@ class TestSuite
 
 		# loop: each file in the test suite
 		foreach ( $iterator as $file )
-		{	
+		{
 
 			# if: file is a sub-directory and not a dot-directory
 			if ( $file->isDir() && !$file->isDot() )
