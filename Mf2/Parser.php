@@ -1348,64 +1348,44 @@ class Parser {
 	 */
 	public function parse_recursive(DOMElement $context = null, $depth = 0) {
 		$mfs = array();
-		$children = array();
-		$properties = array();
 		$mfElements = $this->getRootMF($context);
-		$result = array();
 
 		foreach ($mfElements as $node) {
-			$merge_properties = array();
-			$children = array();
-			
 			$is_backcompat = !$this->hasRootMf2($node);
 
-			if ( $this->convertClassic && $is_backcompat ) {
+			if ($this->convertClassic && $is_backcompat) {
 				$this->backcompat($node);
 			}
 
-			$recurse = $this->parse_recursive($node, ++$depth);
-
-			// recursion returned parsed result
-			if ( !empty($recurse) ) {
-
-				// parsed result is an mf root
-				if ( is_numeric(key($recurse)) ) {
-
-					// nested mf
-					if ( $depth > 0 ) {
-						$children = $recurse;
-					// top-level mf
-					} else {
-						$mfs = array_merge_recursive($mfs, $recurse);
-					}
-
-				// parsed result is an mf property
-				} else {
-					$merge_properties = $recurse;
-				}
-
-			}
+			$recurse = $this->parse_recursive($node, $depth + 1);
 
 			// set bool flag for nested mf
-			$has_nested_mf = ($children || $merge_properties);
+			$has_nested_mf = ($recurse);
 
 			// parse for root mf
 			$result = $this->parseH($node, $is_backcompat, $has_nested_mf);
 
-			// merge nested mf properties
-			if ( $merge_properties && isset($result['properties']) ) {
-				$result['properties'] = array_merge($result['properties'], $merge_properties);
-			}
+			// TODO: Determine if clearing this is required?
+			$this->elementPrefixParsed($node, 'h');
+			$this->elementPrefixParsed($node, 'p');
+			$this->elementPrefixParsed($node, 'u');
+			$this->elementPrefixParsed($node, 'dt');
+			$this->elementPrefixParsed($node, 'e');
 
 			// parseH returned a parsed result
-			if ( $result ) {
+			if ($result) {
+
+				// merge recursive results into current results
+				if ($recurse) {
+					$result = array_merge_recursive($result, $recurse);
+				}
 
 				// currently a nested mf; check if node is an mf property of parent
-				if ( $depth > 0 ) {
+				if ($depth > 0) {
 					$temp_properties = nestedMfPropertyNamesFromElement($node);
 
-					// properties found; set up parsed result in $properties
-					if ( !empty($temp_properties) ) {
+					// properties found; set up parsed result in 'properties'
+					if (!empty($temp_properties)) {
 
 						foreach ($temp_properties as $property => $prefixes) {
 							// Note: handling microformat nesting under multiple conflicting prefixes is not currently specified by the mf2 parsing spec.
@@ -1420,39 +1400,20 @@ class Parser {
 								$prefixSpecificResult['value'] = (empty($result['properties']['url'])) ? $this->parseU($node) : reset($result['properties']['url']);
 							}
 
-							if ( $children ) {
-								$prefixSpecificResult['children'] = $children;
-							}
-
-							$properties[$property][] = $prefixSpecificResult;
+							$mfs['properties'][$property][] = $prefixSpecificResult;
 						}
 
+					// otherwise, set up in 'children'
+					} else {
+						$mfs['children'][] = $result;
 					}
-
-					// TODO: Determine if clearing this is required?
-					$this->elementPrefixParsed($node, 'h');
-					$this->elementPrefixParsed($node, 'p');
-					$this->elementPrefixParsed($node, 'u');
-					$this->elementPrefixParsed($node, 'dt');
-					$this->elementPrefixParsed($node, 'e');
+				// otherwise, top-level mf
+				} else {
+					$mfs[] = $result;
 				}
-
-				// add children mf from recursion
-				if ( $children ) {
-					$result['children'] = $children;
-				}
-
-				$mfs[] = $result;
 			}
-			
 		}
 
-		// node is an mf property of parent, return $properties which has property name(s) as array indices
-		if ( $properties && ($depth > 1) ) {
-			return $properties;
-		}
-		
-		// otherwise, return $mfs which has numeric array indices
 		return $mfs;
 	}
 

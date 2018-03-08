@@ -598,8 +598,11 @@ EOT;
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
-  public function testChildObjects() {
-    $input = <<<END
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/143
+	 */
+	public function testChildObjects() {
+		$input = <<<END
 <html>
   <head>
     <title>Test</title>
@@ -628,15 +631,16 @@ EOT;
   </body>
 </html>
 END;
-    $output = Mf2\parse($input);
+		$output = Mf2\parse($input);
 
-    $this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
-    $this->assertEquals(4, count($output['items'][0]['children']));
-    $this->assertEquals('One', count($output['items'][0]['children'][0]['properties']['name'][0]));
-    $this->assertEquals('Two', count($output['items'][0]['children'][1]['properties']['name'][0]));
-    $this->assertEquals('Three', count($output['items'][0]['children'][2]['properties']['name'][0]));
-    $this->assertEquals('Four', count($output['items'][0]['children'][3]['properties']['name'][0]));
-  }
+		$this->assertArrayHasKey('author', $output['items'][0]['properties']);
+		$this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+		$this->assertCount(4, $output['items'][0]['children']);
+		$this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
+		$this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
+		$this->assertEquals('Three', $output['items'][0]['children'][2]['properties']['name'][0]);
+		$this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
+	}
 
 }
 
