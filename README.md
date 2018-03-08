@@ -144,10 +144,12 @@ will result in the following output, with relative URLs made absolute:
   "items": [{
     "type": ["h-card"],
     "properties": {
+      "name": ["Mr. Example"],
       "photo": ["http://example.org/photo.png"]
     }
   }],
-  "rels": {}
+  "rels": {},
+  "rel-urls": {}
 }
 ```
 
@@ -170,10 +172,15 @@ parsing will result in the following keys:
   "rels": {
     "me": ["https://twitter.com/barnabywalters"]
   },
-  "alternates": [{
-    "url": "http://example.com/notes.atom",
-    "rel": "etc"
-  }]
+  "rel-urls": {
+    "https://twitter.com/barnabywalters": {
+      "text": "Me on twitter",
+      "rels": ["me"]
+    },
+    "http://example.com/notes.atom": {
+      "rels": ["alternate","etc"]
+    }
+  }
 }
 ```
 
@@ -242,6 +249,34 @@ $doc = '<div class="h-entry" lang="sv" id="postfrag123">
 $parser = new Mf2\Parser($doc);
 $parser->lang = true;
 $result = $parser->parse();
+```
+
+```json
+{
+  "items": [
+    {
+      "type": ["h-entry"],
+      "properties": {
+        "name": ["En svensk titel"],
+        "content": [
+          {
+            "html": "With an <em>english</em> summary",
+            "value": "With an english summary",
+            "lang": "en"
+          },
+          {
+            "html": "Och <em>svensk</em> huvudtext",
+            "value": "Och svensk huvudtext",
+            "lang": "sv"
+          }
+        ]
+      },
+      "lang": "sv"
+    }
+  ],
+  "rels": {},
+  "rel-urls": {}
+}
 ```
 
 Note that this option is still considered experimental and in development, and the parsed output may change between minor releases.
