@@ -307,6 +307,23 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### Current Master Branch
+
+Breaking changes:
+
+* [#125](https://github.com/indieweb/php-mf2/pull/125) - Add `rel-urls` to parsed result. Removes `alternates` by default but still available behind a feature flag.
+* [#142](https://github.com/indieweb/php-mf2/pull/142) - Reduce instances of implied `p-name`. See Microformats issue [#6](https://github.com/microformats/microformats2-parsing/issues/6). This means it is now possible for the parsed result to *not* have a `name` property, whereas before there was always a `name` property on an object. Make sure consuming code can handle an object without a name now.
+
+Fixes:
+
+* [#124](https://github.com/indieweb/php-mf2/pull/124) - Fix for experimental lang parsing
+* [#127](https://github.com/indieweb/php-mf2/issues/127) - Fix for parsing `h-*` class names containing invalid characters.
+* [#131](https://github.com/indieweb/php-mf2/pull/131) - Improved `dt-` parsing. Issues [#126](https://github.com/indieweb/php-mf2/issues/126) and [#115](https://github.com/indieweb/php-mf2/issues/115).
+* [#130](https://github.com/indieweb/php-mf2/issues/130) - Fix for implied properties with empty attributes.
+* [#135](https://github.com/indieweb/php-mf2/issues/135) - Trim leading and tailing whitespace from HTML value as well as text value.
+* [#137](https://github.com/indieweb/php-mf2/issues/137) - Fix backcompat hfeed parsing.
+* [#134](https://github.com/indieweb/php-mf2/issues/134) - Fix `rel=bookmark` backcompat parsing.
+
 #### v0.3.2
 
 2017-05-27
