@@ -642,5 +642,59 @@ END;
 		$this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
 	}
 
+
+  public function testMultiLevelRecursion() {
+    $input = <<<END
+<html>
+  <head>
+    <title>Test</title>
+  </head>
+  <body>
+
+    <div class="h-feed">
+      <a href="/author" class="p-author h-card">Author Name</a>
+
+      <ul>
+        <li class="h-entry">
+          <a href="/1" class="u-url p-name">One</a>
+        </li>
+        <li class="h-entry">
+          <a href="/2" class="u-url p-name">Two</a>
+          <ul>
+            <li class="p-comment h-entry"><a href="/a" class="u-url p-name">Comment A</a></li>
+            <li class="p-comment h-entry"><a href="/b" class="u-url p-name">Comment B</a></li>
+          </ul>
+        </li>
+        <li class="h-entry">
+          <a href="/3" class="u-url p-name">Three</a>
+          <ul>
+            <li class="h-entry"><a href="/c" class="u-url p-name">Comment C</a></li>
+            <li class="h-entry"><a href="/d" class="u-url p-name">Comment D</a></li>
+          </ul>
+        </li>
+        <li class="h-entry">
+          <a href="/4" class="u-url p-name">Four</a>
+        </li>
+      </ul>
+    </div>
+
+  </body>
+</html>
+END;
+    $output = Mf2\parse($input);
+
+    $this->assertArrayHasKey('author', $output['items'][0]['properties']);
+    $this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+    $this->assertCount(4, $output['items'][0]['children']);
+    $this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
+    $this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
+    $this->assertEquals('Comment A', $output['items'][0]['children'][1]['properties']['comment'][0]['properties']['name'][0]);
+    $this->assertEquals('Comment B', $output['items'][0]['children'][1]['properties']['comment'][1]['properties']['name'][0]);
+    $three = $output['items'][0]['children'][2];
+    $this->assertEquals('Three', $three['properties']['name'][0]);
+    $this->assertEquals('Comment C', $three['children'][0]['properties']['name'][0]);
+    $this->assertEquals('Comment D', $three['children'][1]['properties']['name'][0]);
+    $this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
+  }
 }
 
