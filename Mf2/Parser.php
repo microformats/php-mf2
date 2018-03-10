@@ -1929,7 +1929,7 @@ class Parser {
 		),
 		'hreview' => array(
 			'summary' => array(
-				'replace' => 'p-summary'
+				'replace' => 'p-name'
 			),
 			# fn: see item.fn below
 			# photo: see item.photo below
