@@ -760,9 +760,10 @@ class Parser {
 						if (!$impliedTimezone && $timezoneOffset) {
 							$impliedTimezone = $timezoneOffset;
 						}
+					// Is the current part a valid date AND no other date representation has been found?
 					} elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $part) and empty($datePart)) {
-						// Is the current part a valid date AND no other date representation has been found?
 						$datePart = $part;
+					// Is the current part a valid timezone offset AND no other timezone part has been found?
 					} elseif (preg_match('/^(Z|[+-]\d{1,2}:?(\d{2})?)$/', $part) and empty($timezonePart)) {
 						$timezonePart = $part;
 
@@ -770,6 +771,9 @@ class Parser {
 						if (!$impliedTimezone && $timezoneOffset) {
 							$impliedTimezone = $timezoneOffset;
 						}
+					// Current part already represented by other VCP parts; do nothing with it
+					} else {
+						continue;
 					}
 
 					if ( !empty($datePart) && !in_array($datePart, $dates) ) {
