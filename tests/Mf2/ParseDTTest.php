@@ -442,4 +442,32 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('2017-06-17 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/147
+	 */
+	public function testDtVCPMultipleDatesAndTimezones() {
+		$input = '<div class="h-event">
+  <h1 class="p-name">Multiple date and time values</h1>
+
+  <p> When:
+    <span class="dt-start">
+    <span class="value" title="June 1, 2014">2014-06-01</span>
+    <span class="value" title="June 1, 3014">3014-06-01</span>
+    <span class="value" title="12:30">12:30</span>
+    (UTC<span class="value">-06:00</span>)
+    <span class="value" title="23:00">23:00</span>
+    (UTC<span class="value">+01:00</span>)
+    –
+    <span class="dt-end">19:30</span>
+  </p>
+
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2014-06-01 12:30-0600', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2014-06-01 19:30-0600', $output['items'][0]['properties']['end'][0]);
+	}
+
 }
+
