@@ -358,6 +358,7 @@ Fixes:
 * [#135](https://github.com/indieweb/php-mf2/issues/135) - Trim leading and tailing whitespace from HTML value as well as text value.
 * [#137](https://github.com/indieweb/php-mf2/issues/137) - Fix backcompat hfeed parsing.
 * [#134](https://github.com/indieweb/php-mf2/issues/134) - Fix `rel=bookmark` backcompat parsing.
+* [#116](https://github.com/indieweb/php-mf2/issues/116) - Fix backcompat parsing for `summary` property in `hreview`
 
 #### v0.3.2
 
