@@ -759,13 +759,13 @@ END;
 
 		$this->assertArrayNotHasKey('reviewer', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('description', $result['items'][0]['properties']);
-		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('summary', $result['items'][0]['properties']);
 
 		$this->assertArrayHasKey('author', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('item', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('rating', $result['items'][0]['properties']);
-		$this->assertArrayHasKey('summary', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
 
 		$this->assertCount(1, $result['items'][0]['properties']['author'][0]['type']);
 		$this->assertCount(1, $result['items'][0]['properties']['item'][0]['type']);
