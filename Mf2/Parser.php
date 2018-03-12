@@ -250,6 +250,8 @@ function normalizeTimezoneOffset(&$dtValue) {
 		return null;
 	}
 
+  $timezoneOffset = null;
+
 	if ( $matches[0] != 'Z' ) {
 		$timezoneString = str_replace(':', '', $matches[0]);
 		$plus_minus = substr($timezoneString, 0, 1);
