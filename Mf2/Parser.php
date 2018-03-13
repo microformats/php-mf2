@@ -845,11 +845,12 @@ class Parser {
 				$dtValue = $this->textContent($dt);
 			}
 
-			// if the dtValue is not just YYYY-MM-DD, normalize the timezone offset
+			// if the dtValue is not just YYYY-MM-DD
 			if (!preg_match('/^(\d{4}-\d{2}-\d{2})$/', $dtValue)) {
-				$timezoneOffset = normalizeTimezoneOffset($dtValue);
-				if (!$impliedTimezone && $timezoneOffset) {
-					$impliedTimezone = $timezoneOffset;
+				// no implied timezone set and dtValue has a TZ offset, use un-normalized TZ offset
+				preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);
+				if (!$impliedTimezone && !empty($matches[0])) {
+					$impliedTimezone = $matches[0];
 				}
 			}
 
@@ -1031,7 +1032,7 @@ class Parser {
 		foreach ($temp_dates as $propName => $data) {
 			foreach ( $data as $dtValue ) {
 				// var_dump(preg_match('/[+-]\d{2}(\d{2})?$/i', $dtValue));
-				if ( $impliedTimezone && preg_match('/[+-]\d{2}(\d{2})?$/i', $dtValue, $matches) == 0 ) {
+				if ( $impliedTimezone && preg_match('/[+-]\d{2}:?(\d{2})?$/i', $dtValue, $matches) == 0 ) {
 					$dtValue .= $impliedTimezone;
 				}
 

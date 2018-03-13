@@ -469,5 +469,16 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('2014-06-01 19:30-0600', $output['items'][0]['properties']['end'][0]);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/149
+	 */
+	public function testDtWithoutYear() {
+		$input = '<div class="h-card"> <time class="dt-bday" datetime="--12-28"></time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('--12-28', $output['items'][0]['properties']['bday'][0]);
+	}
+
 }
 
