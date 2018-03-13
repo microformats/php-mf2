@@ -244,13 +244,13 @@ function convertTimeFormat($time) {
  * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
  */
 function normalizeTimezoneOffset(&$dtValue) {
-	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);	
+	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);
 
 	if (empty($matches)) {
 		return null;
 	}
 
-  $timezoneOffset = null;
+	$timezoneOffset = null;
 
 	if ( $matches[0] != 'Z' ) {
 		$timezoneString = str_replace(':', '', $matches[0]);
