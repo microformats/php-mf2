@@ -359,6 +359,7 @@ Fixes:
 * [#137](https://github.com/indieweb/php-mf2/issues/137) - Fix backcompat hfeed parsing.
 * [#134](https://github.com/indieweb/php-mf2/issues/134) - Fix `rel=bookmark` backcompat parsing.
 * [#116](https://github.com/indieweb/php-mf2/issues/116) - Fix backcompat parsing for `summary` property in `hreview`
+* [#149](https://github.com/indieweb/php-mf2/issues/149) - Fix for datetime parsing, no longer tries to interpret the value and passes through instead
 
 #### v0.3.2
 
