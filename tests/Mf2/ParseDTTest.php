@@ -260,9 +260,11 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * 
+	 * TZ offsets normalized only for VCP.
+	 * This behavior is implied from "However the colons ":" separating the hours and minutes of any timezone offset are optional and discouraged in order to make it less likely that a timezone offset will be confused for a time."
+	 * @see http://microformats.org/wiki/index.php?title=value-class-pattern&oldid=66473##However+the+colons
 	 */
-	public function testNormalizeTZOffset() {
+	public function testNormalizeTZOffsetVCP() {
 		$input = '<div class="h-event">
             <span class="dt-start"> <time class="value" datetime="2017-05-27">May 27</time>, from
             <time class="value">20:57-07:00</time> </span>
@@ -272,6 +274,19 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('2017-05-27 20:57-0700', $output['items'][0]['properties']['start'][0]);
 	}
+
+
+	/**
+	 * TZ offsets *not* normalized for non-VCP dates
+	 */
+	public function testNoNormalizeTZOffset() {
+		$input = '<div class="h-entry"> <time class="dt-start" datetime="2018-03-13 15:30-07:00">March 13, 2018 3:30PM</time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2018-03-13 15:30-07:00', $output['items'][0]['properties']['start'][0]);
+	}
+
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/115
@@ -297,7 +312,7 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertEquals('2009-06-26T19:01-0800', $output['items'][0]['properties']['start'][0]);
+		$this->assertEquals('2009-06-26T19:01-08:00', $output['items'][0]['properties']['start'][0]);
 	}
 
 	/**
@@ -467,6 +482,17 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('2014-06-01 12:30-0600', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2014-06-01 19:30-0600', $output['items'][0]['properties']['end'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/149
+	 */
+	public function testDtWithoutYear() {
+		$input = '<div class="h-card"> <time class="dt-bday" datetime="--12-28"></time> </div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('--12-28', $output['items'][0]['properties']['bday'][0]);
 	}
 
 }
