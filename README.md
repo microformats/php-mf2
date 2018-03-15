@@ -342,7 +342,19 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### Current Master
+
+2018-03-15
+
+Fixes:
+
+* [#153](https://github.com/indieweb/php-mf2/issues/153) - Fixes parsed timestamps authored with a Z timezone offset
+* [#151](https://github.com/indieweb/php-mf2/issues/151) - Adds back "value" of nested microformats when no matching property exists
+
+
 #### v0.4.0
+
+2018-03-13
 
 Breaking changes:
 
