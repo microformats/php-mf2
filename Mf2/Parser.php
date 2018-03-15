@@ -856,6 +856,7 @@ class Parser {
 
 			$dtValue = unicodeTrim($dtValue);
 
+      // Store the date part so that we can use it when assembling the final timestamp if the next one is missing a date part
 			if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches)) {
 				$dates[] = $matches[0];
 			}
@@ -1032,7 +1033,7 @@ class Parser {
 		foreach ($temp_dates as $propName => $data) {
 			foreach ( $data as $dtValue ) {
 				// var_dump(preg_match('/[+-]\d{2}(\d{2})?$/i', $dtValue));
-				if ( $impliedTimezone && preg_match('/[+-]\d{2}:?(\d{2})?$/i', $dtValue, $matches) == 0 ) {
+				if ( $impliedTimezone && preg_match('/(Z|[+-]\d{2}:?(\d{2})?)$/i', $dtValue, $matches) == 0 ) {
 					$dtValue .= $impliedTimezone;
 				}
 
