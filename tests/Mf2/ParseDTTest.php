@@ -90,6 +90,42 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
 
+  /**
+   * @group parseDT
+   */
+  public function testParseDTHandlesTimeDatetimeAttrWithZ() {
+    $input = '<div class="h-card"><time class="dt-start" datetime="2012-08-05T14:50:00Z"></div>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
+    $this->assertEquals('2012-08-05T14:50:00Z', $output['items'][0]['properties']['start'][0]);
+  }
+
+  /**
+   * @group parseDT
+   */
+  public function testParseDTHandlesTimeDatetimeAttrWithTZOffset() {
+    $input = '<div class="h-card"><time class="dt-start" datetime="2012-08-05T14:50:00-0700"></div>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
+    $this->assertEquals('2012-08-05T14:50:00-0700', $output['items'][0]['properties']['start'][0]);
+  }
+
+  /**
+   * @group parseDT
+   */
+  public function testParseDTHandlesTimeDatetimeAttrWithTZOffset2() {
+    $input = '<div class="h-card"><time class="dt-start" datetime="2012-08-05T14:50:00-07:00"></div>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+
+    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
+    $this->assertEquals('2012-08-05T14:50:00-07:00', $output['items'][0]['properties']['start'][0]);
+  }
+
 	/**
 	 * @group parseDT
 	 */
