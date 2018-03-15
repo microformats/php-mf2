@@ -255,46 +255,46 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		  <h1 class="p-name">Name</h1>
 		  <p class="e-content">Hello World</p>
 		  <ul>
-		    <li class="u-comment h-cite">
-		    	<a class="u-author h-card" href="http://jane.example.com/">Jane Bloggs</a>
-		    	<p class="p-content p-name">lol</p>
-		    	<a class="u-url" href="http://example.org/post1234"><time class="dt-published">2015-07-12 12:03</time></a>
-		    </li>
+			<li class="u-comment h-cite">
+				<a class="u-author h-card" href="http://jane.example.com/">Jane Bloggs</a>
+				<p class="p-content p-name">lol</p>
+				<a class="u-url" href="http://example.org/post1234"><time class="dt-published">2015-07-12 12:03</time></a>
+			</li>
 		  </ul>
 		</div>';
 		$expected = '{
 		  "items": [{
-    	  "type": ["h-entry"],
-	      "properties": {
-	        "name": ["Name"],
-	        "content": [{
-	          "html": "Hello World",
-	          "value": "Hello World"
-	        }],
-	        "comment": [{
-            "type": ["h-cite"],
-            "properties": {
-              "author": [{
-                "type": ["h-card"],
-                "properties": {
-                  "name": ["Jane Bloggs"],
-                  "url": ["http:\/\/jane.example.com\/"]
-                },
-                "value": "http:\/\/jane.example.com\/"
-              }],
-              "content": ["lol"],
-              "name": ["lol"],
-              "url": ["http:\/\/example.org\/post1234"],
-              "published": ["2015-07-12 12:03"]
-            },
-            "value": "http:\/\/example.org\/post1234"
-          }]
-	      }
-	    }],
-	    "rels":[],
-	    "rel-urls": []
+		  "type": ["h-entry"],
+		  "properties": {
+			"name": ["Name"],
+			"content": [{
+			  "html": "Hello World",
+			  "value": "Hello World"
+			}],
+			"comment": [{
+			"type": ["h-cite"],
+			"properties": {
+			  "author": [{
+				"type": ["h-card"],
+				"properties": {
+				  "name": ["Jane Bloggs"],
+				  "url": ["http:\/\/jane.example.com\/"]
+				},
+				"value": "http:\/\/jane.example.com\/"
+			  }],
+			  "content": ["lol"],
+			  "name": ["lol"],
+			  "url": ["http:\/\/example.org\/post1234"],
+			  "published": ["2015-07-12 12:03"]
+			},
+			"value": "http:\/\/example.org\/post1234"
+		  }]
+		  }
+		}],
+		"rels":[],
+		"rel-urls": []
 	  }';
-	  	$mf = Mf2\parse($input);
+		$mf = Mf2\parse($input);
 
 		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'http://example.org/post1234');
@@ -345,19 +345,57 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	}
 
   public function testNoUrlFromRelOnMf2() {
-    $input = <<< END
+	$input = <<< END
 <div class="h-entry">
 <p> <a href="/article" rel="bookmark" class="p-name">Title of Post</a> </p>
 <div class="e-content"><p> This is the post </p> </div>
 </div>
 END;
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('name', $output['items'][0]['properties']);
-    $this->assertArrayHasKey('content', $output['items'][0]['properties']);
-    $this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
+	$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+	$this->assertArrayHasKey('content', $output['items'][0]['properties']);
+	$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
   }
+
+	/**
+	 * Simplified h-entry with `p-location h-adr` from https://aaronparecki.com/2018/03/14/3/
+	 * Whitespace cleaned up for easier test assertion
+	 * @see https://github.com/indieweb/php-mf2/issues/151
+	 */
+	public function testNestedValuePProperty() {
+		$input = <<< END
+<div class="h-entry">
+<span class="p-location h-adr">
+<span class="p-locality">Portland</span>, <span class="p-region">Oregon</span> <span class="weather"><span>&bull;</span><i class="wi wi-night-alt-cloudy" title="Mostly Cloudy"></i> 44&deg;F</span>
+<data class="p-latitude" value="45.535623"></data>
+<data class="p-longitude" value="-122.621209"></data>
+</span>
+</div>
+END;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('value', $output['items'][0]['properties']['location'][0]);
+		$this->assertEquals("Portland, Oregon • 44°F", $output['items'][0]['properties']['location'][0]['value']);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/151
+	 */
+	public function testNestedValueDTProperty() {
+		$input = <<< END
+<div class="h-entry">
+	<div class="dt-acme h-acme-object">1997-12-12</div>
+</div>
+END;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('value', $output['items'][0]['properties']['acme'][0]);
+		$this->assertEquals('1997-12-12', $output['items'][0]['properties']['acme'][0]['value']);
+	}
 
 }
 
