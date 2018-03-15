@@ -359,5 +359,43 @@ END;
     $this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
   }
 
+	/**
+	 * Simplified h-entry with `p-location h-adr` from https://aaronparecki.com/2018/03/14/3/
+	 * Whitespace cleaned up for easier test assertion
+	 * @see https://github.com/indieweb/php-mf2/issues/151
+	 */
+	public function testNestedValuePProperty() {
+		$input = <<< END
+<div class="h-entry">
+<span class="p-location h-adr">
+<span class="p-locality">Portland</span>, <span class="p-region">Oregon</span> <span class="weather"><span>&bull;</span><i class="wi wi-night-alt-cloudy" title="Mostly Cloudy"></i> 44&deg;F</span>
+<data class="p-latitude" value="45.535623"></data>
+<data class="p-longitude" value="-122.621209"></data>
+</span>
+</div>
+END;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('value', $output['items'][0]['properties']['location'][0]);
+		$this->assertEquals("Portland, Oregon • 44°F", $output['items'][0]['properties']['location'][0]['value']);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/151
+	 */
+	public function testNestedValueDTProperty() {
+		$input = <<< END
+<div class="h-entry">
+	<div class="dt-acme h-acme-object">1997-12-12</div>
+</div>
+END;
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('value', $output['items'][0]['properties']['acme'][0]);
+		$this->assertEquals('1997-12-12', $output['items'][0]['properties']['acme'][0]['value']);
+	}
+
 }
 
