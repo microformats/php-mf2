@@ -342,7 +342,7 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
-#### Current Master
+#### v0.4.1
 
 2018-03-15
 
