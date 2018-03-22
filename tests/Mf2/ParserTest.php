@@ -696,5 +696,68 @@ END;
     $this->assertEquals('Comment D', $three['children'][1]['properties']['name'][0]);
     $this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
   }
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/158
+	 */	
+	public function testPrefixWithNumbers() {
+		$input = '<li class="h-entry">
+  <data class="p-name" value="Coffee"></data>
+  <div class="p-p3k-drank h-p3k-food">
+    <span class="value">Coffee</span>
+  </div>
+</li>';
+		$output = Mf2\parse($input);
+
+		$this->assertArrayHasKey('p3k-drank', $output['items'][0]['properties']);
+		$this->assertCount(1, $output['items'][0]['properties']['p3k-drank']);
+		$this->assertEquals('h-p3k-food', $output['items'][0]['properties']['p3k-drank'][0]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/160
+	 */
+	public function testConsecutiveDashes() {
+		$input = '<div class="h-entry h-----">
+<p> <a href="http://example.com/post" class="u-in-reply--to">http://example.com/post posted:</a> </p>
+<span class="p-name">Too many dashes</span>
+<span class="p--acme-leading">leading dash</span>
+<span class="p-acme--middle">middle dash</span>
+<span class="p-acme-trailing-">trailing dash</span>
+</div>';
+		$output = Mf2\parse($input);
+
+		$this->assertCount(1, $output['items'][0]['type']);
+		$this->assertEquals('h-entry', $output['items'][0]['type'][0]);
+		$this->assertCount(1, $output['items'][0]['properties']);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+	}
+
+	/**
+	 * Additional test from mf2py. Covers consecutive dashes, numbers in vendor prefix, and capital letters.
+	 * Added markup for numbers-only prefix and capital letter in prefix
+	 * @see https://github.com/kartikprabhu/mf2py/blob/experimental/test/examples/class_names_format.html
+	 * @see https://github.com/indieweb/php-mf2/issues/160
+	 * @see https://github.com/indieweb/php-mf2/issues/158
+	 */
+	public function testMfClassRegex() {
+		$input = '<article class="h-x-test h-p3k-entry h-feed h-Entry h-p3k-fEed h--d h-test-">
+    <a class="u-url u-Url u-p3k-url u--url u-url- u-123-url u-123A-url" href="example.com" >URL </a>
+    <span class="p-name p-nAme p-p3k-name p--name p-name-" >name</span>
+</article>';
+		$output = Mf2\parse($input);
+
+		$this->assertCount(3, $output['items'][0]['type']);
+		$this->assertContains('h-feed', $output['items'][0]['type']);
+		$this->assertContains('h-p3k-entry', $output['items'][0]['type']);
+		$this->assertContains('h-x-test', $output['items'][0]['type']);
+		$this->assertCount(5, $output['items'][0]['properties']);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('p3k-url', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('p3k-name', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('123-url', $output['items'][0]['properties']);
+	}
+
 }
 
