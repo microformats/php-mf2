@@ -200,4 +200,13 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
   }
 
+  public function testRelURLsNoDuplicates() {
+    $input = '<a href="#a" rel="a"></a>
+<a href="#b" rel="a"></a>
+<a href="#a" rel="a"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rels']['a'], ['#a', '#b']);
+  }
+
 }

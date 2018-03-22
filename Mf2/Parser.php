@@ -1295,7 +1295,11 @@ class Parser {
 			}
 
 			foreach ($linkRels as $rel) {
-				$rels[$rel][] = $href;
+				if (!array_key_exists($rel, $rels)) {
+					$rels[$rel] = array($href);
+				} elseif (!in_array($href, $rels[$rel])) {
+					$rels[$rel][] = $href;
+				}
 			}
 
 			if (!array_key_exists($href, $rel_urls)) {
