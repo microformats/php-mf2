@@ -188,4 +188,16 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($output['rel-urls']['#']['rels'], ['archived', 'bookmark', 'me']);
   }
 
+  public function testRelURLsInfoMergesCorrectly() {
+    $input = '<a href="#" rel="a">This nodeValue</a>
+<a href="#" rel="a" hreflang="en">Not this nodeValue</a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rel-urls']['#']['hreflang'], 'en');
+    $this->assertArrayNotHasKey('media', $output['rel-urls']['#']);
+    $this->assertArrayNotHasKey('title', $output['rel-urls']['#']);
+    $this->assertArrayNotHasKey('type', $output['rel-urls']['#']);
+    $this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
+  }
+
 }
