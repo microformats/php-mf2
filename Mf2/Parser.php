@@ -1277,8 +1277,8 @@ class Parser {
 				$rel_attributes['type'] = $hyperlink->getAttribute('type');
 			}
 
-			if ($hyperlink->nodeValue) {
-				$rel_attributes['text'] = $hyperlink->nodeValue;
+			if (strlen($hyperlink->textContent) > 0) {
+				$rel_attributes['text'] = $hyperlink->textContent;
 			}
 
 			if ($this->enableAlternates) {

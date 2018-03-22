@@ -209,4 +209,14 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($output['rels']['a'], array('#a', '#b'));
   }
 
+  public function testRelURLsFalsyTextVSEmpty() {
+    $input = '<a href="#a" rel="a">0</a>
+<a href="#b" rel="b"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertArrayHasKey('text', $output['rel-urls']['#a']);
+    $this->assertEquals($output['rel-urls']['#a']['text'], '0');
+    $this->assertArrayNotHasKey('text', $output['rel-urls']['#b']);
+  }
+
 }
