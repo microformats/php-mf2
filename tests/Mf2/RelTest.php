@@ -176,4 +176,16 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/articles.atom']);
   }
 
+  /**
+   * @see https://github.com/microformats/microformats2-parsing/issues/29
+   * @see https://github.com/microformats/microformats2-parsing/issues/30
+   */
+  public function testRelURLsRelsUniqueAndSorted() {
+    $input = '<a href="#" rel="me bookmark"></a>
+<a href="#" rel="bookmark archived"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rel-urls']['#']['rels'], ['archived', 'bookmark', 'me']);
+  }
+
 }
