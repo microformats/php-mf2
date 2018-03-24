@@ -1576,6 +1576,8 @@ class Parser {
 							}
 						}
 					}
+
+					$this->upgradeRelTagToCategory($el);
 				break;
 
 				case 'vevent':
@@ -1995,6 +1997,9 @@ class Parser {
 			),
 			'description' => array(
 				'replace' => 'e-content'
+			),
+			'category' => array(
+				'replace' => 'p-category'
 			),
 		),
 		'hproduct' => array(

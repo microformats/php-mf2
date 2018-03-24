@@ -888,5 +888,44 @@ END;
 		$this->assertContains('wordpress', $output['items'][0]['properties']['category']);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/157
+	 * @see source: http://jg.typepad.com/ciel/2006/02/daniel_bouluds_.html
+	 */
+	public function testHReviewRelTag() {
+		$input = '<div class="hreview">
+<span class="version" style="display:none">0.2</span>
+  <h2 class="summary">
+    Divine Brunch!
+  </h2>
+  <abbr class="dtreviewed" title="20060219T1919-0800">
+    Feb 19, 2006
+  </abbr>
+  by <span class="reviewer fn"><a href="http://jg.typepad.com/ciel">Joan Gelfand</a></span>
+<span class="type" style="display:none">business</span>
+  <div class="item vcard">
+    <a href="http://www.garconsf.com" class="url fn">
+  Garçon
+    </a>
+    <div class="adr">
+      <div class="street-address">1101 Valencia Street</div>
+      <span class="locality">San Francisco</span>,
+      <span class="region">CA</span>
+    </div>
+  </div>
+  <blockquote class="description"><p>
+  <abbr class="rating" title="3">★★★ </abbr>
+Best Benedicts!
+Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circle of warm brioche. Drizzled on top is a light, slightly tangy sauce. Seamless! The sophisticated room and great wine list added to the whole experience - Super!</p></blockquote>
+<p style="text-align:right;font-size:10px;">Technorati Tags: <a href="http://www.technorati.com/tag/Garcon" rel="tag">Garcon</a>, <a href="http://www.technorati.com/tag/Garçon" rel="tag">Garçon</a></p>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
+		$this->assertCount(2, $output['items'][0]['properties']['category']);
+		$this->assertContains('Garcon', $output['items'][0]['properties']['category']);
+		$this->assertContains('Garçon', $output['items'][0]['properties']['category']);
+	}
 }
 
