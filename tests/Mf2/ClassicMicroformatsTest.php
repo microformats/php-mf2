@@ -927,5 +927,31 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertContains('Garcon', $output['items'][0]['properties']['category']);
 		$this->assertContains('Garçon', $output['items'][0]['properties']['category']);
 	}
+
+	/**
+	 * Should return the last non-empty URL segment
+	 * @see https://github.com/indieweb/php-mf2/issues/157
+	 */
+	public function testRelTagTrailingSlash() {
+		$input = '<div class="hentry">
+<a rel="tag" href="/tags/testing/">Testing</a>,
+<a rel="tag" href="/tags/microformats">Microformats</a>
+</div>
+
+<div class="hreview">
+<a rel="tag" href="/tags/phpmf2/">php-mf2</a>,
+<a rel="tag" href="/tags/mf2py">mf2py</a>
+</div>
+';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
+		$this->assertContains('testing', $output['items'][0]['properties']['category']);
+		$this->assertContains('microformats', $output['items'][0]['properties']['category']);
+		$this->assertArrayHasKey('category', $output['items'][1]['properties']);
+		$this->assertContains('phpmf2', $output['items'][1]['properties']['category']);
+		$this->assertContains('mf2py', $output['items'][1]['properties']['category']);
+	}
 }
 
