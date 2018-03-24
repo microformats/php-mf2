@@ -102,6 +102,15 @@ EOT;
 		$result = $parser->parse();
 		$e = $result['items'][0];
 		$this->assertContains('h-entry', $e['type']);
+		$this->assertArrayHasKey('category', $e['properties']);
+		$this->assertCount(7, $e['properties']['category']);
+		$this->assertContains('speaking', $e['properties']['category']);
+		$this->assertContains('web-dev', $e['properties']['category']);
+		$this->assertContains('conferences', $e['properties']['category']);
+		$this->assertContains('front-trends', $e['properties']['category']);
+		$this->assertContains('fronttrends', $e['properties']['category']);
+		$this->assertContains('speaking', $e['properties']['category']);
+		$this->assertContains('txjs', $e['properties']['category']);
 	}
 	
 	public function testParsesSnarfedOrgArticleCorrectly() {
@@ -566,8 +575,8 @@ END;
 
 		$this->assertCount(1, $result['items'][0]['properties']['author']);
 		$this->assertCount(1, $result['items'][0]['properties']['author'][0]['type']);
-
 		$this->assertEquals('h-card', $result['items'][0]['properties']['author'][0]['type'][0]);
+		$this->assertArrayNotHasKey('category', $result['items'][0]['properties']);
 	}
 
 
@@ -835,6 +844,48 @@ END;
 		$this->assertEquals('h-card', $output['items'][0]['children'][0]['properties']['author'][0]['type'][0]);
 		$this->assertArrayHasKey('properties', $output['items'][0]['children'][0]['properties']['author'][0]);
 		$this->assertArrayHasKey('value', $output['items'][0]['children'][0]['properties']['author'][0]);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/157
+	 * @see source: http://www.manton.org/2018/03/indieweb-generation-4-and-hosted-domains.html
+	 */
+	public function testHEntryRelTag() {
+		$input = '<article id="post-6586" class="post-6586 post type-post status-publish format-standard hentry category-technology tag-domains tag-indiewebcamp tag-microblog tag-wordpress">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">IndieWeb generation 4 and hosted domains</h1>
+								</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<p>Naturally because of the goals of Micro.blog, I see a lot of discussion about “owning your content”. It’s an important part of the mission for Micro.blog to take control back from closed, ad-supported social networks and instead embrace posting on our own blogs again.</p>
+<p>But what does it mean to own our content? Do we have to install WordPress or some home-grown blogging system for it to be considered true content ownership, where we have the source code and direct SFTP access to the server? No. If that’s our definition, then content ownership will be permanently reserved for programmers and technical folks who have hours to spend on server configuration.</p>
+<p><a href="https://indieweb.org/generations">IndieWebCamp has a generations chart</a> to illustrate the path from early adopters to mainstream users. Eli Mellen highlighted it <a href="https://eli.li/entry.php?id=20180318015703">in a recent post</a> about the need to bridge the gap between the technical aspects of IndieWeb tools and more approachable platforms. With Micro.blog specifically, the goal is “generation 4”, and I think we’re on track to get there.</p>
+<p>I want blogging to be as easy as tweeting. Anything short of that isn’t good enough for Micro.blog. You’ll notice when you use Twitter that they never ask you to SFTP into twitter.com to configure your account. They don’t ask you to install anything.</p>
+<p>More powerful software that you can endlessly customize will always have its place. It’s good to have a range of options, including open source to tinker with. That’s often where some of the best ideas start. But too often I see people get lost in the weeds of plugins and themes, lured in by the myth that you have to self-host with WordPress to be part of the IndieWeb.</p>
+<p>Owning your content isn’t about portable software. It’s about portable URLs and data. It’s about domain names.</p>
+<p>When you write and post photos at your own domain name, your content can outlive any one blogging platform. This month marked the 16th anniversary of blogging at manton.org, and in that time I’ve switched blogging platforms and hosting providers a few times. The posts and URLs can all be preserved through those changes because it’s my own domain name.</p>
+<p>I was disappointed when Medium announced they were <a href="http://web.archive.org/web/20180301231401/https://help.medium.com/hc/en-us/articles/115005579728-Get-started-with-custom-domains">discontinuing support for custom domain names</a>. I’m linking to the Internet Archive copy because Medium’s help page about this is no longer available. If “no custom domains” is still their policy, it’s a setback for the open web, and dooms Medium to the same dead-end as twitter.com/username URLs.</p>
+<p>If you can’t use your own domain name, you can’t own it. Your content will be forever stuck at those silo URLs, beholden to the whims of the algorithmic timeline and shifting priorities of the executive team.</p>
+<p>For hosted blogs on Micro.blog, we encourage everyone to map a custom domain to their content, and we throw in free SSL and preserve redirects for old posts on imported WordPress content. There’s more we can do.</p>
+<p>I’m working on the next version of the macOS app for Micro.blog now, which features multiple accounts and even multiple blogs under the same account. Here’s a screenshot of the settings screen:</p>
+<p><img src="https://manton.org/images/2018/prefs_accounts.png" width="512" height="415" alt="Mac screenshot" scale="0"></p>
+<p>The goal with Micro.blog is not to be a stop-gap hosting provider, with truly “serious” users eventually moving on to something else (although we make that easy). We want Micro.blog hosting to be the best platform for owning your content and participating in the Micro.blog and IndieWeb communities.</p>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+			This entry was posted in <a href="http://www.manton.org/category/technology" rel="category tag">Technology</a> and tagged <a href="http://www.manton.org/tag/domains" rel="tag">domains</a>, <a href="http://www.manton.org/tag/indiewebcamp" rel="tag">indiewebcamp</a>, <a href="http://www.manton.org/tag/microblog" rel="tag">microblog</a>, <a href="http://www.manton.org/tag/wordpress" rel="tag">wordpress</a> on <a href="http://www.manton.org/2018/03/indieweb-generation-4-and-hosted-domains.html" title="9:24 am" rel="bookmark"><time class="entry-date" datetime="2018-03-23T09:24:36+00:00">2018/03/23</time></a><span class="by-author"> by <span class="author vcard"><a class="url fn n" href="http://www.manton.org/author/manton" title="View all posts by manton" rel="author">manton</a></span></span>.								</footer><!-- .entry-meta -->
+	</article>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
+		$this->assertCount(5, $output['items'][0]['properties']['category']);
+		$this->assertContains('technology', $output['items'][0]['properties']['category']);
+		$this->assertContains('domains', $output['items'][0]['properties']['category']);
+		$this->assertContains('indiewebcamp', $output['items'][0]['properties']['category']);
+		$this->assertContains('microblog', $output['items'][0]['properties']['category']);
+		$this->assertContains('wordpress', $output['items'][0]['properties']['category']);
 	}
 
 }

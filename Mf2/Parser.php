@@ -1319,6 +1319,32 @@ class Parser {
 		return array($rels, $rel_urls, $alternates);
 	}
 
+	/**
+	 * Find rel=tag elements that don't have class=category and have an href.
+	 * For each element, get the last non-empty URL segment. Append a <data> 
+	 * element with that value as the category. Uses the mf1 class 'category'
+	 * which will then be upgraded to p-category during backcompat.
+	 * @param DOMElement $el
+	 */
+	public function upgradeRelTagToCategory(DOMElement $el) {
+		$rel_tag = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," tag ") and not(contains(concat(" ", normalize-space(@class), " "), " category ")) and @href]', $el);
+
+		if ( $rel_tag->length ) {
+			foreach ( $rel_tag as $tempEl ) {
+				$path = trim(parse_url($tempEl->getAttribute('href'), PHP_URL_PATH), ' /');
+				$segments = explode('/', $path);
+				$value = array_pop($segments);
+
+				# build the <data> element
+				$dataEl = $tempEl->ownerDocument->createElement('data');
+				$dataEl->setAttribute('class', 'category');
+				$dataEl->setAttribute('value', $value);
+
+				# append before the current element
+				$tempEl->parentNode->insertBefore($dataEl, $tempEl);
+			}
+		}
+	}
 
 	/**
 	 * Kicks off the parsing routine
@@ -1502,6 +1528,8 @@ class Parser {
 			switch ( $classname )
 			{
 				case 'hentry':
+					$this->upgradeRelTagToCategory($el);
+
 					$rel_bookmark = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $el);
 
 					if ( $rel_bookmark->length ) {
