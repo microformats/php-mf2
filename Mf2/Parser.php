@@ -897,10 +897,17 @@ class Parser {
 		// TODO: as it is this is not relative to only children, make this .// and rerun tests
 		$this->resolveChildUrls($e);
 
-		$html = '';
-		foreach ($e->childNodes as $node) {
-			$html .= $node->ownerDocument->saveHTML($node);
+		// Temporarily move all descendants into a separate DocumentFragment.
+		// This way we can DOMDocument::saveHTML on the entire collection at once.
+		// Running DOMDocument::saveHTML per node may add whitespace that isn't in source.
+		// See https://stackoverflow.com/q/38317903
+		$innerNodes = $e->ownerDocument->createDocumentFragment();
+		while ($e->hasChildNodes()) {
+			$innerNodes->appendChild($e->firstChild);
 		}
+		$html = $e->ownerDocument->saveHtml($innerNodes);
+		// Put the nodes back in place.
+		$e->appendChild($innerNodes);
 
 		$return = array(
 			'html' => unicodeTrim($html),
