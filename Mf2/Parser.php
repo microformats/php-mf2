@@ -1340,8 +1340,8 @@ class Parser {
 				$dataEl->setAttribute('class', 'category');
 				$dataEl->setAttribute('value', $value);
 
-				# append before the current element
-				$tempEl->parentNode->insertBefore($dataEl, $tempEl);
+				# append as child of input element. this should ensure added element does get parsed inside e-*
+				$el->appendChild($dataEl);
 			}
 		}
 	}
