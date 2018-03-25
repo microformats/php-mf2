@@ -696,6 +696,13 @@ END;
     $this->assertEquals('Comment D', $three['children'][1]['properties']['name'][0]);
     $this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
   }
+  
+  public function testNoErrantWhitespaceOnEHtml()
+  {
+    $input = '<div class="h-entry"><div class="e-content"><p>1</p><p>2</p></div></div>';
+    $output = Mf2\parse($input);
+    $this->assertEquals('<p>1</p><p>2</p>', $output['items'][0]['properties']['content'][0]['html']);
+  }
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/158
