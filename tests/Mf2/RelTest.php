@@ -176,4 +176,47 @@ class RelTest extends PHPUnit_Framework_TestCase {
     $this->assertArrayHasKey('rels', $output['rel-urls']['http://example.com/articles.atom']);
   }
 
+  /**
+   * @see https://github.com/microformats/microformats2-parsing/issues/29
+   * @see https://github.com/microformats/microformats2-parsing/issues/30
+   */
+  public function testRelURLsRelsUniqueAndSorted() {
+    $input = '<a href="#" rel="me bookmark"></a>
+<a href="#" rel="bookmark archived"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rel-urls']['#']['rels'], array('archived', 'bookmark', 'me'));
+  }
+
+  public function testRelURLsInfoMergesCorrectly() {
+    $input = '<a href="#" rel="a">This nodeValue</a>
+<a href="#" rel="a" hreflang="en">Not this nodeValue</a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rel-urls']['#']['hreflang'], 'en');
+    $this->assertArrayNotHasKey('media', $output['rel-urls']['#']);
+    $this->assertArrayNotHasKey('title', $output['rel-urls']['#']);
+    $this->assertArrayNotHasKey('type', $output['rel-urls']['#']);
+    $this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
+  }
+
+  public function testRelURLsNoDuplicates() {
+    $input = '<a href="#a" rel="a"></a>
+<a href="#b" rel="a"></a>
+<a href="#a" rel="a"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertEquals($output['rels']['a'], array('#a', '#b'));
+  }
+
+  public function testRelURLsFalsyTextVSEmpty() {
+    $input = '<a href="#a" rel="a">0</a>
+<a href="#b" rel="b"></a>';
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $this->assertArrayHasKey('text', $output['rel-urls']['#a']);
+    $this->assertEquals($output['rel-urls']['#a']['text'], '0');
+    $this->assertArrayNotHasKey('text', $output['rel-urls']['#b']);
+  }
+
 }
