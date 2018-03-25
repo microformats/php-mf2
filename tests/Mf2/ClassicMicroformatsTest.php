@@ -888,6 +888,25 @@ END;
 		$this->assertContains('wordpress', $output['items'][0]['properties']['category']);
 	}
 
+  public function testHEntryRelTagInContent() {
+    $input = <<< END
+<article class="hentry">
+  <div class="entry-content">
+    Entry content should not include the generated <code>data</code> element for rel tag backcompat
+    <a href="/tag/test" rel="tag">test</a>
+  </div>
+</article>
+END;
+
+    $parser = new Parser($input);
+    $output = $parser->parse();
+    $item = $output['items'][0];
+
+    $this->assertEquals(['test'], $item['properties']['category']);
+    $this->assertEquals('Entry content should not include the generated data element for rel tag backcompat', $item['properties']['content'][0]['value']);
+    $this->assertEquals('Entry content should not include the generated <code>data</code> element for rel tag backcompat', $item['properties']['content'][0]['html']);
+  }
+
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 * @see source: http://jg.typepad.com/ciel/2006/02/daniel_bouluds_.html
