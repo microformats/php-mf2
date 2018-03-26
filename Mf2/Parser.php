@@ -1166,7 +1166,8 @@ class Parser {
 			}
 		}
 
-		// Make sure things are in alphabetical order
+		// Make sure things are unique and in alphabetical order
+		$mfTypes = array_unique($mfTypes);
 		sort($mfTypes);
 
 		// Phew. Return the final result.

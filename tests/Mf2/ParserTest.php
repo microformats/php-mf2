@@ -766,5 +766,15 @@ END;
 		$this->assertArrayHasKey('123-url', $output['items'][0]['properties']);
 	}
 
+	/**
+	 * @see https://github.com/microformats/microformats2-parsing/issues/30
+	 */
+	public function testUniqueAndAlphabeticalMfClasses() {
+		$input = '<div class="h-entry h-cite h-entry"></div>';
+		$output = Mf2\parse($input);
+
+		$this->assertEquals(array('h-cite', 'h-entry'), $output['items'][0]['type']);
+	}
+
 }
 
