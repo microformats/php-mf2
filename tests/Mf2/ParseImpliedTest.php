@@ -193,8 +193,8 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$inner = "Name	\nand more";
 		$test = '<span class="h-card"> ' . $inner .' </span><span class="h-card"><span class="p-name"> ' . $inner . ' </span></span>';
 		$result = Mf2\parse($test);
-		$this->assertEquals($inner, $result['items'][0]['properties']['name'][0]);
-		$this->assertEquals($inner, $result['items'][1]['properties']['name'][0]);
+		$this->assertEquals('Name and more', $result['items'][0]['properties']['name'][0]);
+		$this->assertEquals('Name and more', $result['items'][1]['properties']['name'][0]);
 	}
 
 
