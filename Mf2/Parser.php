@@ -438,96 +438,44 @@ class Parser {
 		}
 	}
 
-	public function textContent(DOMElement $el) {
-		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
-		
-		if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
-			return '';
-		}
-		
-		$this->resolveChildUrls($el);
-
-		$clonedEl = $el->cloneNode(true);
-
-		foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
-			$newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
-			$imgEl->parentNode->replaceChild($newNode, $imgEl);
-		}
-		
-		foreach ($excludeTags as $tagName) {
-			foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
-				$elToRemove->parentNode->removeChild($elToRemove);
-			}
-		}
-
-		return $this->innerText($clonedEl);
+    /**
+     * The following two methods implements plain text parsing.
+     * @see https://wiki.zegnat.net/media/textparsing.html
+     **/
+	public function textContent(DOMElement $element)
+	{
+        return preg_replace(
+            '/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
+            '',
+            $this->elementToString($element)
+        );
 	}
-
-	/**
-	 * This method attempts to return a better 'innerText' representation than DOMNode::textContent
-	 *
-	 * @param DOMElement|DOMText $el
-	 * @param bool $implied when parsing for implied name for h-*, rules may be slightly different
-	 * @see: https://github.com/glennjones/microformat-shiv/blob/dev/lib/text.js
-	 */
-	public function innerText($el, $implied=false) {
-		$out = '';
-
-		$blockLevelTags = array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
-			'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
-			'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
-			'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
-			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details');
-
-		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
-		
-		// PHP DOMDocument doesn’t correctly handle whitespace around elements it doesn’t recognise.
-		$unsupportedTags = array('data');
-		
-		if (isset($el->tagName)) {
-			if (in_array(strtolower($el->tagName), $excludeTags)) {
-				return $out;
-			} else if ($el->tagName == 'img') {
-				if ($el->hasAttribute('alt')) {
-					return $el->getAttribute('alt');
-				} else if (!$implied && $el->hasAttribute('src')) {
-					return $this->resolveUrl($el->getAttribute('src'));
-				}
-			} else if ($el->tagName == 'area' and $el->hasAttribute('alt')) {
-				return $el->getAttribute('alt');
-			} else if ($el->tagName == 'abbr' and $el->hasAttribute('title')) {
-				return $el->getAttribute('title');
-			}
-		}
-
-		// if node is a text node get its text
-		if (isset($el->nodeType) && $el->nodeType === 3) {
-			$out .= $el->textContent;
-		}
-
-		// get the text of the child nodes
-		if ($el->childNodes && $el->childNodes->length > 0) {
-			for ($j = 0; $j < $el->childNodes->length; $j++) {
-				$text = $this->innerText($el->childNodes->item($j), $implied);
-				if (!is_null($text)) {
-					$out .= $text;
-				}
-			}
-		}
-
-		if (isset($el->tagName)) {
-			// if its a block level tag add an additional space at the end
-			if (in_array(strtolower($el->tagName), $blockLevelTags)) {
-				$out .= ' ';
-			} elseif ($implied and in_array(strtolower($el->tagName), $unsupportedTags)) {
-				$out .= ' ';
-			} else if (strtolower($el->tagName) == 'br') {
-				// else if its a br, replace with newline 
-				$out .= "\n";
-			}
-		} 
-
-		return ($out === '') ? NULL : $out;
+	private function elementToString(DOMElement $input)
+	{
+	    $output = '';
+	    foreach ($input->childNodes as $child) {
+	        if ($child->nodeType === XML_TEXT_NODE) {
+	            $output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
+	        } else if ($child->nodeType === XML_ELEMENT_NODE) {
+	            $tagName = strtoupper($child->tagName);
+	            if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
+	                continue;
+	            } else if ($tagName === 'IMG') {
+	                if ($child->hasAttribute('alt')) {
+	                    $output .= ' ' . trim($child->getAttribute('alt'), "\t\n\f\r ") . ' ';
+	                } else if ($child->hasAttribute('src')) {
+	                    $output .= ' ' . $this->resolveUrl(trim($child->getAttribute('src'), "\t\n\f\r ")) . ' ';
+	                }
+	            } else if ($tagName === 'BR') {
+	                $output .= "\n";
+	            } else if ($tagName === 'P') {
+	                $output .= "\n" . $this->elementToString($child);
+	            } else {
+	                $output .= $this->elementToString($child);
+	            }
+	        }
+	    }
+	    return $output;
 	}
 
 	/**
@@ -643,7 +591,7 @@ class Parser {
 		} elseif (in_array($p->tagName, array('data', 'input')) and $p->hasAttribute('value')) {
 			$pValue = $p->getAttribute('value');
 		} else {
-			$pValue = unicodeTrim($this->innerText($p));
+			$pValue = $this->textContent($p);
 		}
 
 		return $pValue;
@@ -680,7 +628,7 @@ class Parser {
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
 			return $u->getAttribute('value');
 		} else {
-			return unicodeTrim($this->textContent($u));
+			return $this->textContent($u);
 		}
 	}
 
@@ -911,7 +859,7 @@ class Parser {
 
 		$return = array(
 			'html' => unicodeTrim($html),
-			'value' => unicodeTrim($this->innerText($e)),
+			'value' => $this->textContent($e),
 		);
 
 		if($this->lang) {
@@ -1118,7 +1066,7 @@ class Parser {
 					}
 				}
 
-				throw new Exception($this->innerText($e, true));
+				throw new Exception($this->textContent($e, true));
 			} catch (Exception $exc) {
 				$return['name'][] = unicodeTrim($exc->getMessage());
 			}
