@@ -397,5 +397,25 @@ END;
 		$this->assertEquals('1997-12-12', $output['items'][0]['properties']['acme'][0]['value']);
 	}
 
+	/**
+	 * rel=tag should not be upgraded within microformats2
+	 * @see https://github.com/indieweb/php-mf2/issues/157
+	 */
+	public function testMf2DoesNotParseRelTag() {
+		$input = '<div class="h-entry">
+<a rel="tag" href="/tags/tests">Tests</a>
+</div>
+
+<div class="h-review">
+<a rel="tag" href="/tags/reviews">Reviews</a>
+</div>
+';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayNotHasKey('category', $output['items'][0]['properties']);
+		$this->assertArrayNotHasKey('category', $output['items'][1]['properties']);
+	}
+
 }
 
