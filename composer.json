@@ -23,6 +23,7 @@
     },
     "license": "CC0-1.0",
     "suggest": {
-        "barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you"
+        "barnabywalters/mf-cleaner": "To more easily handle the canonical data php-mf2 gives you",
+        "masterminds/html5": "Alternative HTML parser for PHP, for better HTML5 support."
     }
 }

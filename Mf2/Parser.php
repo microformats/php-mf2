@@ -337,8 +337,13 @@ class Parser {
 	public function __construct($input, $url = null, $jsonMode = false) {
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
-			$doc = new DOMDocument();
-			@$doc->loadHTML(unicodeToHtmlEntities($input));
+			if (class_exists('Masterminds\\HTML5')) {
+			    $doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
+			    $doc = $doc->loadHTML($input);
+			} else {
+				$doc = new DOMDocument();
+				@$doc->loadHTML(unicodeToHtmlEntities($input));
+			}
 		} elseif (is_a($input, 'DOMDocument')) {
 			$doc = $input;
 		} else {

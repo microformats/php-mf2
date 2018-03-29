@@ -776,5 +776,19 @@ END;
 		$this->assertEquals(array('h-cite', 'h-entry'), $output['items'][0]['type']);
 	}
 
+	/**
+	 * The default DOMDocument parser will trip here because it does not know HTML5 elements.
+	 * @see https://html.spec.whatwg.org/#optional-tags:the-p-element
+	 **/
+	public function testHtml5OptionalPEndTag() {
+		if (!class_exists('Masterminds\\HTML5')) {
+			$this->markTestSkipped('masterminds/html5 is required for this test.');
+		}
+		$input = '<div class="h-entry"><p class="p-name">Name<article>Not Name</article></div>';
+		$output = Mf2\parse($input);
+
+		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
+	}
+
 }
 
