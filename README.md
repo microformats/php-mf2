@@ -10,7 +10,11 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 There are two ways of installing php-mf2. I **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
 
-To install using Composer, run `./composer.phar require mf2/mf2:~0.3`
+To install using Composer, run
+
+```
+composer require mf2/mf2
+```
 
 If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from, like this:
 
@@ -22,6 +26,15 @@ require_once 'Mf2/Parser.php';
 // Now all the functions documented below are available, for example:
 $mf = Mf2\fetch('https://waterpigs.co.uk');
 ```
+
+It is recommended to install the HTML5 parser for proper handling of HTML5 elements. Using composer, run
+
+```
+composer require masterminds/html5
+```
+
+If this library is added to your project, the php-mf2 parser will use it automatically instead of the built-in HTML parser.
+
 
 ### Signed Code Verification
 
@@ -341,6 +354,18 @@ The other, in `tests/test-suite`, is a custom test harness which hooks up php-mf
 Currently php-mf2 passes the majority of it’s own test case, and a good percentage of the cross-platform tests. Contributors should ALWAYS test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
 ### Changelog
+
+#### v0.4.3
+
+2018-03-29
+
+If the [masterminds/html5](https://github.com/Masterminds/html5-php) HTML5 parser is available, the Mf2 parser will use that instead of the built-in HTML parser. This enables proper handling of HTML5 elements such as `<article>`.
+
+To include the HTML5 parser in your project, run:
+
+```
+composer require masterminds/html5
+```
 
 #### v0.4.2
 
