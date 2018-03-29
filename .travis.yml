@@ -7,4 +7,9 @@ php:
   - 7.1
   - 7.2
   - nightly
+env:
+  - COMPOSER_REQUIRE="echo"
+  - COMPOSER_REQUIRE="composer require masterminds/html5"
+install:
+  - $COMPOSER_REQUIRE
 before_script: composer install
