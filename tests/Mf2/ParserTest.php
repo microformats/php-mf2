@@ -93,7 +93,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img">', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertEquals('Blah blah thing.  http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertEquals('Blah blah thing. http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	public function testParseEWithBR() {
@@ -156,7 +156,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 
 
 	public function testHtmlEncodesImpliedProperties() {
-		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" />&lt;name&gt;</a>';
+		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" alt="" />&lt;name&gt;</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
