@@ -342,6 +342,22 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.4.2
+
+2018-03-29
+
+Fixes:
+
+* [#165](https://github.com/indieweb/php-mf2/pull/165) - Prevents inadvertently adding whitespace to the html value
+* [#158](https://github.com/indieweb/php-mf2/issues/158) - Allows numbers in vendor prefixed names
+* [#160](https://github.com/indieweb/php-mf2/issues/160) - Ignores class names with consecutive dashes
+* [#159](https://github.com/indieweb/php-mf2/issues/159) - Remove duplicate values from type and rels arrays
+* [#162](https://github.com/indieweb/php-mf2/pull/162) - Improved rel attribute parsing
+
+Backcompat:
+
+* [#157](https://github.com/indieweb/php-mf2/issues/157) - Parse `rel=tag` as `p-category` for hEntry and hReview
+
 #### v0.4.1
 
 2018-03-15
