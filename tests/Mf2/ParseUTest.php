@@ -47,7 +47,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 		
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('Awesome example website', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('http://example.com/Awesome example website', $output['items'][0]['properties']['url'][0]);
 	}
 
 	/**
@@ -294,6 +294,14 @@ END;
 
     $this->assertArrayHasKey('name', $output['items'][0]['properties']);
     $this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);
+  }
+
+  public function testResolveFromDataElement() {
+    $parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
+    $output = $parser->parse();
+    
+    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
+    $this->assertEquals('https://example.com/relative.html', $output['items'][0]['properties']['url'][0]);
   }
 
 }

@@ -618,23 +618,16 @@ class Parser {
 			$uValue = $u->getAttribute('poster');
 		} elseif ($u->tagName == 'object' and $u->hasAttribute('data')) {
 			$uValue = $u->getAttribute('data');
-		}
-
-		if (isset($uValue)) {
-			return $this->resolveUrl($uValue);
-		}
-
-		$classTitle = $this->parseValueClassTitle($u);
-
-		if ($classTitle !== null) {
-			return $classTitle;
+		} elseif (($classTitle = $this->parseValueClassTitle($u)) !== null) {
+		    $uValue = $classTitle;
 		} elseif (($u->tagName == 'abbr' or $u->tagName == 'link') and $u->hasAttribute('title')) {
-			return $u->getAttribute('title');
+			$uValue = $u->getAttribute('title');
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
-			return $u->getAttribute('value');
+			$uValue = $u->getAttribute('value');
 		} else {
-			return $this->textContent($u);
+			$uValue = $this->textContent($u);
 		}
+        return $this->resolveUrl($uValue);
 	}
 
 	/**
