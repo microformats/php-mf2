@@ -425,7 +425,7 @@ END;
 		$input = '<div class="h-feed"><div class="h-entry"></div></div>';
 		$parser = new Parser($input, null, true);
 		$output = $parser->parse();
-		$this->assertInstanceOf(\stdClass::class, $output['items'][0]['properties']);
+		$this->assertInstanceOf('\stdClass', $output['items'][0]['properties']);
 		$this->assertSame('{}', json_encode($output['items'][0]['properties']));
 	}
 
