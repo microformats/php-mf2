@@ -1122,6 +1122,11 @@ class Parser {
 		// Make sure things are unique and in alphabetical order
 		$mfTypes = array_unique($mfTypes);
 		sort($mfTypes);
+		
+		// Properties should be an object when JSON serialised
+		if (empty($return) and $this->jsonMode) {
+			$return = new stdClass();
+		}
 
 		// Phew. Return the final result.
 		$parsed = array(

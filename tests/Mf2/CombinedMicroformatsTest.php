@@ -417,5 +417,17 @@ END;
 		$this->assertArrayNotHasKey('category', $output['items'][1]['properties']);
 	}
 
+	/**
+	 * JSON-mode should return an empty stdClass when a microformat has no properties.
+	 * @see https://github.com/indieweb/php-mf2/issues/171
+	 */
+	public function testEmptyPropertiesObjectInJSONMode() {
+		$input = '<div class="h-feed"><div class="h-entry"></div></div>';
+		$parser = new Parser($input, null, true);
+		$output = $parser->parse();
+		$this->assertInstanceOf(\stdClass::class, $output['items'][0]['properties']);
+		$this->assertSame('{}', json_encode($output['items'][0]['properties']));
+	}
+
 }
 
