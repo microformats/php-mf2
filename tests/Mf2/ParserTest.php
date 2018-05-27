@@ -790,5 +790,27 @@ END;
 		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
 	}
 
+	/**
+	 * Make sure the parser does not mutate any DOMDocument instances passed to the constructor.
+	 * @see https://github.com/indieweb/php-mf2/issues/174
+	 * @see https://github.com/microformats/mf2py/issues/104
+	 */
+	public function testNotMutatingPassedInDOM() {
+		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
+
+		// Use same parsing as Parser::__construct(), twice to have a comparison object.
+		libxml_use_internal_errors(true);
+		$refDoc = new \DOMDocument();
+		@$refDoc->loadHTML(Mf2\unicodeToHtmlEntities($input));
+		$inputDoc = new \DOMDocument();
+		@$inputDoc->loadHTML(Mf2\unicodeToHtmlEntities($input));
+
+		// For completion sake, test PHP itself.
+		$this->assertEquals($refDoc, $inputDoc, 'PHP could not create identical DOMDocument instances.');
+
+		// Parse one DOMDocument instance, and test if it is still the same as the other.
+		Mf2\parse($inputDoc, 'http://snarfed.org/2013-10-23_oauth-dropins');
+		$this->assertEquals($refDoc, $inputDoc, 'Parsing mutated the DOMDocument.');
+	}
 }
 
