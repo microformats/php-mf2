@@ -274,6 +274,26 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/176
+	 */
+	public function testIgnoredPhotoImgInNestedH() {
+		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <img src="/image.jpg"> </div> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/176
+	 */
+	public function testIgnoredPhotoObjectInNestedH() {
+		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <object data="/image2.jpg">John Doe</object> </div> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+	}
+
+	/**
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
 	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
