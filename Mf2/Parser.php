@@ -1506,6 +1506,8 @@ class Parser {
 			$mf1Classes = array_intersect($classes, array_keys($this->classicRootMap));
 		}
 
+		$el_has_mf2 = $this->hasRootMf2($el);
+
 		foreach ($mf1Classes as $classname) {
 			// special handling for specific properties
 			switch ( $classname )
@@ -1600,7 +1602,7 @@ class Parser {
 				}
 			}
 
-			if ( empty($context) && isset($this->classicRootMap[$classname]) && !$this->hasRootMf2($el) ) {
+			if ( empty($context) && isset($this->classicRootMap[$classname]) && !$el_has_mf2 ) {
 				$this->addMfClasses($el, $this->classicRootMap[$classname]);
 			}
 		}
