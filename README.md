@@ -355,6 +355,26 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.4.4
+
+2018-08-01
+
+Bugfixes:
+
+* Ensure empty `properties` is an object `{}` rather than array  `[]` ([#171](https://github.com/indieweb/php-mf2/issues/171))
+* Ensure the parser does not mutate the DOMDOcument passed in ([#174](https://github.com/indieweb/php-mf2/issues/174))
+* Fix for multiple class names in backcompat parsing ([#156](https://github.com/indieweb/php-mf2/issues/156))
+
+Microformats Parsing Updates:
+
+* New algorithm for plaintext values ([#168](https://github.com/indieweb/php-mf2/pull/168) and [parsing issue #15](https://github.com/microformats/microformats2-parsing/issues/15))
+* Always resolve URLs from `u-` properties even when not from a link element ([Parsing issue #10](https://github.com/microformats/microformats2-parsing/issues/10))
+
+Other Updates:
+
+* Improved test coverage
+
+
 #### v0.4.3
 
 2018-03-29
