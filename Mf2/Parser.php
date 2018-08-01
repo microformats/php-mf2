@@ -1164,8 +1164,8 @@ class Parser {
 		$xpaths = array(
 			'./img',
 			'./object',
-			'./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img',
-			'./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/object',
+			'./*[not(contains(concat(" ", @class), " h-"))]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]',
+			'./*[not(contains(concat(" ", @class), " h-"))]/object[count(preceding-sibling::object)+count(following-sibling::object)=0]',
 		);
 
 		foreach ($xpaths as $path) {
