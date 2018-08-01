@@ -345,7 +345,7 @@ class Parser {
 				@$doc->loadHTML(unicodeToHtmlEntities($input));
 			}
 		} elseif (is_a($input, 'DOMDocument')) {
-			$doc = $input;
+			$doc = clone $input;
 		} else {
 			$doc = new DOMDocument();
 			@$doc->loadHTML('');
