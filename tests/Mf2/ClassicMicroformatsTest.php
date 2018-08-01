@@ -971,5 +971,26 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertContains('phpmf2', $output['items'][1]['properties']['category']);
 		$this->assertContains('mf2py', $output['items'][1]['properties']['category']);
 	}
+
+	/**
+	 * Upgrade multiple mf1 roots on the same element
+	 * @see https://github.com/indieweb/php-mf2/issues/156
+	 */
+	public function testBackcompatMultipleRoots() {
+		$input = '<article class="vevent hentry">
+    <span class="entry-title">h-entry name</span>
+    <span class="summary">h-event name</span>
+</article>';
+		$result = Mf2\parse($input);
+
+		$this->assertCount(2, $result['items'][0]['type']);
+		$this->assertContains('h-event', $result['items'][0]['type']);
+		$this->assertContains('h-entry', $result['items'][0]['type']);
+		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
+		$this->assertCount(2, $result['items'][0]['properties']['name']);
+		$this->assertContains('h-event name', $result['items'][0]['properties']['name']);
+		$this->assertContains('h-entry name', $result['items'][0]['properties']['name']);
+	}
+
 }
 
