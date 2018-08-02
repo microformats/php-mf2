@@ -853,7 +853,9 @@ class Parser {
 		}
 		$html = $e->ownerDocument->saveHtml($innerNodes);
 		// Put the nodes back in place.
-		$e->appendChild($innerNodes);
+		if($innerNodes->hasChildNodes()) {
+			$e->appendChild($innerNodes);
+		}
 
 		$return = array(
 			'html' => unicodeTrim($html),

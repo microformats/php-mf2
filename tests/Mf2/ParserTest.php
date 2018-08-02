@@ -87,6 +87,17 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Here is a load of embedded markup', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
+  public function testParseEmptyE() {
+    $input = '<div class="h-entry"><div class="p-name">Name</div> <div class="e-content"></div></div>';
+    //$parser = new Parser($input);
+    $output = Mf2\parse($input);
+
+    $this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
+    $this->assertArrayHasKey('content', $output['items'][0]['properties']);
+    $this->assertEquals('', $output['items'][0]['properties']['content'][0]['html']);
+    $this->assertEquals('', $output['items'][0]['properties']['content'][0]['value']);
+  }
+
 	public function testParseEResolvesRelativeLinks() {
 		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>. <object data="/object"></object> <img src="/img" /></p></div>';
 		$parser = new Parser($input, 'http://example.com');
