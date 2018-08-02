@@ -13,7 +13,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
-	
+
 	/**
 	 * @group parseU
 	 */
@@ -21,7 +21,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><a class="u-url" href="http://example.com">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
 	}
@@ -33,7 +33,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><a class="u-url" href="">Awesome example website</a></div>';
 		$parser = new Parser($input, "http://example.com/");
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
@@ -45,7 +45,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><a class="u-url">Awesome example website</a></div>';
 		$parser = new Parser($input, "http://example.com/");
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/Awesome example website', $output['items'][0]['properties']['url'][0]);
 	}
@@ -57,11 +57,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group parseU
 	 */
@@ -69,11 +69,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><area class="u-photo" href="http://example.com/someimage.png"></area></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group parseU
 	 */
@@ -81,11 +81,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><object class="u-photo" data="http://example.com/someimage.png"></object></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group parseU
 	 */
@@ -93,7 +93,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><abbr class="u-photo" title="http://example.com/someimage.png"></abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -105,11 +105,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><abbr class="u-photo">no title attribute</abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('no title attribute', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group parseU
 	 */
@@ -117,11 +117,11 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><data class="u-photo" value="http://example.com/someimage.png"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group baseUrl
 	 */
@@ -129,10 +129,10 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><img class="u-photo" src="../image.png" /></div>';
 		$parser = new Parser($input, 'http://example.com/things/more/more.html');
 		$output = $parser->parse();
-		
+
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group baseUrl
 	 */
@@ -140,10 +140,10 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<head><base href="http://example.com/things/more/andmore/" /></head><body><div class="h-card"><img class="u-photo" src="../image.png" /></div></body>';
 		$parser = new Parser($input, 'http://example.com/things/more.html');
 		$output = $parser->parse();
-		
+
 		$this->assertEquals('http://example.com/things/more/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group baseUrl
 	 */
@@ -151,10 +151,10 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<a class="h-card"><img src="image.png" /></a>';
 		$parser = new Parser($input, 'http://example.com/things/more.html');
 		$output = $parser->parse();
-		
+
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/**
 	 * @group baseUrl
 	 */
@@ -162,10 +162,10 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<base href="things/"/><a class="h-card"><img src="image.png" /></a>';
 		$parser = new Parser($input, 'http://example.com/');
 		$output = $parser->parse();
-		
+
 		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
-	
+
 	/** @see https://github.com/indieweb/php-mf2/issues/33 */
 	public function testParsesHrefBeforeValueClass() {
 		$input = '<span class="h-card"><a class="u-url" href="http://example.com/right"><span class="value">WRONG</span></a></span>';
@@ -242,7 +242,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card"><a class="u-url" href=" http://example.com ">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
 	}
@@ -253,7 +253,7 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 	public function testImpliedUWithEmptyHref() {
 		$input = '<a class="h-card" href="">Jane Doe</a>
 <area class="h-card" href="" alt="Jane Doe"/ >
-<div class="h-card" ><a href="">Jane Doe</a><p></p></div> 
+<div class="h-card" ><a href="">Jane Doe</a><p></p></div>
 <div class="h-card" ><area href="">Jane Doe</area><p></p></div>
 <div class="h-card" ><a class="h-card" href="">Jane Doe</a><p></p></div>';
 		$parser = new Parser($input, 'http://example.com');
@@ -299,7 +299,7 @@ END;
   public function testResolveFromDataElement() {
     $parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
     $output = $parser->parse();
-    
+
     $this->assertArrayHasKey('url', $output['items'][0]['properties']);
     $this->assertEquals('https://example.com/relative.html', $output['items'][0]['properties']['url'][0]);
   }

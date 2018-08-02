@@ -91,7 +91,7 @@ class ParsePTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 	}
-	
+
 	public function testParsesInputValue() {
 		$input = '<span class="h-card"><input class="u-url" value="http://example.com" /></span>';
 		$result = Mf2\parse($input);

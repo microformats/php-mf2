@@ -65,7 +65,7 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 	public function testMicroformatNamesFromClassHandlesExcessiveWhitespace() {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('  someclass
-			 	h-card 	 someotherclass		   	 ', 'h-');
+				h-card 	 someotherclass		   	 ', 'h-');
 
 		$this->assertEquals($expected, $actual);
 	}
@@ -87,16 +87,16 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Here is a load of embedded markup', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-  public function testParseEmptyE() {
-    $input = '<div class="h-entry"><div class="p-name">Name</div> <div class="e-content"></div></div>';
-    //$parser = new Parser($input);
-    $output = Mf2\parse($input);
+	public function testParseEmptyE() {
+		$input = '<div class="h-entry"><div class="p-name">Name</div> <div class="e-content"></div></div>';
+		//$parser = new Parser($input);
+		$output = Mf2\parse($input);
 
-    $this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
-    $this->assertArrayHasKey('content', $output['items'][0]['properties']);
-    $this->assertEquals('', $output['items'][0]['properties']['content'][0]['html']);
-    $this->assertEquals('', $output['items'][0]['properties']['content'][0]['value']);
-  }
+		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
+		$this->assertEquals('', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('', $output['items'][0]['properties']['content'][0]['value']);
+	}
 
 	public function testParseEResolvesRelativeLinks() {
 		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>. <object data="/object"></object> <img src="/img" /></p></div>';
@@ -119,9 +119,9 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 
 	public function testParseEWithWhitespace() {
 		$input = '<div class="h-entry">
-  <div class="e-content">
-    This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.
-  </div>
+	<div class="e-content">
+		This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.
+	</div>
 </div>';
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
@@ -461,58 +461,58 @@ EOT;
 		$input = <<<EOT
 <div class="EmbeddedTweet js-clickToOpenTarget" data-click-to-open-target="https://twitter.com/kevinmarks/status/700752598123433985" data-iframe-title="Twitter Tweet" data-dt-full="%{hours12}:%{minutes} %{amPm} - %{day} %{month} %{year}" data-dt-months="Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec" data-dt-am="AM" data-dt-pm="PM" data-dt-now="now" data-dt-s="s" data-dt-m="m" data-dt-h="h" data-dt-second="second" data-dt-seconds="seconds" data-dt-minute="minute" data-dt-minutes="minutes" data-dt-hour="hour" data-dt-hours="hours" data-dt-abbr="%{number}%{symbol}" data-dt-short="%{day} %{month}" data-dt-long="%{day} %{month} %{year}" data-scribe="page:tweet" id="twitter-widget-0" lang="en" data-twitter-event-id="0">
 
-    <div class="EmbeddedTweet-tweet">
+		<div class="EmbeddedTweet-tweet">
 <blockquote class="Tweet h-entry js-tweetIdInfo subject expanded
-                   is-deciderHtmlWhitespace" cite="https://twitter.com/kevinmarks/status/700752598123433985" data-tweet-id="700752598123433985" data-scribe="section:subject">
-  <div class="Tweet-header u-cf">
-    <div class="Tweet-brand u-floatRight">
-      <span class="u-hiddenInNarrowEnv">
+									 is-deciderHtmlWhitespace" cite="https://twitter.com/kevinmarks/status/700752598123433985" data-tweet-id="700752598123433985" data-scribe="section:subject">
+	<div class="Tweet-header u-cf">
+		<div class="Tweet-brand u-floatRight">
+			<span class="u-hiddenInNarrowEnv">
 <a class="FollowButton follow-button profile" data-scribe="component:followbutton" href="https://twitter.com/kevinmarks" role="button" title="Follow Kevin Marks on Twitter"><span class="FollowButton-bird"><div class="Icon Icon--twitter " aria-label="" title="" role="presentation"></div></span> Follow</a>
 </span>
-      <span class="u-hiddenInWideEnv"><a href="https://twitter.com/download" data-scribe="element:logo"><div class="Icon Icon--twitter " aria-label="Get Twitter app" title="Get Twitter app" role="img"></div></a></span>
-    </div>
+			<span class="u-hiddenInWideEnv"><a href="https://twitter.com/download" data-scribe="element:logo"><div class="Icon Icon--twitter " aria-label="Get Twitter app" title="Get Twitter app" role="img"></div></a></span>
+		</div>
 
 <div class="TweetAuthor" data-scribe="component:author">
-  <a class="TweetAuthor-link Identity u-linkBlend" data-scribe="element:user_link" href="https://twitter.com/kevinmarks" aria-label="Kevin Marks (screen name: kevinmarks)">
-    <span class="TweetAuthor-avatar Identity-avatar">
-      <img class="Avatar" data-scribe="element:avatar" data-src-2x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_bigger.jpeg" alt="" data-src-1x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg" src="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg">
-    </span>
-    <span class="TweetAuthor-name Identity-name customisable-highlight" title="Kevin Marks" data-scribe="element:name">Kevin Marks</span>
+	<a class="TweetAuthor-link Identity u-linkBlend" data-scribe="element:user_link" href="https://twitter.com/kevinmarks" aria-label="Kevin Marks (screen name: kevinmarks)">
+		<span class="TweetAuthor-avatar Identity-avatar">
+			<img class="Avatar" data-scribe="element:avatar" data-src-2x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_bigger.jpeg" alt="" data-src-1x="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg" src="https://pbs.twimg.com/profile_images/553009683087114240/tU5HkXEI_normal.jpeg">
+		</span>
+		<span class="TweetAuthor-name Identity-name customisable-highlight" title="Kevin Marks" data-scribe="element:name">Kevin Marks</span>
 
-    <span class="TweetAuthor-screenName Identity-screenName" title="@kevinmarks" data-scribe="element:screen_name">@kevinmarks</span>
-  </a>
+		<span class="TweetAuthor-screenName Identity-screenName" title="@kevinmarks" data-scribe="element:screen_name">@kevinmarks</span>
+	</a>
 </div>
 
-  </div>
+	</div>
 
-  <div class="Tweet-body e-entry-content" data-scribe="component:tweet">
-    <p class="Tweet-text e-entry-title" lang="en" dir="ltr">I wish people would stop using u- as a prefix for utility classes in CSS. Use util- instead. You're messing with my microformats.</p>
+	<div class="Tweet-body e-entry-content" data-scribe="component:tweet">
+		<p class="Tweet-text e-entry-title" lang="en" dir="ltr">I wish people would stop using u- as a prefix for utility classes in CSS. Use util- instead. You're messing with my microformats.</p>
 
 
-    <div class="Tweet-metadata dateline">
+		<div class="Tweet-metadata dateline">
 
 
 <a class="u-linkBlend u-url customisable-highlight long-permalink" data-datetime="2016-02-19T18:43:33+0000" data-scribe="element:full_timestamp" href="https://twitter.com/kevinmarks/status/700752598123433985">
 <time class="dt-updated" datetime="2016-02-19T18:43:33+0000" pubdate="" title="Time posted: 19 Feb 2016, 18:43:33 (UTC)">10:43 AM - 19 Feb 2016</time></a>
-    </div>
+		</div>
 
 
-    <ul class="Tweet-actions" data-scribe="component:actions" role="menu" aria-label="Tweet actions">
-      <li class="Tweet-action">
+		<ul class="Tweet-actions" data-scribe="component:actions" role="menu" aria-label="Tweet actions">
+			<li class="Tweet-action">
 <a class="TweetAction TweetAction--reply web-intent" href="https://twitter.com/intent/tweet?in_reply_to=700752598123433985" data-scribe="element:reply"><div class="Icon Icon--reply TweetAction-icon" aria-label="Reply" title="Reply" role="img"></div></a></li>
-      <li class="Tweet-action">
+			<li class="Tweet-action">
 <a class="TweetAction TweetAction--retweet web-intent" href="https://twitter.com/intent/retweet?tweet_id=700752598123433985" data-scribe="element:retweet"><div class="Icon Icon--retweet TweetAction-icon" aria-label="Retweet" title="Retweet" role="img"></div>    <span class="TweetAction-stat" data-scribe="element:retweet_count" aria-hidden="true">1</span>
-    <span class="u-hiddenVisually">1 Retweet</span>
+		<span class="u-hiddenVisually">1 Retweet</span>
 </a></li>
-      <li class="Tweet-action">
+			<li class="Tweet-action">
 <a class="TweetAction TweetAction--heart web-intent" href="https://twitter.com/intent/like?tweet_id=700752598123433985" data-scribe="element:heart"><div class="Icon Icon--heart TweetAction-icon" aria-label="Like" title="Like" role="img"></div>    <span class="TweetAction-stat" data-scribe="element:heart_count" aria-hidden="true">4</span>
-    <span class="u-hiddenVisually">4 likes</span>
+		<span class="u-hiddenVisually">4 likes</span>
 </a></li>
-    </ul>
-  </div>
+		</ul>
+	</div>
 </blockquote>
 </div>
-  </div>
+	</div>
 EOT;
 
 		$output = Mf2\parse($input);
@@ -561,12 +561,12 @@ EOT;
 	public function testNoImpliedNameWhenE()
 	{
 		$input = '<article class="h-entry">
-  <div class="e-content">
-    <p>Wanted content.</p>
-  </div>
-  <footer>
-    <p>Footer to be ignored.</p>
-  </footer>
+	<div class="e-content">
+		<p>Wanted content.</p>
+	</div>
+	<footer>
+		<p>Footer to be ignored.</p>
+	</footer>
 </article>';
 		$output = Mf2\parse($input);
 
@@ -579,12 +579,12 @@ EOT;
 	public function testNoImpliedNameWhenP()
 	{
 		$input = '<article class="h-entry">
-  <div class="p-content">
-    <p>Wanted content.</p>
-  </div>
-  <footer>
-    <p>Footer to be ignored.</p>
-  </footer>
+	<div class="p-content">
+		<p>Wanted content.</p>
+	</div>
+	<footer>
+		<p>Footer to be ignored.</p>
+	</footer>
 </article>';
 		$output = Mf2\parse($input);
 
@@ -597,12 +597,12 @@ EOT;
 	public function testNoImpliedNameWhenNestedMicroformat()
 	{
 		$input = '<article class="h-entry">
-  <div class="u-like-of h-cite">
-    <p>I really like <a class="p-name u-url" href="http://microformats.org/">Microformats</a></p>
-  </div>
-  <footer>
-    <p>Footer to be ignored.</p>
-  </footer>
+	<div class="u-like-of h-cite">
+		<p>I really like <a class="p-name u-url" href="http://microformats.org/">Microformats</a></p>
+	</div>
+	<footer>
+		<p>Footer to be ignored.</p>
+	</footer>
 </article>';
 		$output = Mf2\parse($input);
 
@@ -615,31 +615,31 @@ EOT;
 	public function testChildObjects() {
 		$input = <<<END
 <html>
-  <head>
-    <title>Test</title>
-  </head>
-  <body>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
 
-    <div class="h-feed">
-      <a href="/author" class="p-author h-card">Author Name</a>
+		<div class="h-feed">
+			<a href="/author" class="p-author h-card">Author Name</a>
 
-      <ul>
-        <li class="h-entry">
-          <a href="/1" class="u-url p-name">One</a>
-        </li>
-        <li class="h-entry">
-          <a href="/2" class="u-url p-name">Two</a>
-        </li>
-        <li class="h-entry">
-          <a href="/3" class="u-url p-name">Three</a>
-        </li>
-        <li class="h-entry">
-          <a href="/4" class="u-url p-name">Four</a>
-        </li>
-      </ul>
-    </div>
+			<ul>
+				<li class="h-entry">
+					<a href="/1" class="u-url p-name">One</a>
+				</li>
+				<li class="h-entry">
+					<a href="/2" class="u-url p-name">Two</a>
+				</li>
+				<li class="h-entry">
+					<a href="/3" class="u-url p-name">Three</a>
+				</li>
+				<li class="h-entry">
+					<a href="/4" class="u-url p-name">Four</a>
+				</li>
+			</ul>
+		</div>
 
-  </body>
+	</body>
 </html>
 END;
 		$output = Mf2\parse($input);
@@ -654,76 +654,76 @@ END;
 	}
 
 
-  public function testMultiLevelRecursion() {
-    $input = <<<END
+	public function testMultiLevelRecursion() {
+		$input = <<<END
 <html>
-  <head>
-    <title>Test</title>
-  </head>
-  <body>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
 
-    <div class="h-feed">
-      <a href="/author" class="p-author h-card">Author Name</a>
+		<div class="h-feed">
+			<a href="/author" class="p-author h-card">Author Name</a>
 
-      <ul>
-        <li class="h-entry">
-          <a href="/1" class="u-url p-name">One</a>
-        </li>
-        <li class="h-entry">
-          <a href="/2" class="u-url p-name">Two</a>
-          <ul>
-            <li class="p-comment h-entry"><a href="/a" class="u-url p-name">Comment A</a></li>
-            <li class="p-comment h-entry"><a href="/b" class="u-url p-name">Comment B</a></li>
-          </ul>
-        </li>
-        <li class="h-entry">
-          <a href="/3" class="u-url p-name">Three</a>
-          <ul>
-            <li class="h-entry"><a href="/c" class="u-url p-name">Comment C</a></li>
-            <li class="h-entry"><a href="/d" class="u-url p-name">Comment D</a></li>
-          </ul>
-        </li>
-        <li class="h-entry">
-          <a href="/4" class="u-url p-name">Four</a>
-        </li>
-      </ul>
-    </div>
+			<ul>
+				<li class="h-entry">
+					<a href="/1" class="u-url p-name">One</a>
+				</li>
+				<li class="h-entry">
+					<a href="/2" class="u-url p-name">Two</a>
+					<ul>
+						<li class="p-comment h-entry"><a href="/a" class="u-url p-name">Comment A</a></li>
+						<li class="p-comment h-entry"><a href="/b" class="u-url p-name">Comment B</a></li>
+					</ul>
+				</li>
+				<li class="h-entry">
+					<a href="/3" class="u-url p-name">Three</a>
+					<ul>
+						<li class="h-entry"><a href="/c" class="u-url p-name">Comment C</a></li>
+						<li class="h-entry"><a href="/d" class="u-url p-name">Comment D</a></li>
+					</ul>
+				</li>
+				<li class="h-entry">
+					<a href="/4" class="u-url p-name">Four</a>
+				</li>
+			</ul>
+		</div>
 
-  </body>
+	</body>
 </html>
 END;
-    $output = Mf2\parse($input);
+		$output = Mf2\parse($input);
 
-    $this->assertArrayHasKey('author', $output['items'][0]['properties']);
-    $this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
-    $this->assertCount(4, $output['items'][0]['children']);
-    $this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
-    $this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
-    $this->assertEquals('Comment A', $output['items'][0]['children'][1]['properties']['comment'][0]['properties']['name'][0]);
-    $this->assertEquals('Comment B', $output['items'][0]['children'][1]['properties']['comment'][1]['properties']['name'][0]);
-    $three = $output['items'][0]['children'][2];
-    $this->assertEquals('Three', $three['properties']['name'][0]);
-    $this->assertEquals('Comment C', $three['children'][0]['properties']['name'][0]);
-    $this->assertEquals('Comment D', $three['children'][1]['properties']['name'][0]);
-    $this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
-  }
-  
-  public function testNoErrantWhitespaceOnEHtml()
-  {
-    $input = '<div class="h-entry"><div class="e-content"><p>1</p><p>2</p></div></div>';
-    $output = Mf2\parse($input);
-    $this->assertEquals('<p>1</p><p>2</p>', $output['items'][0]['properties']['content'][0]['html']);
-  }
+		$this->assertArrayHasKey('author', $output['items'][0]['properties']);
+		$this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+		$this->assertCount(4, $output['items'][0]['children']);
+		$this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
+		$this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
+		$this->assertEquals('Comment A', $output['items'][0]['children'][1]['properties']['comment'][0]['properties']['name'][0]);
+		$this->assertEquals('Comment B', $output['items'][0]['children'][1]['properties']['comment'][1]['properties']['name'][0]);
+		$three = $output['items'][0]['children'][2];
+		$this->assertEquals('Three', $three['properties']['name'][0]);
+		$this->assertEquals('Comment C', $three['children'][0]['properties']['name'][0]);
+		$this->assertEquals('Comment D', $three['children'][1]['properties']['name'][0]);
+		$this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
+	}
+
+	public function testNoErrantWhitespaceOnEHtml()
+	{
+		$input = '<div class="h-entry"><div class="e-content"><p>1</p><p>2</p></div></div>';
+		$output = Mf2\parse($input);
+		$this->assertEquals('<p>1</p><p>2</p>', $output['items'][0]['properties']['content'][0]['html']);
+	}
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/158
-	 */	
+	 */
 	public function testPrefixWithNumbers() {
 		$input = '<li class="h-entry">
-  <data class="p-name" value="Coffee"></data>
-  <div class="p-p3k-drank h-p3k-food">
-    <span class="value">Coffee</span>
-  </div>
+	<data class="p-name" value="Coffee"></data>
+	<div class="p-p3k-drank h-p3k-food">
+		<span class="value">Coffee</span>
+	</div>
 </li>';
 		$output = Mf2\parse($input);
 
@@ -760,8 +760,8 @@ END;
 	 */
 	public function testMfClassRegex() {
 		$input = '<article class="h-x-test h-p3k-entry h-feed h-Entry h-p3k-fEed h--d h-test-">
-    <a class="u-url u-Url u-p3k-url u--url u-url- u-123-url u-123A-url" href="example.com" >URL </a>
-    <span class="p-name p-nAme p-p3k-name p--name p-name-" >name</span>
+		<a class="u-url u-Url u-p3k-url u--url u-url- u-123-url u-123A-url" href="example.com" >URL </a>
+		<span class="p-name p-nAme p-p3k-name p--name p-name-" >name</span>
 </article>';
 		$output = Mf2\parse($input);
 

@@ -100,7 +100,7 @@ class UrlTest extends PHPUnit_Framework_TestCase {
 		$actual = mf2\removeDotSegments($path);
 		$this->assertEquals($expected, $actual, $assert);
 	}
-	
+
 	public function removeDotSegmentsData() {
 		return array(
 			array('Should remove .. and .',
@@ -137,18 +137,18 @@ class UrlTest extends PHPUnit_Framework_TestCase {
 		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', '..');
 		$this->assertEquals($expected, $actual);
 	}
-	
+
 	/** as per https://github.com/indieweb/php-mf2/issues/35 */
 	public function testResolvesProtocolRelativeUrlsCorrectly() {
 		$expected = 'http://cdn.example.org/thing/asset.css';
 		$actual = Mf2\resolveUrl('http://example.com', '//cdn.example.org/thing/asset.css');
 		$this->assertEquals($expected, $actual);
-		
+
 		$expected = 'https://cdn.example.org/thing/asset.css';
 		$actual = Mf2\resolveUrl('https://example.com', '//cdn.example.org/thing/asset.css');
 		$this->assertEquals($expected, $actual);
 	}
-	
+
 	/**
 	 * @dataProvider testData
 	 */
@@ -296,7 +296,7 @@ class UrlTest extends PHPUnit_Framework_TestCase {
 				'test rfc ' . $i, 'http://a/b/c/d;p?q', $test[0], $test[1]
 			);
 		}
-	
+
 		return $cases;
 	}
 }

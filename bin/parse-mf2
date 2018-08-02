@@ -23,7 +23,7 @@ if (!empty($argv[1])) {
 	$url = $argv[1];
 	if (!preg_match('|https?://|', $url)) {
 		$url = 'http://' . $url;
-	}	
+	}
 } else {
 	$url = null;
 }

@@ -8,10 +8,10 @@ use PHPUnit_Framework_TestCase;
 
 /**
  * Combined Microformats Test
- * 
+ *
  * Tests the ability of Parser::parse() to handle nested microformats correctly.
  * More info at http://microformats.org/wiki/microformats-2#combining_microformats
- * 
+ *
  * @todo implement
  */
 class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
@@ -28,8 +28,8 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	<a class="p-name u-url" href="http://indiewebcamp.com/2012">
 	IndieWebCamp 2012
 	</a>
-	from <time class="dt-start">2012-06-30</time> 
-	to <time class="dt-end">2012-07-01</time> at 
+	from <time class="dt-start">2012-06-30</time>
+	to <time class="dt-end">2012-07-01</time> at
 	<span class="p-location h-card">
 	<a class="p-name p-org u-url" href="http://geoloqi.com/">
 	Geoloqi</a>, <span class="p-street-address">920 SW 3rd Ave. Suite 400</span>, <span class="p-locality">Portland</span>, <abbr class="p-region" title="Oregon">OR</abbr>
@@ -38,7 +38,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-	"items": [{ 
+	"items": [{
 		"type": ["h-event"],
 		"properties": {
 			"name": ["IndieWebCamp 2012"],
@@ -64,7 +64,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$parser = new Parser($input, '', true);
 		$parser->stringDateTimes = true;
 		$output = $parser->parse();
-		
+
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
 
@@ -74,14 +74,14 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	public function testHCardOrgPOrg() {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
-	 href="http://blog.lizardwrangler.com/" 
-	>Mitchell Baker</a> 
+	 href="http://blog.lizardwrangler.com/"
+	>Mitchell Baker</a>
   (<span class="p-org">Mozilla Foundation</span>)
 </div>';
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 	"type": ["h-card"],
 	"properties": {
 	  "name": ["Mitchell Baker"],
@@ -104,16 +104,16 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	public function testHCardOrgHCard() {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
-	 href="http://blog.lizardwrangler.com/" 
-	>Mitchell Baker</a> 
-  (<a class="p-org h-card" 
+	 href="http://blog.lizardwrangler.com/"
+	>Mitchell Baker</a>
+  (<a class="p-org h-card"
 	  href="http://mozilla.org/"
 	 >Mozilla Foundation</a>)
 </div>';
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 	"type": ["h-card"],
 	"properties": {
 	  "name": ["Mitchell Baker"],
@@ -143,16 +143,16 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 	public function testHCardPOrgHCardHOrg() {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
-	 href="http://blog.lizardwrangler.com/" 
-	>Mitchell Baker</a> 
-  (<a class="p-org h-card h-org" 
+	 href="http://blog.lizardwrangler.com/"
+	>Mitchell Baker</a>
+  (<a class="p-org h-card h-org"
 	  href="http://mozilla.org/"
 	 >Mozilla Foundation</a>)
 </div>';
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 	"type": ["h-card"],
 	"properties": {
 	  "name": ["Mitchell Baker"],
@@ -171,7 +171,7 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
-		
+
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
 
@@ -182,14 +182,14 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card">
 	<a class="p-name u-url"
 	href="http://blog.lizardwrangler.com/">
-	Mitchell Baker</a> 
+	Mitchell Baker</a>
 	(<a class="h-card h-org" href="http://mozilla.org/">
 	Mozilla Foundation</a>)
 </div>';
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 		"type": ["h-card"],
 		"properties": {
 			"name": ["Mitchell Baker"],
@@ -207,46 +207,46 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
-		
+
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
-	
+
 	/**
 	 * Regression test for https://github.com/indieweb/php-mf2/issues/42
-	 * 
+	 *
 	 * This was occurring because mfPropertyNamesFromClass was only ever returning the first property name
 	 * rather than all of them.
 	 */
 	public function testNestedMicroformatUnderMultipleProperties() {
 		$input = '<article class="h-entry"><div class="p-like-of p-in-reply-to h-cite"></div></article>';
 		$mf = Mf2\parse($input);
-		
+
 		$this->assertCount(1, $mf['items'][0]['properties']['like-of']);
 		$this->assertCount(1, $mf['items'][0]['properties']['in-reply-to']);
 	}
-	
+
 	/**
 	 * Test microformats nested under e-* property classnames retain html: key in structure
-	 * 
+	 *
 	 * @see https://github.com/indieweb/php-mf2/issues/64
 	 */
 	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey() {
 		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
 		$mf = Mf2\parse($input);
-		
+
 		$this->assertArrayHasKey('value', $mf['items'][0]['properties']['content'][0]);
 		$this->assertEquals($mf['items'][0]['properties']['content'][0]['value'], 'Hello');
 		$this->assertArrayHasKey('html', $mf['items'][0]['properties']['content'][0]);
 		$this->assertEquals($mf['items'][0]['properties']['content'][0]['html'], '<p>Hello</p>');
 	}
-	
+
 	/**
 	 * Test microformats nested under u-* property classnames derive value: key from parsing as u-*
 	 */
 	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly() {
 		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
 		$mf = Mf2\parse($input);
-		
+
 		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value');
 	}
 
@@ -300,11 +300,11 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'http://example.org/post1234');
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'http://jane.example.com/');
 	}
-	
+
 	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {
 		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
 		$mf = Mf2\parse($input);
-		
+
 		$this->assertEquals($mf['items'][0]['properties']['author'][0]['value'], 'Zoe');
 	}
 
@@ -317,16 +317,16 @@ class CombinedMicroformatsTest extends PHPUnit_Framework_TestCase {
 		$input = '<div class="h-card" ><a class="h-card" href="jane.html">Jane Doe</a><p></p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-		
+
 		$this->assertArrayHasKey('children', $output['items'][0]);
 		$this->assertArrayNotHasKey('value', $output['items'][0]['children'][0]);
 	}
 
 
 	/**
-	 * With the backcompat changes I worked on in this PR, I ran into a case where 
-	 * nested mf1 without properties were not added to the 'children' property properly. 
-	 * I fixed that but then wanted to ensure it worked beyond 1-level deep. This example 
+	 * With the backcompat changes I worked on in this PR, I ran into a case where
+	 * nested mf1 without properties were not added to the 'children' property properly.
+	 * I fixed that but then wanted to ensure it worked beyond 1-level deep. This example
 	 * is contrived, but lets me test to confirm 'children' is set correctly. - Gregor Morrill
 	 */
 	public function testNestedMf1() {

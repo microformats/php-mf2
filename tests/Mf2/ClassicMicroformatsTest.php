@@ -12,30 +12,30 @@ use PHPUnit_Framework_TestCase;
 
 /**
  * Classic Microformats Test
- * 
+ *
  * Contains tests of the classic microformat => µf2 functionality.
- * 
+ *
  * Mainly based off BC tables on http://microformats.org/wiki/microformats2#v2_vocabularies
  */
 class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
-	
+
 	public function testParsesClassicHcard() {
 		$input = '<div class="vcard"><span class="fn n">Barnaby Walters</span> is a person.</div>';
 		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
-	
+
 	public function testParsesClassicHEntry() {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
 		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
-	
+
 	public function testIgnoresClassicClassnamesUnderMf2Root() {
 		$input = <<<EOT
 <div class="h-entry">
@@ -46,9 +46,9 @@ EOT;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 		$this->assertEquals('I wrote this', $result['items'][0]['properties']['author'][0]['properties']['name'][0]);
-		
+
 	}
-	
+
 	public function testIgnoresClassicPropertyClassnamesOutsideClassicRoots() {
 		$input = <<<EOT
 <p class="author">Mr. Invisible</p>
@@ -57,7 +57,7 @@ EOT;
 		$result = $parser->parse();
 		$this->assertCount(0, $result['items']);
 	}
-	
+
 	public function testParsesFBerrimanClassicHEntry() {
 		$input = <<<EOT
 <article id="post-976" class="post-976 post type-post status-publish format-standard hentry category-speaking category-web-dev tag-conferences tag-front-trends tag-fronttrends tag-speaking tag-txjs">
@@ -65,7 +65,7 @@ EOT;
 		<h1 class="entry-title">
 			<a href="http://fberriman.com/2013/05/14/april-recap-txjs-front-trends/" rel="bookmark">April recap &#8211; TXJS &#038; Front-Trends</a>
 		</h1>
-		
+
 		<div class="entry-meta">
 			<span class="date">
 				<a href="http://fberriman.com/2013/05/14/april-recap-txjs-front-trends/" title="Permalink to April recap &#8211; TXJS &amp; Front-Trends" rel="bookmark">
@@ -89,7 +89,7 @@ EOT;
 		<div class="entry-content">
 		<p>April was pretty decent.  I got to attend two very good conferences <strong>and</strong> I got to speak at them.</p>
 			</div>
-	
+
 	<footer class="entry-meta">
 		<div class="comments-link">
 			<a href="http://fberriman.com/2013/05/14/april-recap-txjs-front-trends/#respond" title="Comment on April recap &#8211; TXJS &amp; Front-Trends"><span class="leave-reply">Leave a comment</span></a>
@@ -112,7 +112,7 @@ EOT;
 		$this->assertContains('speaking', $e['properties']['category']);
 		$this->assertContains('txjs', $e['properties']['category']);
 	}
-	
+
 	public function testParsesSnarfedOrgArticleCorrectly() {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
@@ -147,17 +147,17 @@ EOT;
 <h3 class="summary">XYZ Project Review</h3>
 <p class="description">Project XYZ Review Meeting</p>
 <p> <a class="url" href="http://example.com/xyz-meeting">http://example.com/xyz-meeting</a> </p>
-<p>To be held on 
+<p>To be held on
  <span class="dtstart">
-  <abbr class="value" title="1998-03-12">the 12th of March</abbr> 
+  <abbr class="value" title="1998-03-12">the 12th of March</abbr>
   from <span class="value">8:30am</span> <abbr class="value" title="-0500">EST</abbr>
- </span> until 
+ </span> until
  <span class="dtend">
   <span class="value">9:30am</span> <abbr class="value" title="-0500">EST</abbr>
  </span>
 </p>
 <p>Location: <span class="location">1CP Conference Room 4350</span></p>
-<small>Booked by: <span class="uid">guid-1.host1.com</span> on 
+<small>Booked by: <span class="uid">guid-1.host1.com</span> on
  <span class="dtstamp">
   <abbr class="value" title="1998-03-09">the 9th</abbr> at <span class="value">6:00pm</span>
  </span>
@@ -318,7 +318,7 @@ END;
   <header class="entry-header">
     <h1 class="entry-title p-name" itemprop="name headline"><a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" class="u-url url" title="Permalink to Wir brauchen Metadaten für Telefonnummern" rel="bookmark" itemprop="url">Wir brauchen Metadaten für Telefonnummern</a></h1>
 
-        <div class="entry-meta">      
+        <div class="entry-meta">
       <span class="sep">Ver&ouml;ffentlicht am </span><a href="http://notizblog.org/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/" title="10:30" rel="bookmark" class="url u-url"><time class="entry-date updated published dt-updated dt-published" datetime="2014-02-20T10:30:40+00:00" itemprop="dateModified">20. Februar 2014</time></a><address class="byline"> <span class="sep"> von </span> <span class="author p-author vcard hcard h-card" itemprop="author" itemscope itemtype="http://schema.org/Person"><img alt='' src='http://1.gravatar.com/avatar/b36983a5651df2c413e264ad4d5cc1a1?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='u-photo avatar avatar-40 photo' height='40' width='40' /> <a class="url uid u-url u-uid fn p-name" href="http://notizblog.org/author/matthias-pfefferle/" title="Alle Beitr&auml;ge von Matthias Pfefferle ansehen" rel="author" itemprop="url"><span itemprop="name">Matthias Pfefferle</span></a></span></address>    </div><!-- .entry-meta -->
       </header><!-- .entry-header -->
 
@@ -356,7 +356,7 @@ END;
     <h1 class="assistive-text section-heading">Beitragsnavigation</h1>
 
 
-    <div class="nav-previous"><a href="http://notizblog.org/2014/02/13/amber-case-ueber-privacy-und-das-indieweb/" rel="prev"><span class="meta-nav">&larr;</span> Amber Case über Privacy und das IndieWeb</a></div>    
+    <div class="nav-previous"><a href="http://notizblog.org/2014/02/13/amber-case-ueber-privacy-und-das-indieweb/" rel="prev"><span class="meta-nav">&larr;</span> Amber Case über Privacy und das IndieWeb</a></div>
 
   </nav><!-- #nav-below -->
 
@@ -624,7 +624,7 @@ END;
       <data class="p-longitude" value="-122.62130255822"></data>
       </span>
   </div>
-    
+
           <div class="metaline pad">
       <a href="https://aaronparecki.com/2016/12/15/16/dropvox" class="u-url">
       <time class="dt-published" datetime="2016-12-15T18:01:31-08:00">
@@ -633,13 +633,13 @@ END;
     </a>
       </div>
 <a class="u-author" href="/"></a>
-        
+
   <div style="clear:both;"></div>
 </div>
   <div class="responses">
-  
-  
-  
+
+
+
     <form class="webmention-form ui form" action="https://webmention.io/aaronpk/webmention" method="post">
     <div class="fields">
       <div class="twelve wide field">
@@ -656,10 +656,10 @@ END;
     </div>
     <input type="hidden" name="target" value="https://aaronparecki.com/2016/12/15/16/dropvox">
   </form>
-  
-  
-  
-  
+
+
+
+
 </div>
   </li>
 END;
@@ -694,10 +694,10 @@ END;
 <span class="h-card vcard">
 <a href="http://cherryreds.com">
   <span class="p-name fn p-org org">Cherry Red's</span>
-</a>, 
+</a>,
 <span class="adr">
-  <span class="street-address p-street-address">88-92 John Bright St</span>, 
-  <span class="p-locality locality">Birmingham</span>, 
+  <span class="street-address p-street-address">88-92 John Bright St</span>,
+  <span class="p-locality locality">Birmingham</span>,
   <abbr class="p-country-name country-name">UK</abbr>
 </span></span>
 END;
@@ -754,7 +754,7 @@ END;
 <div class="hreview">
 	<span><span class="rating">5</span> out of 5 stars</span>
 	<h4 class="summary">Crepes on Cole is awesome</h4>
-	<span class="reviewer vcard">Reviewer: <span class="fn">Tantek</span> - 
+	<span class="reviewer vcard">Reviewer: <span class="fn">Tantek</span> -
 	<abbr class="dtreviewed" title="2005-04-18">April 18, 2005</abbr></span>
 	<div class="description item vcard">
 		<p> <span class="fn org">Crepes on Cole</span> is one of the best little creperies in <span class="adr"><span class="locality">San Francisco</span></span>. Excellent food and service. Plenty of tables in a variety of sizes for parties large and small.  Window seating makes for excellent people watching to/from the N-Judah which stops right outside. I've had many fun social gatherings here, as well as gotten plenty of work done thanks to neighborhood WiFi. </p>
@@ -808,7 +808,7 @@ END;
 
 
 	/**
-	 * 
+	 *
 	 */
 	public function testParsesHfeed() {
 		$input = <<< END
@@ -853,7 +853,7 @@ END;
 	public function testHEntryRelTag() {
 		$input = '<article id="post-6586" class="post-6586 post type-post status-publish format-standard hentry category-technology tag-domains tag-indiewebcamp tag-microblog tag-wordpress">
 				<header class="entry-header">
-			
+
 						<h1 class="entry-title">IndieWeb generation 4 and hosted domains</h1>
 								</header><!-- .entry-header -->
 
@@ -872,7 +872,7 @@ END;
 <p><img src="https://manton.org/images/2018/prefs_accounts.png" width="512" height="415" alt="Mac screenshot" scale="0"></p>
 <p>The goal with Micro.blog is not to be a stop-gap hosting provider, with truly “serious” users eventually moving on to something else (although we make that easy). We want Micro.blog hosting to be the best platform for owning your content and participating in the Micro.blog and IndieWeb communities.</p>
 					</div><!-- .entry-content -->
-		
+
 		<footer class="entry-meta">
 			This entry was posted in <a href="http://www.manton.org/category/technology" rel="category tag">Technology</a> and tagged <a href="http://www.manton.org/tag/domains" rel="tag">domains</a>, <a href="http://www.manton.org/tag/indiewebcamp" rel="tag">indiewebcamp</a>, <a href="http://www.manton.org/tag/microblog" rel="tag">microblog</a>, <a href="http://www.manton.org/tag/wordpress" rel="tag">wordpress</a> on <a href="http://www.manton.org/2018/03/indieweb-generation-4-and-hosted-domains.html" title="9:24 am" rel="bookmark"><time class="entry-date" datetime="2018-03-23T09:24:36+00:00">2018/03/23</time></a><span class="by-author"> by <span class="author vcard"><a class="url fn n" href="http://www.manton.org/author/manton" title="View all posts by manton" rel="author">manton</a></span></span>.								</footer><!-- .entry-meta -->
 	</article>';

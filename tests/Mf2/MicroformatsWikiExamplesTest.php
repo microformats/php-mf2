@@ -11,12 +11,12 @@ use PHPUnit_Framework_TestCase;
 
 /**
  * Microformats Wiki Examples
- * 
+ *
  * Contains tests built directly from examples given on the microformats wiki pages about µf2.
- * 
+ *
  * These tend to compare the JSON-encoded output of Parser::parse() with the JSON strings given on the wiki.
  * If the given JSON is not within an `items` key of the root object, I add it and mark as so.
- * 
+ *
  * @author Barnaby Walters waterpigs.co.uk <barnaby@waterpigs.co.uk>
  */
 class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
@@ -24,7 +24,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
-		
+
 	public function testHandlesEmptyStringsCorrectly() {
 		$input = '';
 		$expected = '{
@@ -32,13 +32,13 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	"rel-urls": {},
 	"items": []
 }';
-		
+
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
-		
+
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
-	
+
 	public function testHandlesNullCorrectly() {
 		$input = Null;
 		$expected = '{
@@ -46,14 +46,14 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	"rel-urls": {},
 	"items": []
 }';
-		
+
 		$parser = new Parser($input, '', true);
 		$parser->jsonMode = true;
 		$output = $parser->parse();
-		
+
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
 	}
-		
+
 	/**
 	 * From http://microformats.org/wiki/microformats-2
 	 */
@@ -62,10 +62,10 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 	"type": ["h-card"],
 	"properties": {
-	  "name": ["Frances Berriman"] 
+	  "name": ["Frances Berriman"]
 	}
   }]
 }';
@@ -83,7 +83,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-  "items": [{ 
+  "items": [{
 	"type": ["h-card"],
 	"properties": {
 	  "name": ["Ben Ward"],
@@ -106,7 +106,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-	"items": [{ 
+	"items": [{
   "type": ["h-card"],
   "properties": {
 	"name": ["Chris Messina"],
@@ -131,7 +131,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},
-	"items": [{ 
+	"items": [{
   "type": ["h-card"],
   "properties": {
 	"name": ["Rohit Khare"],
@@ -153,9 +153,9 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
   <img class="u-photo" alt="photo of Mitchell"
 	   src="https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"/>
   <a class="p-name u-url"
-	 href="http://blog.lizardwrangler.com/" 
+	 href="http://blog.lizardwrangler.com/"
 	>Mitchell Baker</a>
- (<a class="u-url" 
+ (<a class="u-url"
 	 href="https://twitter.com/MitchellBaker"
 	>@MitchellBaker</a>)
   <span class="p-org">Mozilla Foundation</span>
@@ -169,7 +169,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 		$expected = '{
   "rels": {},
   "rel-urls": {},
-	"items": [{ 
+	"items": [{
 	"type": ["h-card"],
 	"properties": {
 	  "photo": ["https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"],

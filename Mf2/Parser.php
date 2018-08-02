@@ -167,7 +167,7 @@ function nestedMfPropertyNamesFromClass($class) {
 			}
 		}
 	}
-	
+
 	foreach ($propertyNames as $property => $prefixes) {
 		$propertyNames[$property] = array_unique($prefixes);
 	}
@@ -338,8 +338,8 @@ class Parser {
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
 			if (class_exists('Masterminds\\HTML5')) {
-			    $doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
-			    $doc = $doc->loadHTML($input);
+					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
+					$doc = $doc->loadHTML($input);
 			} else {
 				$doc = new DOMDocument();
 				@$doc->loadHTML(unicodeToHtmlEntities($input));
@@ -402,7 +402,7 @@ class Parser {
 		if (!$this->parsed->contains($e)) {
 			return false;
 		}
-			
+
 		$prefixes = $this->parsed[$e];
 
 		if (!in_array($prefix, $prefixes)) {
@@ -443,49 +443,49 @@ class Parser {
 		}
 	}
 
-    /**
-     * The following two methods implements plain text parsing.
-     * @see https://wiki.zegnat.net/media/textparsing.html
-     **/
+		/**
+		 * The following two methods implements plain text parsing.
+		 * @see https://wiki.zegnat.net/media/textparsing.html
+		 **/
 	public function textContent(DOMElement $element)
 	{
-        return preg_replace(
-            '/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
-            '',
-            $this->elementToString($element)
-        );
+				return preg_replace(
+						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
+						'',
+						$this->elementToString($element)
+				);
 	}
 	private function elementToString(DOMElement $input)
 	{
-	    $output = '';
-	    foreach ($input->childNodes as $child) {
-	        if ($child->nodeType === XML_TEXT_NODE) {
-	            $output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
-	        } else if ($child->nodeType === XML_ELEMENT_NODE) {
-	            $tagName = strtoupper($child->tagName);
-	            if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
-	                continue;
-	            } else if ($tagName === 'IMG') {
-	                if ($child->hasAttribute('alt')) {
-	                    $output .= ' ' . trim($child->getAttribute('alt'), "\t\n\f\r ") . ' ';
-	                } else if ($child->hasAttribute('src')) {
-	                    $output .= ' ' . $this->resolveUrl(trim($child->getAttribute('src'), "\t\n\f\r ")) . ' ';
-	                }
-	            } else if ($tagName === 'BR') {
-	                $output .= "\n";
-	            } else if ($tagName === 'P') {
-	                $output .= "\n" . $this->elementToString($child);
-	            } else {
-	                $output .= $this->elementToString($child);
-	            }
-	        }
-	    }
-	    return $output;
+			$output = '';
+			foreach ($input->childNodes as $child) {
+					if ($child->nodeType === XML_TEXT_NODE) {
+							$output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
+					} else if ($child->nodeType === XML_ELEMENT_NODE) {
+							$tagName = strtoupper($child->tagName);
+							if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
+									continue;
+							} else if ($tagName === 'IMG') {
+									if ($child->hasAttribute('alt')) {
+											$output .= ' ' . trim($child->getAttribute('alt'), "\t\n\f\r ") . ' ';
+									} else if ($child->hasAttribute('src')) {
+											$output .= ' ' . $this->resolveUrl(trim($child->getAttribute('src'), "\t\n\f\r ")) . ' ';
+									}
+							} else if ($tagName === 'BR') {
+									$output .= "\n";
+							} else if ($tagName === 'P') {
+									$output .= "\n" . $this->elementToString($child);
+							} else {
+									$output .= $this->elementToString($child);
+							}
+					}
+			}
+			return $output;
 	}
 
 	/**
 	 * This method parses the language of an element
-	 * @param DOMElement $el 
+	 * @param DOMElement $el
 	 * @access public
 	 * @return string
 	 */
@@ -495,7 +495,7 @@ class Parser {
 		if ($el->hasAttribute('lang')) {
 			return unicodeTrim($el->getAttribute('lang'));
 		}
-		
+
 		if ($el->tagName == 'html') {
 			// we're at the <html> element and no lang; check <meta> http-equiv Content-Language
 			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
@@ -506,7 +506,7 @@ class Parser {
 			}
 		} elseif ($el->parentNode instanceof DOMElement) {
 			// check the parent node
-			return $this->language($el->parentNode);			
+			return $this->language($el->parentNode);
 		}
 
 		return '';
@@ -619,7 +619,7 @@ class Parser {
 		} elseif ($u->tagName == 'object' and $u->hasAttribute('data')) {
 			$uValue = $u->getAttribute('data');
 		} elseif (($classTitle = $this->parseValueClassTitle($u)) !== null) {
-		    $uValue = $classTitle;
+				$uValue = $classTitle;
 		} elseif (($u->tagName == 'abbr' or $u->tagName == 'link') and $u->hasAttribute('title')) {
 			$uValue = $u->getAttribute('title');
 		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
@@ -627,7 +627,7 @@ class Parser {
 		} else {
 			$uValue = $this->textContent($u);
 		}
-        return $this->resolveUrl($uValue);
+				return $this->resolveUrl($uValue);
 	}
 
 	/**
@@ -802,7 +802,7 @@ class Parser {
 
 			$dtValue = unicodeTrim($dtValue);
 
-      // Store the date part so that we can use it when assembling the final timestamp if the next one is missing a date part
+			// Store the date part so that we can use it when assembling the final timestamp if the next one is missing a date part
 			if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dtValue, $matches)) {
 				$dates[] = $matches[0];
 			}
@@ -913,7 +913,7 @@ class Parser {
 
 		// Handle p-*
 		foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
-			// element is already parsed 
+			// element is already parsed
 			if ($this->isElementParsed($p, 'p')) {
 				continue;
 			// backcompat parsing and element was not upgraded; skip it
@@ -1117,7 +1117,7 @@ class Parser {
 		// Make sure things are unique and in alphabetical order
 		$mfTypes = array_unique($mfTypes);
 		sort($mfTypes);
-		
+
 		// Properties should be an object when JSON serialised
 		if (empty($return) and $this->jsonMode) {
 			$return = new stdClass();
@@ -1299,7 +1299,7 @@ class Parser {
 
 	/**
 	 * Find rel=tag elements that don't have class=category and have an href.
-	 * For each element, get the last non-empty URL segment. Append a <data> 
+	 * For each element, get the last non-empty URL segment. Append a <data>
 	 * element with that value as the category. Uses the mf1 class 'category'
 	 * which will then be upgraded to p-category during backcompat.
 	 * @param DOMElement $el
@@ -2105,8 +2105,8 @@ function resolveUrl($baseURI, $referenceURI) {
 
 	# 5.2.1 Pre-parse the Base URI
 	# The base URI (Base) is established according to the procedure of
-  # Section 5.1 and parsed into the five main components described in
-  # Section 3
+	# Section 5.1 and parsed into the five main components described in
+	# Section 3
 	$base = parseUriToComponents($baseURI);
 
 	# If base path is blank (http://example.com) then set it to /

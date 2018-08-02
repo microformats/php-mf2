@@ -31,7 +31,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	} # end method testHtmlLangOnly()
 
 	/**
-	 * Test with only h-entry lang 
+	 * Test with only h-entry lang
 	 */
 	public function testHEntryLangOnly()
 	{
@@ -45,7 +45,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	} # end method testHEntryLangOnly()
 
 	/**
-	 * Test with different <html lang> and h-entry lang 
+	 * Test with different <html lang> and h-entry lang
 	 */
 	public function testHtmlAndHEntryLang()
 	{
@@ -116,7 +116,7 @@ class ParseLanguageTest extends PHPUnit_Framework_TestCase {
 	} # end method testMultiLanguageInheritance()
 
 	/**
-	 * Test feed with .h-feed lang which contains multiple h-entries of different languages 
+	 * Test feed with .h-feed lang which contains multiple h-entries of different languages
 	 * (or none specified), which should inherit from the .h-feed lang.
 	 */
 	public function testMultiLanguageFeed()
