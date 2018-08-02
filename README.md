@@ -355,6 +355,19 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.4.5
+
+2018-08-02
+
+Bugfixes:
+
+* Fix for parsing empty `e-` elements
+
+Other Updates:
+
+* Added `.editorconfig` to the project and cleaned up whitespace across all files
+
+
 #### v0.4.4
 
 2018-08-01
