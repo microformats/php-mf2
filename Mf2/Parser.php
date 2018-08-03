@@ -737,11 +737,9 @@ class Parser {
 					// Is the current part a valid date AND no other date representation has been found?
 					} elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $part) and empty($datePart)) {
 						$datePart = $part;
-
 					// Is the current part a valid ordinal date AND no other date representation has been found?
 					} elseif (preg_match('/^\d{4}-\d{3}$/', $part) and empty($datePart)) {
 						$datePart = normalizeOrdinalDate($part);
-
 					// Is the current part a valid timezone offset AND no other timezone part has been found?
 					} elseif (preg_match('/^(Z|[+-]\d{1,2}:?(\d{2})?)$/', $part) and empty($timezonePart)) {
 						$timezonePart = $part;
