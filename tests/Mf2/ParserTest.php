@@ -823,5 +823,18 @@ END;
 		Mf2\parse($inputDoc, 'http://snarfed.org/2013-10-23_oauth-dropins');
 		$this->assertEquals($refDoc, $inputDoc, 'Parsing mutated the DOMDocument.');
 	}
+
+	/**
+	 * Make sure day of year passed to normalizeOrdinalDate() is valid
+	 * @see https://github.com/indieweb/php-mf2/issues/167
+	 */
+	public function testInvalidOrdinalDate() {
+		# 365 days in non-leap years
+		$this->assertEquals('2018-12-31', Mf2\normalizeOrdinalDate('2018-365'));
+		$this->assertEquals('', Mf2\normalizeOrdinalDate('2018-366'));
+		# 366 days in leap years
+		$this->assertEquals('2016-12-31', Mf2\normalizeOrdinalDate('2016-366'));
+		$this->assertEquals('', Mf2\normalizeOrdinalDate('2016-367'));
+	}
 }
 
