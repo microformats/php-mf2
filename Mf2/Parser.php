@@ -244,24 +244,16 @@ function convertTimeFormat($time) {
  * @return string
  */
 function normalizeOrdinalDate($dtValue) {
-	try {
-		$parts = explode('-', $dtValue);
-
-		if ($parts[1] > 366) {
-			throw new \Exception('Day of year can never be greater than 366');
-		}
-
+	list($year, $day) = explode('-', $dtValue, 2);
+	$day = intval($day);
+	if ($day < 367 && $day > 0) {
 		$date = \DateTime::createFromFormat('Y-z', $dtValue);
 		$date->modify('-1 day'); # 'z' format is zero-based so need to adjust
-
-		if ($date->format('Y') != $parts[0]) {
-			throw new \Exception('Day of year cannot be greater than 365 in non-leap years');
+		if ($date->format('Y') === $year) {
+			return $date->format('Y-m-d');
 		}
-
-		return $date->format('Y-m-d');
-	} catch (\Exception $e) {
-		return '';
 	}
+	return '';
 }
 
 /**
