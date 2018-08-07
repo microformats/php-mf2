@@ -1157,12 +1157,12 @@ class Parser {
 
 		// img.h-x[src]
 		if ($e->tagName == 'img') {
-			return $e->getAttribute('src');
+			return $this->resolveUrl($e->getAttribute('src'));
 		}
 
 		// object.h-x[data]
 		if ($e->tagName == 'object' && $e->hasAttribute('data')) {
-			return $e->getAttribute('data');
+			return $this->resolveUrl($e->getAttribute('data'));
 		}
 
 		$xpaths = array(
