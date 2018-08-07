@@ -331,5 +331,18 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
 	}
 
+
+	/**
+	 * Don't imply u-url if there are other u-*
+	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @see https://github.com/microformats/php-mf2/issues/183
+	 */
+	public function testNoImpliedUrl() {
+		$input = '<div class="h-entry"> <h1 class="p-name"><a href="https://example.com/this-post">Title</a></h1> <div class="e-content"> <p> blah blah blah </p> </div> <a href="https://example.org/syndicate" class="u-syndication"></a> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);
+	}
+
 }
 

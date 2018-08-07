@@ -1083,34 +1083,30 @@ class Parser {
 
 		}
 
-		// Check for u-url
-		if (!array_key_exists('url', $return) && !$is_backcompat) {
-			$url = null;
-			// Look for img @src
-			if ($e->tagName == 'a' or $e->tagName == 'area') {
-				$url = $e->getAttribute('href');
-			}
-
-			// Look for nested a @href
-			foreach ($this->xpath->query('./a[count(preceding-sibling::a)+count(following-sibling::a)=0]', $e) as $em) {
-				$emNames = mfNamesFromElement($em, 'h-');
-				if (empty($emNames)) {
-					$url = $em->getAttribute('href');
-					break;
+		// Do we need to imply a url property?
+		// if no explicit "url" property, and no other explicit u-* properties, and no nested microformats
+		if (!array_key_exists('url', $return) && !in_array('u-', $prefixes) && !$has_nested_mf && !$is_backcompat) {
+			// a.h-x[href] or area.h-x[href]
+			if (($e->tagName === 'a' || $e->tagName === 'area') && $e->hasAttribute('href')) {
+				$return['url'][] = $this->resolveUrl($e->getAttribute('href'));
+			} else {
+				$xpaths = array(
+					// .h-x>a[href]:only-of-type:not[.h-*]
+					'./a[not(contains(concat(" ", @class), " h-")) and count(../a) = 1 and @href]',
+					// .h-x>area[href]:only-of-type:not[.h-*]
+					'./area[not(contains(concat(" ", @class), " h-")) and count(../area) = 1 and @href]',
+					// .h-x>:only-child:not[.h-*]>a[href]:only-of-type:not[.h-*]
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(a) = 1]/a[not(contains(concat(" ", @class), " h-")) and @href]',
+					// .h-x>:only-child:not[.h-*]>area[href]:only-of-type:not[.h-*]
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(area) = 1]/area[not(contains(concat(" ", @class), " h-")) and @href]'
+				);
+				foreach ($xpaths as $xpath) {
+					$url = $this->xpath->query($xpath, $e);
+					if ($url->length === 1) {
+						$return['url'][] = $this->resolveUrl($url->item(0)->getAttribute('href'));
+						break;
+					}
 				}
-			}
-
-			// Look for nested area @src
-			foreach ($this->xpath->query('./area[count(preceding-sibling::area)+count(following-sibling::area)=0]', $e) as $em) {
-				$emNames = mfNamesFromElement($em, 'h-');
-				if (empty($emNames)) {
-					$url = $em->getAttribute('href');
-					break;
-				}
-			}
-
-			if (!is_null($url)) {
-				$return['url'][] = $this->resolveUrl($url);
 			}
 		}
 
