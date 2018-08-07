@@ -1020,56 +1020,48 @@ class Parser {
 			$this->elementPrefixParsed($em, 'e');
 		}
 
-		// Imply 'name' only under specific conditions
-		$imply_name = (!$has_nested_mf && !array_key_exists('name', $return) && !$is_backcompat && !in_array('p-', $prefixes) && !in_array('e-', $prefixes));
-
-		if ($imply_name) {
-			try {
-				// Look for img @alt
-				if (($e->tagName == 'img' or $e->tagName == 'area') and $e->getAttribute('alt') != '') {
-					throw new Exception($e->getAttribute('alt'));
-				}
-
-				if ($e->tagName == 'abbr' and $e->hasAttribute('title')) {
-					throw new Exception($e->getAttribute('title'));
-				}
-
-				// Look for nested img @alt
-				foreach ($this->xpath->query('./img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					$emNames = mfNamesFromElement($em, 'h-');
-					if (empty($emNames) && $em->getAttribute('alt') != '') {
-						throw new Exception($em->getAttribute('alt'));
+		// Do we need to imply a name property?
+		// if no explicit "name" property, and no other p-* or e-* properties, and no nested microformats,
+		if (!array_key_exists('name', $return) && !in_array('p-', $prefixes) && !in_array('e-', $prefixes) && !$has_nested_mf && !$is_backcompat) {
+			$name = false;
+			// img.h-x[alt] or area.h-x[alt]
+			if (($e->tagName === 'img' || $e->tagName === 'area') && $e->hasAttribute('alt')) {
+				$name = $e->getAttribute('alt');
+			// abbr.h-x[title]
+			} elseif ($e->tagName === 'abbr' && $e->hasAttribute('title')) {
+				$name = $e->getAttribute('title');
+			} else {
+				$xpaths = array(
+					// .h-x>img:only-child[alt]:not([alt=""]):not[.h-*]
+					'./img[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
+					// .h-x>area:only-child[alt]:not([alt=""]):not[.h-*]
+					'./area[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
+					// .h-x>abbr:only-child[title]:not([title=""]):not[.h-*]
+					'./abbr[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @title and string-length(@title) != 0]',
+					// .h-x>:only-child:not[.h-*]>img:only-child[alt]:not([alt=""]):not[.h-*]
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/img[not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
+					// .h-x>:only-child:not[.h-*]>area:only-child[alt]:not([alt=""]):not[.h-*]
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/area[not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
+					// .h-x>:only-child:not[.h-*]>abbr:only-child[title]:not([title=""]):not[.h-*]
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/abbr[not(contains(concat(" ", @class), " h-")) and @title and string-length(@title) != 0]'
+				);
+				foreach ($xpaths as $xpath) {
+					$nameElement = $this->xpath->query($xpath, $e);
+					if ($nameElement !== false && $nameElement->length === 1) {
+						$nameElement = $nameElement->item(0);
+						if ($nameElement->tagName === 'img' || $nameElement->tagName === 'area') {
+							$name = $nameElement->getAttribute('alt');
+						} else {
+							$name = $nameElement->getAttribute('title');
+						}
+						break;
 					}
 				}
-
-				// Look for nested area @alt
-				foreach ($this->xpath->query('./area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					$emNames = mfNamesFromElement($em, 'h-');
-					if (empty($emNames) && $em->getAttribute('alt') != '') {
-						throw new Exception($em->getAttribute('alt'));
-					}
-				}
-
-				// Look for double nested img @alt
-				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/img[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					$emNames = mfNamesFromElement($em, 'h-');
-					if (empty($emNames) && $em->getAttribute('alt') != '') {
-						throw new Exception($em->getAttribute('alt'));
-					}
-				}
-
-				// Look for double nested img @alt
-				foreach ($this->xpath->query('./*[count(preceding-sibling::*)+count(following-sibling::*)=0]/area[count(preceding-sibling::*)+count(following-sibling::*)=0]', $e) as $em) {
-					$emNames = mfNamesFromElement($em, 'h-');
-					if (empty($emNames) && $em->getAttribute('alt') != '') {
-						throw new Exception($em->getAttribute('alt'));
-					}
-				}
-
-				throw new Exception($this->textContent($e, true));
-			} catch (Exception $exc) {
-				$return['name'][] = unicodeTrim($exc->getMessage());
 			}
+			if ($name === false) {
+				$name = $this->textContent($e, true);
+			}
+			$return['name'][] = unicodeTrim($name);
 		}
 
 		// Check for u-photo
