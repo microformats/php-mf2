@@ -1102,7 +1102,7 @@ class Parser {
 				);
 				foreach ($xpaths as $xpath) {
 					$url = $this->xpath->query($xpath, $e);
-					if ($url->length === 1) {
+					if ($url !== false && $url->length === 1) {
 						$return['url'][] = $this->resolveUrl($url->item(0)->getAttribute('href'));
 						break;
 					}
