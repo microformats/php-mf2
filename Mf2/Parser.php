@@ -1078,7 +1078,7 @@ class Parser {
 			$photo = $this->parseImpliedPhoto($e);
 
 			if ($photo !== false) {
-				$return['photo'][] = $this->resolveUrl($photo);
+				$return['photo'][] = $photo;
 			}
 
 		}
@@ -1167,13 +1167,13 @@ class Parser {
 
 		$xpaths = array(
 			// .h-x>img[src]:only-of-type:not[.h-*]
-			'./img[not(contains(concat(" ", @class), " h-")) and count(../img) = 1]',
+			'./img[not(contains(concat(" ", @class), " h-")) and count(../img) = 1 and @src]',
 			// .h-x>object[data]:only-of-type:not[.h-*]
-			'./object[not(contains(concat(" ", @class), " h-")) and count(../object) = 1]',
+			'./object[not(contains(concat(" ", @class), " h-")) and count(../object) = 1 and @data]',
 			// .h-x>:only-child:not[.h-*]>img[src]:only-of-type:not[.h-*]
-			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(img) = 1]/img[not(contains(concat(" ", @class), " h-"))]',
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(img) = 1]/img[not(contains(concat(" ", @class), " h-")) and @src]',
 			// .h-x>:only-child:not[.h-*]>object[data]:only-of-type:not[.h-*]
-			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(object) = 1]/object[not(contains(concat(" ", @class), " h-"))]',
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(object) = 1]/object[not(contains(concat(" ", @class), " h-")) and @data]',
 		);
 
 		foreach ($xpaths as $path) {
@@ -1182,9 +1182,9 @@ class Parser {
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
 				if ($el->tagName == 'img') {
-					return $el->getAttribute('src');
-				} else if ($el->tagName == 'object' && $el->hasAttribute('data')) {
-					return $el->getAttribute('data');
+					return $this->resolveUrl($el->getAttribute('src'));
+				} else if ($el->tagName == 'object') {
+					return $this->resolveUrl($el->getAttribute('data'));
 				}
 			}
 		}
