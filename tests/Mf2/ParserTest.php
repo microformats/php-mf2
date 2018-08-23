@@ -838,8 +838,10 @@ END;
 EOD;
 
 		$output = Mf2\parse($input);
-		$this->assertEquals([], $output['items'][0]['properties']['comment'][0]['properties']);
-		$this->assertEquals([], $output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['properties']);
+		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['properties']);
+		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
   }
 
   /**
