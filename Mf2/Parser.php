@@ -1078,7 +1078,7 @@ class Parser {
 			$photo = $this->parseImpliedPhoto($e);
 
 			if ($photo !== false) {
-				$return['photo'][] = $this->resolveUrl($photo);
+				$return['photo'][] = $photo;
 			}
 
 		}
@@ -1155,38 +1155,37 @@ class Parser {
 	 */
 	public function parseImpliedPhoto(\DOMElement $e) {
 
+		// img.h-x[src]
 		if ($e->tagName == 'img') {
-			return $e->getAttribute('src');
+			return $this->resolveUrl($e->getAttribute('src'));
 		}
 
+		// object.h-x[data]
 		if ($e->tagName == 'object' && $e->hasAttribute('data')) {
-			return $e->getAttribute('data');
+			return $this->resolveUrl($e->getAttribute('data'));
 		}
 
 		$xpaths = array(
-			'./img',
-			'./object',
-			'./*[not(contains(concat(" ", @class), " h-"))]/img[count(preceding-sibling::img)+count(following-sibling::img)=0]',
-			'./*[not(contains(concat(" ", @class), " h-"))]/object[count(preceding-sibling::object)+count(following-sibling::object)=0]',
+			// .h-x>img[src]:only-of-type:not[.h-*]
+			'./img[not(contains(concat(" ", @class), " h-")) and count(../img) = 1 and @src]',
+			// .h-x>object[data]:only-of-type:not[.h-*]
+			'./object[not(contains(concat(" ", @class), " h-")) and count(../object) = 1 and @data]',
+			// .h-x>:only-child:not[.h-*]>img[src]:only-of-type:not[.h-*]
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(img) = 1]/img[not(contains(concat(" ", @class), " h-")) and @src]',
+			// .h-x>:only-child:not[.h-*]>object[data]:only-of-type:not[.h-*]
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(object) = 1]/object[not(contains(concat(" ", @class), " h-")) and @data]',
 		);
 
 		foreach ($xpaths as $path) {
 			$els = $this->xpath->query($path, $e);
 
-			if ($els->length == 1) {
+			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
-				$hClasses = mfNamesFromElement($el, 'h-');
-
-				// no nested h-
-				if (empty($hClasses)) {
-
-					if ($el->tagName == 'img') {
-						return $el->getAttribute('src');
-					} else if ($el->tagName == 'object' && $el->hasAttribute('data')) {
-						return $el->getAttribute('data');
-					}
-
-				} // no nested h-
+				if ($el->tagName == 'img') {
+					return $this->resolveUrl($el->getAttribute('src'));
+				} else if ($el->tagName == 'object') {
+					return $this->resolveUrl($el->getAttribute('data'));
+				}
 			}
 		}
 
