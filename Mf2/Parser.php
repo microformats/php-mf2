@@ -240,6 +240,8 @@ function convertTimeFormat($time) {
 
 /**
  * Normalize an ordinal date to YYYY-MM-DD
+ * This function should only be called after validating the $dtValue
+ * matches regex \d{4}-\d{2}
  * @param string $dtValue
  * @return string
  */
