@@ -531,5 +531,24 @@ class ParseDTTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('--12-28', $output['items'][0]['properties']['bday'][0]);
 	}
 
+	/**
+	 * @see https://github.com/indieweb/php-mf2/issues/167
+	 * @see https://github.com/microformats/mf2py/blob/master/test/examples/datetimes.html
+	 */
+	public function testNormalizeOrdinalDate() {
+		$input = '<div class="h-event">
+	<h1 class="p-name">Ordinal date</h1>
+	<p> When:
+		<span class="dt-start">
+			<span class="value">2016-062</span>
+			<span class="value">12:30AM</span>
+			(UTC<span class="value">-06:00</span>)
+	</p>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertEquals('2016-03-02 12:30-0600', $output['items'][0]['properties']['start'][0]);
+	}
 }
 

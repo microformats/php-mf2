@@ -840,6 +840,19 @@ EOD;
 		$output = Mf2\parse($input);
 		$this->assertEquals([], $output['items'][0]['properties']['comment'][0]['properties']);
 		$this->assertEquals([], $output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+  }
+
+  /**
+	 * Make sure day of year passed to normalizeOrdinalDate() is valid
+	 * @see https://github.com/indieweb/php-mf2/issues/167
+	 */
+	public function testInvalidOrdinalDate() {
+		# 365 days in non-leap years
+		$this->assertEquals('2018-12-31', Mf2\normalizeOrdinalDate('2018-365'));
+		$this->assertEquals('', Mf2\normalizeOrdinalDate('2018-366'));
+		# 366 days in leap years
+		$this->assertEquals('2016-12-31', Mf2\normalizeOrdinalDate('2016-366'));
+		$this->assertEquals('', Mf2\normalizeOrdinalDate('2016-367'));
 	}
 }
 
