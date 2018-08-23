@@ -364,5 +364,16 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);
 	}
 
+	/**
+	 * Do not use img src in implied p-name
+	 * @see https://github.com/microformats/php-mf2/issues/180
+	 */
+	public function testNoImgSrcImpliedName() {
+		$input = '<p class="h-card">My Name <img src="http://xyz" /></p>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
+		$this->assertEquals('My Name', $result['items'][0]['properties']['name'][0]);
+	}
 }
 
