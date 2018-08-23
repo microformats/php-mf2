@@ -825,7 +825,26 @@ END;
 		$this->assertEquals($refDoc, $inputDoc, 'Parsing mutated the DOMDocument.');
 	}
 
-	/**
+	public function testNoImpliedURLForEmptyProperties() {
+		// In the 0.4.5 release, this caused an error
+		// https://github.com/microformats/php-mf2/issues/196
+
+		$input = <<<EOD
+<div class="h-entry">
+  <li class="h-cite u-comment">
+    <div class="vcard"></div>
+  </li>
+</div>
+EOD;
+
+		$output = Mf2\parse($input);
+		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['properties']);
+		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['properties']);
+		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+  }
+
+  /**
 	 * Make sure day of year passed to normalizeOrdinalDate() is valid
 	 * @see https://github.com/indieweb/php-mf2/issues/167
 	 */
