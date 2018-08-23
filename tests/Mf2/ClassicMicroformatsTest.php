@@ -704,7 +704,7 @@ END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
-		$this->assertCount(3, $result['items'][0]['properties']);
+		$this->assertCount(2, $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('street-address', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('locality', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('country-name', $result['items'][0]['properties']);
