@@ -253,7 +253,7 @@ EOT;
 	}
 
 	/**
-	 * @group network
+	 * @group internet
 	 */
 	public function testFetchMicroformats() {
 		$mf = Mf2\fetch('http://waterpigs.co.uk/');
@@ -367,6 +367,7 @@ EOT;
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/84
+	 * @group internet
 	 */
 	public function testRelativeURLResolvedWithFinalURL() {
 		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
