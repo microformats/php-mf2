@@ -239,6 +239,26 @@ function convertTimeFormat($time) {
 }
 
 /**
+ * Normalize an ordinal date to YYYY-MM-DD
+ * This function should only be called after validating the $dtValue
+ * matches regex \d{4}-\d{2}
+ * @param string $dtValue
+ * @return string
+ */
+function normalizeOrdinalDate($dtValue) {
+	list($year, $day) = explode('-', $dtValue, 2);
+	$day = intval($day);
+	if ($day < 367 && $day > 0) {
+		$date = \DateTime::createFromFormat('Y-z', $dtValue);
+		$date->modify('-1 day'); # 'z' format is zero-based so need to adjust
+		if ($date->format('Y') === $year) {
+			return $date->format('Y-m-d');
+		}
+	}
+	return '';
+}
+
+/**
  * If a date value has a timezone offset, normalize it.
  * @param string $dtValue
  * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
@@ -711,6 +731,9 @@ class Parser {
 					// Is the current part a valid date AND no other date representation has been found?
 					} elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $part) and empty($datePart)) {
 						$datePart = $part;
+					// Is the current part a valid ordinal date AND no other date representation has been found?
+					} elseif (preg_match('/^\d{4}-\d{3}$/', $part) and empty($datePart)) {
+						$datePart = normalizeOrdinalDate($part);
 					// Is the current part a valid timezone offset AND no other timezone part has been found?
 					} elseif (preg_match('/^(Z|[+-]\d{1,2}:?(\d{2})?)$/', $part) and empty($timezonePart)) {
 						$timezonePart = $part;
