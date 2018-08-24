@@ -355,6 +355,23 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.4.6
+
+Bugfixes:
+
+* Don't include img src attribute in implied p-name ([#180](https://github.com/microformats/php-mf2/issues/180))
+* Normalize ordinal dates in VCP values ([#167](https://github.com/microformats/php-mf2/issues/167))
+* Fix for accidental array access of stdClass in deeply nested structures ([#196](https://github.com/microformats/php-mf2/issues/196))
+* Reduce instances where u-url is implied according to a [spec update](http://microformats.org/wiki/index.php?title=microformats2-parsing&diff=66887&oldid=66871) ([#183](https://github.com/microformats/php-mf2/issues/183) and [parsing issue #36](https://github.com/microformats/microformats2-parsing/issues/36))
+* Fix for wrongly implied photo property ([#190](https://github.com/microformats/php-mf2/issues/190))
+
+Other Updates:
+
+* Adds a filter to avoid running tests that require a live internet connection ([#194](https://github.com/microformats/php-mf2/pull/194))
+* Refactor implied name code to match new implied name handling of photo and url ([#193](https://github.com/microformats/php-mf2/pull/193))
+* Moved this repo to the microformats GitHub organization ([#179](https://github.com/microformats/php-mf2/issues/179))
+
+
 #### v0.4.5
 
 2018-08-02
