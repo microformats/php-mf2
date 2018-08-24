@@ -1,6 +1,6 @@
 # php-mf2
 
-[![Build Status](https://travis-ci.org/indieweb/php-mf2.png?branch=master)](http://travis-ci.org/indieweb/php-mf2)
+[![Build Status](https://travis-ci.org/microformats/php-mf2.png?branch=master)](http://travis-ci.org/microformats/php-mf2)
 
 php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
 
@@ -16,7 +16,7 @@ To install using Composer, run
 composer require mf2/mf2
 ```
 
-If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/indieweb/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from, like this:
+If you can’t or don’t want to use Composer, then php-mf2 can be installed the old way by downloading [`/Mf2/Parser.php`](https://raw.githubusercontent.com/microformats/php-mf2/master/Mf2/Parser.php), adding it to your project and requiring it from files you want to call its functions from, like this:
 
 ```php
 <?php
@@ -297,7 +297,7 @@ Note that this option is still considered experimental and in development, and t
 
 ### Generating output for JSON serialization with JSON-mode
 
-Due to a quirk with the way PHP arrays work, there is an edge case ([reported](https://github.com/indieweb/php-mf2/issues/29) by Tom Morris) in which a document with no rel values, when serialised as JSON, results in an empty object as the rels value rather than an empty array. Replacing this in code with a stdClass breaks PHP iteration over the values.
+Due to a quirk with the way PHP arrays work, there is an edge case ([reported](https://github.com/microformats/php-mf2/issues/29) by Tom Morris) in which a document with no rel values, when serialised as JSON, results in an empty object as the rels value rather than an empty array. Replacing this in code with a stdClass breaks PHP iteration over the values.
 
 As of version 0.2.6, the default behaviour is back to being PHP-friendly, so if you want to produce results specifically for serialisation as JSON (for example if you run a HTML -> JSON service, or want to run tests against JSON fixtures), enable JSON mode:
 
@@ -313,7 +313,7 @@ php-mf2 has some support for parsing classic microformats markup. It’s enabled
 In previous versions of php-mf2 you could also add your own class mappings — officially this is no longer supported.
 
 * If the built in mappings don’t successfully parse some classic microformats markup then raise an issue and we’ll fix it.
-* If you want to screen-scrape websites which don’t use mf2 into mf2 data structures, consider contributing to [php-mf2-shim](https://github.com/indieweb/php-mf2-shim)
+* If you want to screen-scrape websites which don’t use mf2 into mf2 data structures, consider contributing to [php-mf2-shim](https://github.com/microformats/php-mf2-shim)
 * If you *really* need to make one-off changes to the default mappings… It is possible. But you have to figure it out for yourself ;)
 
 ## Security
@@ -374,13 +374,13 @@ Other Updates:
 
 Bugfixes:
 
-* Ensure empty `properties` is an object `{}` rather than array  `[]` ([#171](https://github.com/indieweb/php-mf2/issues/171))
-* Ensure the parser does not mutate the DOMDOcument passed in ([#174](https://github.com/indieweb/php-mf2/issues/174))
-* Fix for multiple class names in backcompat parsing ([#156](https://github.com/indieweb/php-mf2/issues/156))
+* Ensure empty `properties` is an object `{}` rather than array  `[]` ([#171](https://github.com/microformats/php-mf2/issues/171))
+* Ensure the parser does not mutate the DOMDOcument passed in ([#174](https://github.com/microformats/php-mf2/issues/174))
+* Fix for multiple class names in backcompat parsing ([#156](https://github.com/microformats/php-mf2/issues/156))
 
 Microformats Parsing Updates:
 
-* New algorithm for plaintext values ([#168](https://github.com/indieweb/php-mf2/pull/168) and [parsing issue #15](https://github.com/microformats/microformats2-parsing/issues/15))
+* New algorithm for plaintext values ([#168](https://github.com/microformats/php-mf2/pull/168) and [parsing issue #15](https://github.com/microformats/microformats2-parsing/issues/15))
 * Always resolve URLs from `u-` properties even when not from a link element ([Parsing issue #10](https://github.com/microformats/microformats2-parsing/issues/10))
 
 Other Updates:
@@ -406,15 +406,15 @@ composer require masterminds/html5
 
 Fixes:
 
-* [#165](https://github.com/indieweb/php-mf2/pull/165) - Prevents inadvertently adding whitespace to the html value
-* [#158](https://github.com/indieweb/php-mf2/issues/158) - Allows numbers in vendor prefixed names
-* [#160](https://github.com/indieweb/php-mf2/issues/160) - Ignores class names with consecutive dashes
-* [#159](https://github.com/indieweb/php-mf2/issues/159) - Remove duplicate values from type and rels arrays
-* [#162](https://github.com/indieweb/php-mf2/pull/162) - Improved rel attribute parsing
+* [#165](https://github.com/microformats/php-mf2/pull/165) - Prevents inadvertently adding whitespace to the html value
+* [#158](https://github.com/microformats/php-mf2/issues/158) - Allows numbers in vendor prefixed names
+* [#160](https://github.com/microformats/php-mf2/issues/160) - Ignores class names with consecutive dashes
+* [#159](https://github.com/microformats/php-mf2/issues/159) - Remove duplicate values from type and rels arrays
+* [#162](https://github.com/microformats/php-mf2/pull/162) - Improved rel attribute parsing
 
 Backcompat:
 
-* [#157](https://github.com/indieweb/php-mf2/issues/157) - Parse `rel=tag` as `p-category` for hEntry and hReview
+* [#157](https://github.com/microformats/php-mf2/issues/157) - Parse `rel=tag` as `p-category` for hEntry and hReview
 
 #### v0.4.1
 
@@ -422,8 +422,8 @@ Backcompat:
 
 Fixes:
 
-* [#153](https://github.com/indieweb/php-mf2/issues/153) - Fixes parsed timestamps authored with a Z timezone offset
-* [#151](https://github.com/indieweb/php-mf2/issues/151) - Adds back "value" of nested microformats when no matching property exists
+* [#153](https://github.com/microformats/php-mf2/issues/153) - Fixes parsed timestamps authored with a Z timezone offset
+* [#151](https://github.com/microformats/php-mf2/issues/151) - Adds back "value" of nested microformats when no matching property exists
 
 
 #### v0.4.0
@@ -432,20 +432,20 @@ Fixes:
 
 Breaking changes:
 
-* [#125](https://github.com/indieweb/php-mf2/pull/125) - Add `rel-urls` to parsed result. Removes `alternates` by default but still available behind a feature flag.
-* [#142](https://github.com/indieweb/php-mf2/pull/142) - Reduce instances of implied `p-name`. See Microformats issue [#6](https://github.com/microformats/microformats2-parsing/issues/6). This means it is now possible for the parsed result to *not* have a `name` property, whereas before there was always a `name` property on an object. Make sure consuming code can handle an object without a name now.
+* [#125](https://github.com/microformats/php-mf2/pull/125) - Add `rel-urls` to parsed result. Removes `alternates` by default but still available behind a feature flag.
+* [#142](https://github.com/microformats/php-mf2/pull/142) - Reduce instances of implied `p-name`. See Microformats issue [#6](https://github.com/microformats/microformats2-parsing/issues/6). This means it is now possible for the parsed result to *not* have a `name` property, whereas before there was always a `name` property on an object. Make sure consuming code can handle an object without a name now.
 
 Fixes:
 
-* [#124](https://github.com/indieweb/php-mf2/pull/124) - Fix for experimental lang parsing
-* [#127](https://github.com/indieweb/php-mf2/issues/127) - Fix for parsing `h-*` class names containing invalid characters.
-* [#131](https://github.com/indieweb/php-mf2/pull/131) - Improved `dt-` parsing. Issues [#126](https://github.com/indieweb/php-mf2/issues/126) and [#115](https://github.com/indieweb/php-mf2/issues/115).
-* [#130](https://github.com/indieweb/php-mf2/issues/130) - Fix for implied properties with empty attributes.
-* [#135](https://github.com/indieweb/php-mf2/issues/135) - Trim leading and tailing whitespace from HTML value as well as text value.
-* [#137](https://github.com/indieweb/php-mf2/issues/137) - Fix backcompat hfeed parsing.
-* [#134](https://github.com/indieweb/php-mf2/issues/134) - Fix `rel=bookmark` backcompat parsing.
-* [#116](https://github.com/indieweb/php-mf2/issues/116) - Fix backcompat parsing for `summary` property in `hreview`
-* [#149](https://github.com/indieweb/php-mf2/issues/149) - Fix for datetime parsing, no longer tries to interpret the value and passes through instead
+* [#124](https://github.com/microformats/php-mf2/pull/124) - Fix for experimental lang parsing
+* [#127](https://github.com/microformats/php-mf2/issues/127) - Fix for parsing `h-*` class names containing invalid characters.
+* [#131](https://github.com/microformats/php-mf2/pull/131) - Improved `dt-` parsing. Issues [#126](https://github.com/microformats/php-mf2/issues/126) and [#115](https://github.com/microformats/php-mf2/issues/115).
+* [#130](https://github.com/microformats/php-mf2/issues/130) - Fix for implied properties with empty attributes.
+* [#135](https://github.com/microformats/php-mf2/issues/135) - Trim leading and tailing whitespace from HTML value as well as text value.
+* [#137](https://github.com/microformats/php-mf2/issues/137) - Fix backcompat hfeed parsing.
+* [#134](https://github.com/microformats/php-mf2/issues/134) - Fix `rel=bookmark` backcompat parsing.
+* [#116](https://github.com/microformats/php-mf2/issues/116) - Fix backcompat parsing for `summary` property in `hreview`
+* [#149](https://github.com/microformats/php-mf2/issues/149) - Fix for datetime parsing, no longer tries to interpret the value and passes through instead
 
 #### v0.3.2
 
@@ -453,23 +453,23 @@ Fixes:
 
 * Fixed how the Microformats tests repo is loaded via composer
 * Moved experimental language parsing feature behind an opt-in flag
-* [#121](https://github.com/indieweb/php-mf2/pull/121) Fixed language detection to support parsing of HTML fragments
+* [#121](https://github.com/microformats/php-mf2/pull/121) Fixed language detection to support parsing of HTML fragments
 
 #### v0.3.1
 
 2017-05-24
 
-* [#89](https://github.com/indieweb/php-mf2/issues/89) - Fixed parsing empty `img alt=""` attributes
-* [#91](https://github.com/indieweb/php-mf2/issues/91) - Ignore rel values from HTML tags that don't allow rel values
-* [#57](https://github.com/indieweb/php-mf2/issues/57) - Implement hAtom rel=bookmark backcompat
-* [#94](https://github.com/indieweb/php-mf2/pull/94) - Fixed HTML output when parsing e-* properties
-* [#97](https://github.com/indieweb/php-mf2/pull/97) - Experimental language parsing
-* [#88](https://github.com/indieweb/php-mf2/issues/88) - Fix for implied photo parsing
-* [#102](https://github.com/indieweb/php-mf2/pull/102) - Ignore classes with numbers or capital letters
-* [#111](https://github.com/indieweb/php-mf2/pull/111) - Improved backcompat parsing
-* [#106](https://github.com/indieweb/php-mf2/issues/106) - Send `Accept: text/html` header when using the `fetch` method
-* [#114](https://github.com/indieweb/php-mf2/issues/114) - Parse `poster` attribute for `video` tags
-* [#118](https://github.com/indieweb/php-mf2/issues/118) - Fixes parsing elements with missing attributes
+* [#89](https://github.com/microformats/php-mf2/issues/89) - Fixed parsing empty `img alt=""` attributes
+* [#91](https://github.com/microformats/php-mf2/issues/91) - Ignore rel values from HTML tags that don't allow rel values
+* [#57](https://github.com/microformats/php-mf2/issues/57) - Implement hAtom rel=bookmark backcompat
+* [#94](https://github.com/microformats/php-mf2/pull/94) - Fixed HTML output when parsing e-* properties
+* [#97](https://github.com/microformats/php-mf2/pull/97) - Experimental language parsing
+* [#88](https://github.com/microformats/php-mf2/issues/88) - Fix for implied photo parsing
+* [#102](https://github.com/microformats/php-mf2/pull/102) - Ignore classes with numbers or capital letters
+* [#111](https://github.com/microformats/php-mf2/pull/111) - Improved backcompat parsing
+* [#106](https://github.com/microformats/php-mf2/issues/106) - Send `Accept: text/html` header when using the `fetch` method
+* [#114](https://github.com/microformats/php-mf2/issues/114) - Parse `poster` attribute for `video` tags
+* [#118](https://github.com/microformats/php-mf2/issues/118) - Fixes parsing elements with missing attributes
 * Tests now use [microformats/tests](https://github.com/microformats/tests) repo
 
 Many thanks to @gRegorLove for the major overhaul of the backcompat parsing!
@@ -490,8 +490,8 @@ Many thanks to @aaronpk, @diplix, @dissolve, @dymcx @gRegorLove, @jeena, @vegans
 
 2015-07-12
 
-* Merges pull requests [#65](https://github.com/indieweb/php-mf2/pull/65), [#66](https://github.com/indieweb/php-mf2/pull/66) and [#67](https://github.com/indieweb/php-mf2/pull/67).
-* Fixes issue [#64](https://github.com/indieweb/php-mf2/issues/64).
+* Merges pull requests [#65](https://github.com/microformats/php-mf2/pull/65), [#66](https://github.com/microformats/php-mf2/pull/66) and [#67](https://github.com/microformats/php-mf2/pull/67).
+* Fixes issue [#64](https://github.com/microformats/php-mf2/issues/64).
 
 Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and @kevinmarks for PR management and @tantek for issue reporting!
 
@@ -503,7 +503,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 2015-04-29
 
-* Merged [#58](https://github.com/indieweb/php-mf2/pull/58), fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
+* Merged [#58](https://github.com/microformats/php-mf2/pull/58), fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
 
 #### v0.2.9
 
@@ -577,7 +577,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 #### v0.1.23
 
 * Made some changes to the way back-compatibility with classic microformats are handled, ignoring classic property classnames inside mf2 roots and outside classic roots
-* Deprecated ability to add new classmaps, removed twitter classmap. Use [php-mf2-shim](http://github.com/indieweb/php-mf2-shim) instead, it’s better
+* Deprecated ability to add new classmaps, removed twitter classmap. Use [php-mf2-shim](http://github.com/microformats/php-mf2-shim) instead, it’s better
 
 #### v0.1.22
 
