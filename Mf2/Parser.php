@@ -463,19 +463,21 @@ class Parser {
 		}
 	}
 
-		/**
-		 * The following two methods implements plain text parsing.
-		 * @see https://wiki.zegnat.net/media/textparsing.html
-		 **/
-	public function textContent(DOMElement $element)
+	/**
+	 * The following two methods implements plain text parsing.
+	 * @param DOMElement $element
+	 * @param bool $implied
+	 * @see https://wiki.zegnat.net/media/textparsing.html
+	 **/
+	public function textContent(DOMElement $element, $implied=false)
 	{
 				return preg_replace(
 						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
 						'',
-						$this->elementToString($element)
+						$this->elementToString($element, $implied)
 				);
 	}
-	private function elementToString(DOMElement $input)
+	private function elementToString(DOMElement $input, $implied=false)
 	{
 			$output = '';
 			foreach ($input->childNodes as $child) {
@@ -488,7 +490,7 @@ class Parser {
 							} else if ($tagName === 'IMG') {
 									if ($child->hasAttribute('alt')) {
 											$output .= ' ' . trim($child->getAttribute('alt'), "\t\n\f\r ") . ' ';
-									} else if ($child->hasAttribute('src')) {
+									} else if (!$implied && $child->hasAttribute('src')) {
 											$output .= ' ' . $this->resolveUrl(trim($child->getAttribute('src'), "\t\n\f\r ")) . ' ';
 									}
 							} else if ($tagName === 'BR') {
