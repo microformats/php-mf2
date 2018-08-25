@@ -275,33 +275,49 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('http://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
 	}
 
-  public function testValueFromLinkTag() {
-    $input = <<< END
+	public function testValueFromLinkTag() {
+		$input = <<< END
 <!doctype html>
 <html class="h-entry">
-  <head>
-    <link rel="canonical" class="u-url p-name" href="https://example.com/" title="Example.com homepage">
-  </head>
-  <body></body>
+	<head>
+		<link rel="canonical" class="u-url p-name" href="https://example.com/" title="Example.com homepage">
+	</head>
+	<body></body>
 </html>
 END;
 
-    $parser = new Parser($input, 'https://example.com');
-    $output = $parser->parse();
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 
-    $this->assertArrayHasKey('name', $output['items'][0]['properties']);
-    $this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);
-  }
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+		$this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);
+	}
 
-  public function testResolveFromDataElement() {
-    $parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
-    $output = $parser->parse();
+	public function testResolveFromDataElement() {
+		$parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
+		$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('https://example.com/relative.html', $output['items'][0]['properties']['url'][0]);
-  }
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('https://example.com/relative.html', $output['items'][0]['properties']['url'][0]);
+	}
 
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/182
+	 */
+	public function testResolveFromIframeElement() {
+		$input = '<div class="h-entry">
+<h1 class="p-name">Title</h1>
+<iframe src="https://example.com/index.html" class="u-url">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+</div>';
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+		$this->assertEquals('https://example.com/index.html', $output['items'][0]['properties']['url'][0]);
+	}
 }
