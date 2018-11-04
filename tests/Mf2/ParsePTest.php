@@ -140,4 +140,23 @@ EOT;
 		$this->assertEquals('mention.tech', $result['items'][0]['properties']['name'][0]);
 	}
 
+	public function testPropertyParsesFromPropertyAttribute() {
+		$input = '<div class="h-entry"><p property="p-name">Name</div>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('Name', $result['items'][0]['properties']['name'][0]);
+	}
+
+	public function testPropertyUsesClassWhenPropertyHasNonMfValues() {
+		$input = '<div class="h-entry"><p property="foo" class="p-foo">Foo</div>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('Foo', $result['items'][0]['properties']['foo'][0]);
+	}
+
+	public function testPropertyUsesPropertyWhenBothPresent() {
+		$input = '<div class="h-entry"><p property="p-foo" class="p-bar">Foo</div>';
+		$result = Mf2\parse($input);
+		$this->assertEquals('Foo', $result['items'][0]['properties']['foo'][0]);
+		$this->assertArrayNotHasKey('bar', $result['items'][0]['properties']);
+	}
 }
+

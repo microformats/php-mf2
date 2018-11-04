@@ -183,16 +183,26 @@ function nestedMfPropertyNamesFromClass($class) {
  * @return mixed See return value of mf2\Parser::mfNameFromClass()
  */
 function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
-	$class = $e->getAttribute('class');
-	return mfNamesFromClass($class, $prefix);
+	$class = $e->getAttribute('property');
+	$names = mfNamesFromClass($class, $prefix);
+	if(!$names) {
+		$class = $e->getAttribute('class');
+		$names = mfNamesFromClass($class, $prefix);
+	}
+	return $names;
 }
 
 /**
  * Wraps nestedMfPropertyNamesFromClass to handle an element as input
  */
 function nestedMfPropertyNamesFromElement(\DOMElement $e) {
-	$class = $e->getAttribute('class');
-	return nestedMfPropertyNamesFromClass($class);
+	$class = $e->getAttribute('property');
+	$names = nestedMfPropertyNamesFromClass($class);
+	if(!$names) {
+		$class = $e->getAttribute('class');
+		$names = nestedMfPropertyNamesFromClass($class);
+	}
+	return $names;
 }
 
 /**
