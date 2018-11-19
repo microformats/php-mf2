@@ -1142,7 +1142,7 @@ class Parser {
 			'properties' => $return
 		);
 		
-		if($e->getAttribute("id")) {
+		if($e->getAttribute('id') !== '') {
 			$parsed['id'] = $e->getAttribute("id");
 		}
 
