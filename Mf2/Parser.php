@@ -1142,8 +1142,8 @@ class Parser {
 			'properties' => $return
 		);
 		
-		if($e->getAttribute('id') !== '') {
-			$parsed['id'] = $e->getAttribute("id");
+		if(trim($e->getAttribute('id')) !== '') {
+			$parsed['id'] = trim($e->getAttribute("id"));
 		}
 
 		if($this->lang) {
