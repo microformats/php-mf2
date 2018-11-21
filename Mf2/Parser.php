@@ -1090,7 +1090,7 @@ class Parser {
 		}
 
 		// Check for u-photo
-		if (!array_key_exists('photo', $return) && !$is_backcompat) {
+		if (!array_key_exists('photo', $return) && !in_array('u-', $prefixes) && !$is_backcompat) {
 
 			$photo = $this->parseImpliedPhoto($e);
 
