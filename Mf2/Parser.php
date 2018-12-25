@@ -1141,6 +1141,10 @@ class Parser {
 			'type' => $mfTypes,
 			'properties' => $return
 		);
+		
+		if(trim($e->getAttribute('id')) !== '') {
+			$parsed['id'] = trim($e->getAttribute("id"));
+		}
 
 		if($this->lang) {
 			// Language
