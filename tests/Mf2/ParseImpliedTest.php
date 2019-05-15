@@ -379,12 +379,23 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/198
 	 */
-	public function testNoImipliedPhoto() {
+	public function testNoImpliedPhotoWhenExplicitUProperty() {
 		$input = '<div class="h-card"> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div>';
 		$result = Mf2\parse($input);
 
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/198
+	 */
+	public function testNoImpliedPhotoWhenNestedMicroformat() {
+		$input = '<div class="h-entry"> <img src="/photo.jpg" alt=""> <div class="p-author h-card"> <span class="p-name">Alice</span> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div> </div>';
+		$result = Mf2\parse($input);
+
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
+		$this->assertArrayHasKey('author', $result['items'][0]['properties']);
+		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']['author'][0]['properties']);
+	}
 }
 
