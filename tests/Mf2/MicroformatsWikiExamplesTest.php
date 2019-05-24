@@ -7,7 +7,7 @@
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Microformats Wiki Examples
@@ -19,9 +19,9 @@ use PHPUnit_Framework_TestCase;
  *
  * @author Barnaby Walters waterpigs.co.uk <barnaby@waterpigs.co.uk>
  */
-class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
+class MicroformatsWikiExamplesTest extends TestCase {
 
-	public function setUp() {
+	protected function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
 

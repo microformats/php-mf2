@@ -22,7 +22,6 @@
 namespace Mf2\Parser\TestSuite;
 
 use Mf2\Parser;
-use Mf2;
 
 error_reporting(E_ALL);
 require dirname(__DIR__) . '/../vendor/autoload.php';

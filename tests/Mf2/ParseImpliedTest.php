@@ -7,13 +7,13 @@ namespace Mf2\Parser\Test;
 
 use Mf2;
 use Mf2\Parser;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @todo some of these can be made into single tests with dataProviders
  */
-class ParseImpliedTest extends PHPUnit_Framework_TestCase {
-	public function setUp() {
+class ParseImpliedTest extends TestCase {
+	protected function setUp() {
 		date_default_timezone_set('Europe/London');
 	}
 

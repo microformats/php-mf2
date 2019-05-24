@@ -2,7 +2,9 @@
 
 namespace Mf2\Parser\Test;
 
-class PlainTextTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class PlainTextTest extends TestCase {
     /**
      * @dataProvider aaronpkExpectations
      */
