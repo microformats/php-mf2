@@ -172,7 +172,12 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	"items": [{
 	"type": ["h-card"],
 	"properties": {
-	  "photo": ["https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"],
+	  "photo": [
+	     {  
+		"value": "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg",
+		"alt": "photo of Mitchell"
+	     }
+	  ],
 	  "name": ["Mitchell Baker"],
 	  "url": [
 		"http://blog.lizardwrangler.com/",

@@ -509,6 +509,22 @@ class Parser {
 	 * This method parses the language of an element
 	 * @param DOMElement $el
 	 * @access public
+	 * @return string|array
+	 */
+	public function image(DOMElement $el)
+	{
+		if ($el->hasAttribute('alt') and ! empty($el->getAttribute('alt')) ) {
+			return [
+				'value' => $this->resolveUrl( $el->getAttribute('src') ),
+				'alt' => $el->getAttribute('alt')
+			];
+		}
+		return $el->getAttribute('src');
+	}
+	/**
+	 * This method parses the language of an element
+	 * @param DOMElement $el
+	 * @access public
 	 * @return string
 	 */
 	public function language(DOMElement $el)
@@ -634,7 +650,9 @@ class Parser {
 	public function parseU(\DOMElement $u) {
 		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
-		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->hasAttribute('src')) {
+		} elseif ( $u->tagName == 'img' and $u->hasAttribute('src') ) {
+			$uValue = $this->image($u);
+		} elseif (in_array($u->tagName, array('audio', 'video', 'source')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
 			$uValue = $u->getAttribute('poster');
@@ -649,7 +667,8 @@ class Parser {
 		} else {
 			$uValue = $this->textContent($u);
 		}
-				return $this->resolveUrl($uValue);
+
+		return $this->resolveUrl($uValue);
 	}
 
 	/**
@@ -1196,7 +1215,8 @@ class Parser {
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
 				if ($el->tagName == 'img') {
-					return $this->resolveUrl($el->getAttribute('src'));
+					$return = $this->image($el);
+					return is_string( $return ) ? $this->resolveUrl($return) : $return;
 				} else if ($el->tagName == 'object') {
 					return $this->resolveUrl($el->getAttribute('data'));
 				}
@@ -1427,6 +1447,7 @@ class Parser {
 								$parsed_property = $this->parseDT($node);
 								$prefixSpecificResult['value'] = ($parsed_property) ? $parsed_property : '';
 							}
+							$prefixSpecificResult['value'] = is_array($prefixSpecificResult['value']) ? $prefixSpecificResult['value']['value'] : $prefixSpecificResult['value'];
 
 							$mfs['properties'][$property][] = $prefixSpecificResult;
 						}
