@@ -81,6 +81,18 @@ class ParseUTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @group parseU
 	 */
+	public function testParseUHandlesImgwithoutAlt() {
+		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png"></div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals( 'http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+	}
+
+	/**
+	 * @group parseU
+	 */
 	public function testParseUHandlesArea() {
 		$input = '<div class="h-card"><area class="u-photo" href="http://example.com/someimage.png"></area></div>';
 		$parser = new Parser($input);

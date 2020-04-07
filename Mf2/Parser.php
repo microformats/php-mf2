@@ -506,14 +506,14 @@ class Parser {
 	}
 
 	/**
-	 * This method parses the language of an element
+	 * Given an img property, parse its value and/or alt text
 	 * @param DOMElement $el
 	 * @access public
 	 * @return string|array
 	 */
-	public function image(DOMElement $el)
+	public function parseImg(DOMElement $el)
 	{
-		if ($el->hasAttribute('alt') and ! empty($el->getAttribute('alt')) ) {
+		if ($el->hasAttribute('alt')) {
 			return [
 				'value' => $this->resolveUrl( $el->getAttribute('src') ),
 				'alt' => $el->getAttribute('alt')
@@ -552,6 +552,10 @@ class Parser {
 
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
+		// If not a string then return.
+		if (!is_string($url)){
+			return $url;
+		}
 		// If the URL is seriously malformed it’s probably beyond the scope of this
 		// parser to try to do anything with it.
 		if (parse_url($url) === false) {
@@ -651,7 +655,7 @@ class Parser {
 		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
 		} elseif ( $u->tagName == 'img' and $u->hasAttribute('src') ) {
-			$uValue = $this->image($u);
+			$uValue = $this->parseImg($u);
 		} elseif (in_array($u->tagName, array('audio', 'video', 'source')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
@@ -1215,8 +1219,8 @@ class Parser {
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
 				if ($el->tagName == 'img') {
-					$return = $this->image($el);
-					return is_string( $return ) ? $this->resolveUrl($return) : $return;
+					$return = $this->parseImg($el);
+					return $this->resolveUrl($return);
 				} else if ($el->tagName == 'object') {
 					return $this->resolveUrl($el->getAttribute('data'));
 				}

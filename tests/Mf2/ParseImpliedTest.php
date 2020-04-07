@@ -69,7 +69,11 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$return = [
+			'value' => 'http://example.com/img.png',
+			'alt'=> ''
+			];
+		$this->assertEquals( $return, $output['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc() {
@@ -78,7 +82,11 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$result = [
+			'alt' => '',
+			'value' => 'http://example.com/img.png'
+			];
+		$this->assertEquals($result, $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/*
