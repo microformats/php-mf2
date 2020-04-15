@@ -28,7 +28,7 @@ if (!empty($argv[1])) {
 	$url = null;
 }
 
-$result = Mf2\parse(fgets(STDIN), $url);
+$result = Mf2\parse(file_get_contents("php://stdin"), $url);
 
 if (defined('JSON_PRETTY_PRINT')) {
 	echo json_encode($result, JSON_PRETTY_PRINT);
