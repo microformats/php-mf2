@@ -872,14 +872,15 @@ class Parser {
 		// This way we can DOMDocument::saveHTML on the entire collection at once.
 		// Running DOMDocument::saveHTML per node may add whitespace that isn't in source.
 		// See https://stackoverflow.com/q/38317903
-		$innerNodes = $e->ownerDocument->createDocumentFragment();
-		while ($e->hasChildNodes()) {
-			$innerNodes->appendChild($e->firstChild);
-		}
-		$html = $e->ownerDocument->saveHtml($innerNodes);
-		// Put the nodes back in place.
-		if($innerNodes->hasChildNodes()) {
-			$e->appendChild($innerNodes);
+		if ($innerNodes = $e->ownerDocument->createDocumentFragment()) {
+			while ($e->hasChildNodes()) {
+				$innerNodes->appendChild($e->firstChild);
+			}
+			$html = $e->ownerDocument->saveHtml($innerNodes);
+			// Put the nodes back in place.
+			if ($innerNodes->hasChildNodes()) {
+				$e->appendChild($innerNodes);
+			}
 		}
 
 		$return = array(
