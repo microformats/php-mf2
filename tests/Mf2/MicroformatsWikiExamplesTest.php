@@ -110,7 +110,10 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
   "type": ["h-card"],
   "properties": {
 	"name": ["Chris Messina"],
-	"photo": ["http://example.org/pic.jpg"]
+	"photo": [{
+		"value": "http://example.org/pic.jpg",
+		"alt": "Chris Messina"
+	}]
   }
 }]}';
 		$parser = new Parser($input, '', true);
