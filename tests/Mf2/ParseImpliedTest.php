@@ -54,13 +54,33 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesImpliedUPhotoFromImgSrc() {
-		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
+	public function testParsesImpliedUPhotoFromImgSrcWithoutAlt() {
+		$input = '<img class="h-card" src="http://example.com/img.png" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+	}
+
+	public function testParsesImpliedUPhotoFromImgSrcWithEmptyAlt() {
+		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('', $output['items'][0]['properties']['photo'][0]['alt']);
+	}
+
+	public function testParsesImpliedUPhotoFromImgSrcWithAlt() {
+		$input = '<img class="h-card" src="http://example.com/img.png" alt="Example" />';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
 	}
 
 	public function testParsesImpliedUPhotoFromNestedImgSrc() {
