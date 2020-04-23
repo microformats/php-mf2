@@ -1194,7 +1194,7 @@ class Parser {
 
 		// img.h-x[src]
 		if ($e->tagName == 'img') {
-			return $this->resolveUrl($e->getAttribute('src'));
+			return $this->resolveUrl($this->parseImg($e));
 		}
 
 		// object.h-x[data]
