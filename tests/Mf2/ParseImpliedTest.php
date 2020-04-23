@@ -177,7 +177,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		"type": ["h-card"],
 		"properties": {
 			"name": ["Sally Ride"],
-			"photo": ["http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg"]
+			"photo": [{
+				"value": "http://upload.wikimedia.org/wikipedia/commons/a/a4/Ride-s.jpg",
+				"alt": "Sally Ride"
+			}]
 		}
 	},
 	{
