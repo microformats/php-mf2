@@ -136,7 +136,10 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
   "properties": {
 	"name": ["Rohit Khare"],
 	"url": ["http://rohit.khare.org/"],
-	"photo": ["https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg"]
+	"photo": [{
+		"value": "https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg",
+		"alt": "Rohit Khare"
+	}]
   }
 }]}';
 		$parser = new Parser($input, '', true);

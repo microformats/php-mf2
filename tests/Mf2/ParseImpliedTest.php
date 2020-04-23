@@ -185,7 +185,10 @@ class ParseImpliedTest extends PHPUnit_Framework_TestCase {
 		"properties": {
 			"name": ["Tantek Çelik"],
 			"url": ["http://tantek.com"],
-			"photo": ["http://ttk.me/logo.jpg"]
+			"photo": [{
+				"value": "http://ttk.me/logo.jpg",
+				"alt": "Tantek Çelik"
+			}]
 		}
 	}]
 }';
