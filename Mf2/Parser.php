@@ -506,6 +506,22 @@ class Parser {
 	}
 
 	/**
+	 * Given an img property, parse its value and/or alt text
+	 * @param DOMElement $el
+	 * @access public
+	 * @return string|array
+	 */
+	public function parseImg(DOMElement $el)
+	{
+		if ($el->hasAttribute('alt')) {
+			return [
+				'value' => $this->resolveUrl( $el->getAttribute('src') ),
+				'alt' => $el->getAttribute('alt')
+			];
+		}
+		return $el->getAttribute('src');
+	}
+	/**
 	 * This method parses the language of an element
 	 * @param DOMElement $el
 	 * @access public
@@ -536,6 +552,10 @@ class Parser {
 
 	// TODO: figure out if this has problems with sms: and geo: URLs
 	public function resolveUrl($url) {
+		// If not a string then return.
+		if (!is_string($url)){
+			return $url;
+		}
 		// If the URL is seriously malformed it’s probably beyond the scope of this
 		// parser to try to do anything with it.
 		if (parse_url($url) === false) {
@@ -634,7 +654,9 @@ class Parser {
 	public function parseU(\DOMElement $u) {
 		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
-		} elseif (in_array($u->tagName, array('img', 'audio', 'video', 'source')) and $u->hasAttribute('src')) {
+		} elseif ( $u->tagName == 'img' and $u->hasAttribute('src') ) {
+			$uValue = $this->parseImg($u);
+		} elseif (in_array($u->tagName, array('audio', 'video', 'source')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
 			$uValue = $u->getAttribute('poster');
@@ -649,7 +671,8 @@ class Parser {
 		} else {
 			$uValue = $this->textContent($u);
 		}
-				return $this->resolveUrl($uValue);
+
+		return $this->resolveUrl($uValue);
 	}
 
 	/**
@@ -1172,7 +1195,7 @@ class Parser {
 
 		// img.h-x[src]
 		if ($e->tagName == 'img') {
-			return $this->resolveUrl($e->getAttribute('src'));
+			return $this->resolveUrl($this->parseImg($e));
 		}
 
 		// object.h-x[data]
@@ -1197,7 +1220,8 @@ class Parser {
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
 				if ($el->tagName == 'img') {
-					return $this->resolveUrl($el->getAttribute('src'));
+					$return = $this->parseImg($el);
+					return $this->resolveUrl($return);
 				} else if ($el->tagName == 'object') {
 					return $this->resolveUrl($el->getAttribute('data'));
 				}
@@ -1428,6 +1452,7 @@ class Parser {
 								$parsed_property = $this->parseDT($node);
 								$prefixSpecificResult['value'] = ($parsed_property) ? $parsed_property : '';
 							}
+							$prefixSpecificResult['value'] = is_array($prefixSpecificResult['value']) ? $prefixSpecificResult['value']['value'] : $prefixSpecificResult['value'];
 
 							$mfs['properties'][$property][] = $prefixSpecificResult;
 						}

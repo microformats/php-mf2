@@ -173,7 +173,11 @@ class ParserTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('<name>', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('<url>', $output['items'][0]['properties']['url'][0]);
-		$this->assertEquals('<img>', $output['items'][0]['properties']['photo'][0]);
+		$result = [
+			'value' => '<img>',
+			'alt' => ''
+			];
+		$this->assertEquals($result, $output['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testParsesRelValues() {
