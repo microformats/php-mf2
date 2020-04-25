@@ -25,7 +25,8 @@
 	"install-codestandards": [
 		"Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
 	],
-	"phpcs": "./vendor/bin/phpcs -p"
+	"phpcs": "./vendor/bin/phpcs -p",
+	"phpunit": "./vendor/bin/phpunit"
    },
     "autoload": {
         "files": ["Mf2/Parser.php"]
