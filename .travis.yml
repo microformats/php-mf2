@@ -17,4 +17,4 @@ matrix:
     - php: nightly
 install:
   - $COMPOSER_REQUIRE
-before_script: composer update
+before_script: composer install
