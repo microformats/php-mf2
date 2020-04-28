@@ -15,7 +15,6 @@
     },
     "config": {
        "platform": {
-         "php": "5.6.1"
        }
     },
     "require-dev": {
