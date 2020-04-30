@@ -340,11 +340,11 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 3. Install the dev dependencies with `composer install`.
 4. Run PHPUnit with `composer phpunit`
 5. Check PHP Compatibility with the current minimum version supported (`composer phpcs`)
-6. Make your changes
-7. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
+6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
+7. Make your changes
 8. Make sure your tests pass (`composer phpunit`)
 9. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
-9. Bask in the warm feeling of having contributed to a piece of free software
+10. Bask in the warm feeling of having contributed to a piece of free software
 
 ### Testing
 
