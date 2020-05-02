@@ -992,5 +992,18 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertContains('h-entry name', $result['items'][0]['properties']['name']);
 	}
 
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/195
+	 */
+	public function testVcardGeoNoImpliedName() {
+		$input = '<div class="vcard">
+	<div class="fn">John Doe</div>
+	<div>Location: <abbr class="geo" title="30.267991;-97.739568">Brighton</abbr></div>
+</div>';
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']['geo'][0]['properties']);
+	}
 }
 

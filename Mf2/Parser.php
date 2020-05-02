@@ -1071,7 +1071,9 @@ class Parser {
 
 		// Do we need to imply a name property?
 		// if no explicit "name" property, and no other p-* or e-* properties, and no nested microformats,
-		if (!array_key_exists('name', $return) && !in_array('p-', $prefixes) && !in_array('e-', $prefixes) && !$has_nested_mf && !$is_backcompat) {
+		if (!array_key_exists('name', $return) && !in_array('p-', $prefixes)
+			&& !in_array('e-', $prefixes) && !$has_nested_mf
+			&& !$is_backcompat && empty($this->upgraded[$e])) {
 			$name = false;
 			// img.h-x[alt] or area.h-x[alt]
 			if (($e->tagName === 'img' || $e->tagName === 'area') && $e->hasAttribute('alt')) {
@@ -1410,7 +1412,7 @@ class Parser {
 			$recurse = $this->parse_recursive($node, $depth + 1);
 
 			// set bool flag for nested mf
-			$has_nested_mf = ($recurse);
+			$has_nested_mf = (bool) $recurse;
 
 			// parse for root mf
 			$result = $this->parseH($node, $is_backcompat, $has_nested_mf);
@@ -1827,7 +1829,8 @@ class Parser {
 				'replace' => 'p-label'
 			),
 			'geo' => array(
-				'replace' => 'p-geo h-geo'
+				'replace' => 'p-geo h-geo',
+				'context' => 'geo'
 			),
 			'latitude' => array(
 				'replace' => 'p-latitude'
