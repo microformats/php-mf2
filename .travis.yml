@@ -16,5 +16,5 @@ matrix:
   allow_failures:
     - php: nightly
 install:
+  - composer update
   - $COMPOSER_REQUIRE
-before_script: composer install
