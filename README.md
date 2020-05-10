@@ -337,13 +337,14 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 
 1. Fork the repo to your github account
 2. Clone a copy to your computer (simply installing php-mf2 using composer only works for using it, not developing it)
-3. Install the dev dependencies with `./composer.phar install`
-4. Run PHPUnit with `./vendor/bin/phpunit`
-5. Make your changes
+3. Install the dev dependencies with `composer install`.
+4. Run PHPUnit with `composer phpunit`
+5. Check PHP Compatibility with the current minimum version supported (`composer phpcs`)
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
-7. Make sure your tests pass (`./vendor/bin/phpunit`), using 5.4+
-8. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
-9. Bask in the warm feeling of having contributed to a piece of free software
+7. Make your changes
+8. Make sure your tests pass (`composer phpunit`)
+9. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
+10. Bask in the warm feeling of having contributed to a piece of free software
 
 ### Testing
 
