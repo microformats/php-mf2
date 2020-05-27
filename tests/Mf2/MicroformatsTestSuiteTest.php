@@ -10,44 +10,29 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
     public function testFromTestSuite($input, $expectedOutput)
     {
         $parser = new \Mf2\Parser($input);
-        $this->compareJson(
-            json_decode($expectedOutput, true),
-            $parser->parse()
+        $this->assertEquals(
+            $this->makeComparible(json_decode($expectedOutput, true)),
+            $this->makeComparible(json_decode(json_encode($parser->parse()), true))
         );
     }
 
     /**
-     * Objects within JSON are unordered.
-     * Check if all keys from the correct one are present (in any order) in our output.
-     * Then recursively check the contents of those properties.
+     * To make arrays coming from JSON more easily comparible by PHPUnit:
+     * * We sort arrays by key, normalising them, because JSON objects are unordered.
+     * * We json_encode strings, and cut the starting and ending ", so PHPUnit better
+     *   shows whitespace characters like tabs and newlines.
      **/
-    public function compareJson($correct, $test)
+    public function makeComparible($array)
     {
-        if (gettype($correct) === 'array'  && $this->isAssoc($correct)) {
-            foreach ($correct as $key => $value) {
-                $this->assertArrayHasKey($key, $test);
-                $this->compareJson($value, $test[$key]);
+        ksort($array);
+        foreach ($array as $key => $value) {
+            if (gettype($value) === 'array') {
+                $array[$key] = $this->makeComparible($value);
+            } else if (gettype($value) === 'string') {
+                $array[$key] = substr(json_encode($value), 1, -1);
             }
-            foreach (array_diff(array_keys($test), array_keys($correct)) as $fault) {
-                // This will always fail, but we want to know in which tests this happens!
-                $this->assertArrayHasKey(
-                    $fault,
-                    $correct,
-                    'The parser output included an extra property compared.'
-                );
-            }
-        } else {
-            $this->assertEquals($correct, $test);
         }
-    }
-
-    /**
-     * Check if the encountered array is an associative array (has string keys).
-     * @see https://stackoverflow.com/a/173479
-     **/
-    public function isAssoc($array)
-    {
-        return array() !== $array && array_keys($array) !== range(0, count($array) - 1);
+        return $array;
     }
 
     /**
