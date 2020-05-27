@@ -68,8 +68,12 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      * @dataProvider mf2TestsProvider
      * @group microformats/tests/mf2
      */
-    public function testMf2FromTestSuite($input, $expectedOutput)
+    public function testMf2FromTestSuite($input, $expectedOutput, $test)
     {
+        if ($test === 'h-event/time') {
+            $this->markTestIncomplete('This test does not match because we implement a proposed spec: https://github.com/microformats/microformats2-parsing/issues/4#issuecomment-373457720.');
+        }
+
         $parser = new TestSuiteParser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
@@ -135,7 +139,8 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
             if (is_file($dir . '/' . $result)) {
                 $tests[$testname] = array(
                     'input' => file_get_contents($dir . '/' . $test),
-                    'expectedOutput' => file_get_contents($dir . '/' . $result)
+                    'expectedOutput' => file_get_contents($dir . '/' . $result),
+                    'name' => $testname
                 );
             }
         }
