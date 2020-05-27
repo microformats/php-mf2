@@ -2,7 +2,7 @@
 
 namespace Mf2\Parser\Test;
 
-final class Parser extends \Mf2\Parser
+final class TestSuiteParser extends \Mf2\Parser
 {
     /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
     public function textContent(\DOMElement $el, $dummy=false) {
@@ -50,7 +50,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMf1FromTestSuite($input, $expectedOutput)
     {
-        $parser = new Parser($input, 'http://example.com/');
+        $parser = new TestSuiteParser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
@@ -63,7 +63,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMf2FromTestSuite($input, $expectedOutput)
     {
-        $parser = new Parser($input, 'http://example.com/');
+        $parser = new TestSuiteParser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
@@ -76,7 +76,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMixedFromTestSuite($input, $expectedOutput)
     {
-        $parser = new Parser($input, 'http://example.com/');
+        $parser = new TestSuiteParser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
