@@ -2,6 +2,46 @@
 
 namespace Mf2\Parser\Test;
 
+final class Parser extends \Mf2\Parser
+{
+    /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
+    public function textContent(\DOMElement $el, $dummy=false) {
+        $excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
+
+        if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
+            return '';
+        }
+
+        $this->_resolveChildUrls($el);
+
+        $clonedEl = $el->cloneNode(true);
+
+        foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
+            $newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
+            $imgEl->parentNode->replaceChild($newNode, $imgEl);
+        }
+
+        foreach ($excludeTags as $tagName) {
+            foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
+                $elToRemove->parentNode->removeChild($elToRemove);
+            }
+        }
+
+        return \Mf2\unicodeTrim($clonedEl->textContent);
+    }
+
+    // Hack. Old textContent requires "resolveChildUrls", but that method is private.
+    private $__resolveChildUrls = null;
+    private function _resolveChildUrls(\DOMElement $element) {
+        if (null === $this->__resolveChildUrls) {
+            $reflectUpon = new \ReflectionClass($this);
+            $this->__resolveChildUrls = $reflectUpon->getMethod('resolveChildUrls');
+            $this->__resolveChildUrls->setAccessible(true);
+        }
+        return $this->__resolveChildUrls->invoke($this, $element);
+    }
+}
+
 class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -10,7 +50,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMf1FromTestSuite($input, $expectedOutput)
     {
-        $parser = new \Mf2\Parser($input, 'http://example.com/');
+        $parser = new Parser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
@@ -23,7 +63,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMf2FromTestSuite($input, $expectedOutput)
     {
-        $parser = new \Mf2\Parser($input, 'http://example.com/');
+        $parser = new Parser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
@@ -36,7 +76,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMixedFromTestSuite($input, $expectedOutput)
     {
-        $parser = new \Mf2\Parser($input, 'http://example.com/');
+        $parser = new Parser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
@@ -48,9 +88,6 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      * * We sort arrays by key, normalising them, because JSON objects are unordered.
      * * We json_encode strings, and cut the starting and ending ", so PHPUnit better
      *   shows whitespace characters like tabs and newlines.
-     * * We replace all consecutive whitespace with single space characters in e-* value
-     *   properties, to avoid failing tests only because difference in the handing of
-     *   extracting textContent.
      **/
     public function makeComparible($array)
     {
@@ -59,9 +96,6 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
             if (gettype($value) === 'array') {
                 $array[$key] = $this->makeComparible($value);
             } else if (gettype($value) === 'string') {
-                if ($key === 'value' && array_key_exists('html', $array)) {
-                    $value = preg_replace('/\s+/', ' ', $value);
-                }
                 $array[$key] = substr(json_encode($value), 1, -1);
             }
         }
