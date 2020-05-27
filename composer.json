@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "4.8.*",
-        "mf2/tests": "@dev",
+        "mf2/tests": "dev-master#bd958c959be7e55608fc7b37fc322dace676a860",
 	"squizlabs/php_codesniffer": "^2.6 || ^3.1.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
 	"phpcompatibility/php-compatibility": "^9.3"
