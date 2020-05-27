@@ -48,6 +48,9 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      * * We sort arrays by key, normalising them, because JSON objects are unordered.
      * * We json_encode strings, and cut the starting and ending ", so PHPUnit better
      *   shows whitespace characters like tabs and newlines.
+     * * We replace all consecutive whitespace with single space characters in e-* value
+     *   properties, to avoid failing tests only because difference in the handing of
+     *   extracting textContent.
      **/
     public function makeComparible($array)
     {
@@ -56,6 +59,9 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
             if (gettype($value) === 'array') {
                 $array[$key] = $this->makeComparible($value);
             } else if (gettype($value) === 'string') {
+                if ($key === 'value' && array_key_exists('html', $array)) {
+                    $value = preg_replace('/\s+/', ' ', $value);
+                }
                 $array[$key] = substr(json_encode($value), 1, -1);
             }
         }
