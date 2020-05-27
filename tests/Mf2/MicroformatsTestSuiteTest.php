@@ -17,7 +17,14 @@ final class TestSuiteParser extends \Mf2\Parser
         $clonedEl = $el->cloneNode(true);
 
         foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
-            $newNode = $this->doc->createTextNode($imgEl->getAttribute($imgEl->hasAttribute('alt') ? 'alt' : 'src'));
+            if ($imgEl->hasAttribute('alt')) {
+                $replacement = $imgEl->getAttribute('alt');
+            } else if ($imgEl->hasAttribute('src')) {
+                $replacement = ' ' . $imgEl->getAttribute('src') . ' ';
+            } else {
+                $replacement = ''; // Bye bye IMG element.
+            }
+            $newNode = $this->doc->createTextNode($replacement);
             $imgEl->parentNode->replaceChild($newNode, $imgEl);
         }
 
