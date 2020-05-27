@@ -9,7 +9,6 @@
 		<exclude>
 			<group>microformats/tests/mf1</group>
 			<group>microformats/tests/mf2</group>
-			<group>microformats/tests/mixed</group>
 		</exclude>
 	</groups>
 </phpunit>
