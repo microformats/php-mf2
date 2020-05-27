@@ -53,10 +53,11 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
         $tests = array();
         foreach ($finder as $key => $value) {
             $dir = realpath(pathinfo($key, PATHINFO_DIRNAME));
+            $testname = substr($dir, strpos($dir, '/mf2/tests/tests/') + 17) . '/' . pathinfo($key, PATHINFO_FILENAME);
             $test = pathinfo($key, PATHINFO_BASENAME);
             $result = pathinfo($key, PATHINFO_FILENAME) . '.json';
             if (is_file($dir . '/' . $result)) {
-                $tests[pathinfo($key, PATHINFO_FILENAME)] = array(
+                $tests[$testname] = array(
                     'input' => file_get_contents($dir . '/' . $test),
                     'expectedOutput' => file_get_contents($dir . '/' . $result)
                 );
