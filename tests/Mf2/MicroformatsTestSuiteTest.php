@@ -9,7 +9,7 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
      */
     public function testFromTestSuite($input, $expectedOutput)
     {
-        $parser = new \Mf2\Parser($input);
+        $parser = new \Mf2\Parser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
             $this->makeComparible(json_decode(json_encode($parser->parse()), true))
