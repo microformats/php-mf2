@@ -28,6 +28,14 @@ class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
                 $this->assertArrayHasKey($key, $test);
                 $this->compareJson($value, $test[$key]);
             }
+            foreach (array_diff(array_keys($test), array_keys($correct)) as $fault) {
+                // This will always fail, but we want to know in which tests this happens!
+                $this->assertArrayHasKey(
+                    $fault,
+                    $correct,
+                    'The parser output included an extra property compared.'
+                );
+            }
         } else {
             $this->assertEquals($correct, $test);
         }
