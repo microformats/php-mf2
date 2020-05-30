@@ -362,7 +362,7 @@ class Parser {
 					$doc = $doc->loadHTML($input);
 			} else {
 				$doc = new DOMDocument();
-				@$doc->loadHTML(unicodeToHtmlEntities($input));
+				@$doc->loadHTML(unicodeToHtmlEntities($input), \LIBXML_NOWARNING);
 			}
 		} elseif (is_a($input, 'DOMDocument')) {
 			$doc = clone $input;
