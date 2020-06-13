@@ -1,9 +1,0 @@
-{
-    "items": [{
-        "type": ["h-recipe"],
-        "properties": {
-            "name": ["Toast"],
-            "ingredient": ["Slice of bread", "Butter"]
-        }
-    }]
-}

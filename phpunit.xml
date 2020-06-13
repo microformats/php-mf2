@@ -5,4 +5,9 @@
 			<directory suffix="Test.php">tests/Mf2</directory>
 		</testsuite>
 	</testsuites>
+	<groups>
+		<exclude>
+			<group>microformats/tests/mf1</group>
+		</exclude>
+	</groups>
 </phpunit>
