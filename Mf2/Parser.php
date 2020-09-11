@@ -111,10 +111,9 @@ function collapseWhitespace($str) {
 }
 
 function unicodeTrim($str) {
-	// this is cheating. TODO: find a better way if this causes any problems
-	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), ' ', $str);
-	$str = preg_replace('/^\s+/', '', $str);
-	return preg_replace('/\s+$/', '', $str);
+	// the binary sequence C2A0 is a UTF-8 non-breaking space character
+	$str = preg_replace('/^(?:\s|\x{C2}\x{A0})+/', '', $str);
+	return preg_replace('/(?:\s|\x{C2}\x{A0})+$/', '', $str);
 }
 
 /**
