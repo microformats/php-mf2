@@ -93,7 +93,12 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
  * @return string
  */
 function unicodeToHtmlEntities($input) {
-	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
+	// FIXME: This function purportedly works around UTF-8 decoding problems 
+	// in PHP's DOMDocument class circa 2012. Is this still necessary?
+	if (extension_loaded("mbstring")) {
+		return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));	
+	}
+	return $input;
 }
 
 /**
