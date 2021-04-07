@@ -87,18 +87,38 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 	return parse($html, $url, $convertClassic);
 }
 
-/**
- * Unicode to HTML Entities
- * @param string $input String containing characters to convert into HTML entities
- * @return string
- */
-function unicodeToHtmlEntities($input) {
-	// FIXME: This function purportedly works around UTF-8 decoding problems 
-	// in PHP's DOMDocument class circa 2012. Is this still necessary?
-	if (extension_loaded("mbstring")) {
-		return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));	
+function load_dom_document($input) {
+	$d = new \DOMDocument();
+	@$d->loadHTML($input, \LIBXML_NOWARNING);
+	if (substr($input, 0, 3) === "\xEF\xBB\xBF") {
+		// the document has a byte order mark and is unambiguously UTF-8
+		return $d;
 	}
-	return $input;
+	/* Examine each <meta> element in the document to determine whether
+		there is a charset attribute that signals UTF-8 encoding.
+
+		If there is we add a UTF-8 byte order mark to the input and parse
+		the document a second time, yielding a correct document. Otherwise
+		we return the document as-is rather than jump through hoops to
+		correct it (if indeed it is incorrect).
+
+		The truly correct thing to do is to use a modern HTML parser which
+		implements the encoding pre-scan algorithm; this should suffice when
+		such a modern parser is not available, however.
+	*/
+	$charset = false;
+	$labelPattern = '/^\s*(?:unicode-1-1-utf-8|unicode11utf8|unicode20utf8|utf-8|utf8|x-unicode20utf8)\s*$/i'; // See https://encoding.spec.whatwg.org/#names-and-labels
+	foreach ($d->getElementsByTagName("meta") as $e) {
+		if (preg_match($labelPattern, $e->getAttribute("charset"))) {
+			$charset = true;
+			break;
+		}
+	}
+	if ($charset) {
+		$d = new \DOMDocument();
+		@$d->loadHTML("\xEF\xBB\xBF".$input, \LIBXML_NOWARNING);
+	}
+	return $d;
 }
 
 /**
@@ -365,8 +385,7 @@ class Parser {
 					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
 					$doc = $doc->loadHTML($input);
 			} else {
-				$doc = new DOMDocument();
-				@$doc->loadHTML(unicodeToHtmlEntities($input), \LIBXML_NOWARNING);
+				$doc = load_dom_document($input);
 			}
 		} elseif (is_a($input, 'DOMDocument')) {
 			$doc = clone $input;

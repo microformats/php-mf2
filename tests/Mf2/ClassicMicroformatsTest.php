@@ -911,7 +911,7 @@ END;
 	 * @see source: http://jg.typepad.com/ciel/2006/02/daniel_bouluds_.html
 	 */
 	public function testHReviewRelTag() {
-		$input = '<div class="hreview">
+		$input = '<meta charset="UTF-8"><div class="hreview">
 <span class="version" style="display:none">0.2</span>
   <h2 class="summary">
     Divine Brunch!
