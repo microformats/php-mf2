@@ -24,7 +24,8 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      #run: composer validate --strict  # Currently we’re installing mf2/tests from a commit ref.
+      run: composer validate
 
     - name: Cache Composer packages
       id: composer-cache
