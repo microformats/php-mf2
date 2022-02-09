@@ -19,18 +19,9 @@
     },
     "require-dev": {
         "phpunit/phpunit": "4.8.*",
-        "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
-	"squizlabs/php_codesniffer": "^2.6 || ^3.1.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
-	"phpcompatibility/php-compatibility": "^9.3"
+        "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49"
     },
-    "scripts": {
-	"install-codestandards": [
-		"Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
-	],
-	"phpcs": "./vendor/bin/phpcs -p",
-	"phpunit": "./vendor/bin/phpunit"
-   },
+	"phpunit": "./vendor/bin/phpunit",
     "autoload": {
         "files": ["Mf2/Parser.php"]
     },
