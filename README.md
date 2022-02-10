@@ -96,7 +96,7 @@ use Mf2;
 $mf = Mf2\fetch('http://microformats.org');
 
 foreach ($mf['items'] as $microformat) {
-	echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+  echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
 }
 
 ```
@@ -116,16 +116,16 @@ $output = Mf2\parse($html, 'https://waterpigs.co.uk/');
 
 ```json
 {
-	"items": [
-		{
-			"type": ["h-card"],
-			"properties": {
-				"name": ["Barnaby Walters"],
-				"url": ["https://waterpigs.co.uk/"]
-			}
-		}
-	],
-	"rels": {}
+  "items": [
+    {
+      "type": ["h-card"],
+      "properties": {
+        "name": ["Barnaby Walters"],
+        "url": ["https://waterpigs.co.uk/"]
+      }
+    }
+  ],
+  "rels": {}
 }
 ```
 
@@ -136,11 +136,11 @@ Note that, whilst the property prefixes are stripped, the prefix of the `h-*` cl
 ### Parsing a document with relative URLs
 
 Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org/post/1`:
-
+  
 ```html
 <div class="h-card">
-	<h1 class="p-name">Mr. Example</h1>
-	<img class="u-photo" alt="" src="/photo.png" />
+  <h1 class="p-name">Mr. Example</h1>
+  <img class="u-photo" alt="" src="/photo.png" />
 </div>
 ```
 
@@ -154,15 +154,18 @@ will result in the following output, with relative URLs made absolute:
 
 ```json
 {
-	"items": [{
-		"type": ["h-card"],
-		"properties": {
-			"name": ["Mr. Example"],
-			"photo": ["http://example.org/photo.png"]
-		}
-	}],
-	"rels": {},
-	"rel-urls": {}
+  "items": [{
+    "type": ["h-card"],
+    "properties": {
+      "name": ["Mr. Example"],
+      "photo": [{
+				"value": "http://example.org/photo.png",
+				"alt": ""
+			}]
+    }
+  }],
+  "rels": {},
+  "rel-urls": {}
 }
 ```
 
@@ -181,19 +184,19 @@ parsing will result in the following keys:
 
 ```json
 {
-	"items": [],
-	"rels": {
-		"me": ["https://twitter.com/barnabywalters"]
-	},
-	"rel-urls": {
-		"https://twitter.com/barnabywalters": {
-			"text": "Me on twitter",
-			"rels": ["me"]
-		},
-		"http://example.com/notes.atom": {
-			"rels": ["alternate","etc"]
-		}
-	}
+  "items": [],
+  "rels": {
+    "me": ["https://twitter.com/barnabywalters"]
+  },
+  "rel-urls": {
+    "https://twitter.com/barnabywalters": {
+      "text": "Me on twitter",
+      "rels": ["me"]
+    },
+    "http://example.com/notes.atom": {
+      "rels": ["alternate","etc"]
+    }
+  }
 }
 ```
 
@@ -218,7 +221,7 @@ To learn what the HTTP status code for any request was, or learn more about the 
 
 $mf = Mf2\fetch('http://waterpigs.co.uk/this-page-doesnt-exist', true, $curlInfo);
 if ($curlInfo['http_code'] == '404') {
-	// This page doesn’t exist.
+  // This page doesn’t exist.
 }
 
 ```
@@ -255,9 +258,9 @@ There is still [ongoing brainstorming](http://microformats.org/wiki/microformats
 
 ```php
 $doc = '<div class="h-entry" lang="sv" id="postfrag123">
-	<h1 class="p-name">En svensk titel</h1>
-	<div class="e-content" lang="en">With an <em>english</em> summary</div>
-	<div class="e-content">Och <em>svensk</em> huvudtext</div>
+  <h1 class="p-name">En svensk titel</h1>
+  <div class="e-content" lang="en">With an <em>english</em> summary</div>
+  <div class="e-content">Och <em>svensk</em> huvudtext</div>
 </div>';
 $parser = new Mf2\Parser($doc);
 $parser->lang = true;
@@ -266,29 +269,29 @@ $result = $parser->parse();
 
 ```json
 {
-	"items": [
-		{
-			"type": ["h-entry"],
-			"properties": {
-				"name": ["En svensk titel"],
-				"content": [
-					{
-						"html": "With an <em>english</em> summary",
-						"value": "With an english summary",
-						"lang": "en"
-					},
-					{
-						"html": "Och <em>svensk</em> huvudtext",
-						"value": "Och svensk huvudtext",
-						"lang": "sv"
-					}
-				]
-			},
-			"lang": "sv"
-		}
-	],
-	"rels": {},
-	"rel-urls": {}
+  "items": [
+    {
+      "type": ["h-entry"],
+      "properties": {
+        "name": ["En svensk titel"],
+        "content": [
+          {
+            "html": "With an <em>english</em> summary",
+            "value": "With an english summary",
+            "lang": "en"
+          },
+          {
+            "html": "Och <em>svensk</em> huvudtext",
+            "value": "Och svensk huvudtext",
+            "lang": "sv"
+          }
+        ]
+      },
+      "lang": "sv"
+    }
+  ],
+  "rels": {},
+  "rel-urls": {}
 }
 ```
 
@@ -600,8 +603,8 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
 * Updated e-* property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like <pre><code>
 {
-	"html": "<b>The Content</b>",
-	"value: "The Content"
+  "html": "<b>The Content</b>",
+  "value: "The Content"
 }
 </code></pre>
 * Removed `htmlSafe` options as new e-* parsing rules make them redundant
