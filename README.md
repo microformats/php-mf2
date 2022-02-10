@@ -356,6 +356,18 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 ### Changelog
 
+#### v0.5.0
+
+Breaking change: bumped minimum PHP version from 5.4 to 5.6 (#220)
+
+Other changes:
+
+* #195 Fix backcompat parsing for geo property
+* #182 Fix parsing for iframe.u-*\[src]
+* #214 parse an img element for src and alt
+* #206 Add optional ID for h-* elements
+* #198 reduce instances where photo is implied
+
 #### v0.4.6
 
 Bugfixes:
