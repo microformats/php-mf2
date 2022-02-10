@@ -8,7 +8,7 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 ## Installation
 
-There are two ways of installing php-mf2. I **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
+There are two ways of installing php-mf2. We **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
 
 To install using Composer, run
 
@@ -323,7 +323,7 @@ In previous versions of php-mf2 you could also add your own class mappings — o
 Some tips:
 
 * All content apart from the 'html' key in dictionaries produced by parsing an `e-*` property is not HTML-escaped. For example, `<span class="p-name">&lt;code&gt;</span>` will result in `"name": ["<code>"]`. At the very least, HTML-escape all properties before echoing them out in HTML
-* If you’re using the raw HTML content under the 'html' key of dictionaries produced by parsing `e-*` properties, you SHOULD purify the HTML before displaying it to prevent injection of arbitrary code. For PHP I recommend using [HTML Purifier](http://htmlpurifier.org)
+* If you’re using the raw HTML content under the 'html' key of dictionaries produced by parsing `e-*` properties, you SHOULD purify the HTML before displaying it to prevent injection of arbitrary code. For PHP we recommend using [HTML Purifier](http://htmlpurifier.org)
 
 TODO: move this section to a security/consumption best practises page on the wiki
 
@@ -331,7 +331,7 @@ TODO: move this section to a security/consumption best practises page on the wik
 
 Issues and bug reports are very welcome. If you know how to write tests then please do so as code always expresses problems and intent much better than English, and gives me a way of measuring whether or not fixes have actually solved your problem. If you don’t know how to write tests, don’t worry :) Just include as much useful information in the issue as you can.
 
-Pull requests very welcome, please try to maintain stylistic, structural and naming consistency with the existing codebase, and don’t be too upset if I make naming changes :)
+Pull requests very welcome, please try to maintain stylistic, structural and naming consistency with the existing codebase, and don’t be too upset if we make naming changes :)
 
 ### How to make a Pull Request
 
