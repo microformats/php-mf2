@@ -1,6 +1,6 @@
 # php-mf2
 
-[![Build Status](https://travis-ci.org/microformats/php-mf2.png?branch=master)](http://travis-ci.org/microformats/php-mf2)
+[![Latest Stable Version](http://poser.pugx.org/mf2/mf2/v)](https://packagist.org/packages/mf2/mf2) [![Total Downloads](http://poser.pugx.org/mf2/mf2/downloads)](https://packagist.org/packages/mf2/mf2) [![Latest Unstable Version](http://poser.pugx.org/mf2/mf2/v/unstable)](https://packagist.org/packages/mf2/mf2) [![License](http://poser.pugx.org/mf2/mf2/license)](https://packagist.org/packages/mf2/mf2) [![PHP Version Require](http://poser.pugx.org/mf2/mf2/require/php)](https://packagist.org/packages/mf2/mf2)<a href="https://github.com/microformats/php-mf2/actions/workflows/main.yml"><img src="https://github.com/microformats/php-mf2/actions/workflows/main.yml/badge.svg?branch=main" alt="" /></a> 
 
 php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
 
@@ -362,11 +362,13 @@ Breaking change: bumped minimum PHP version from 5.4 to 5.6 (#220)
 
 Other changes:
 
-* #195 Fix backcompat parsing for geo property
-* #182 Fix parsing for iframe.u-*\[src]
-* #214 parse an img element for src and alt
-* #206 Add optional ID for h-* elements
-* #198 reduce instances where photo is implied
+* [#195](https://github.com/microformats/php-mf2/issues/195) Fix backcompat parsing for geo property
+* [#182](https://github.com/microformats/php-mf2/issues/182) Fix parsing for iframe.u-*\[src]
+* [#214](https://github.com/microformats/php-mf2/issues/214) parse an img element for src and alt
+* [#206](https://github.com/microformats/php-mf2/issues/206) Add optional ID for h-* elements
+* [#198](https://github.com/microformats/php-mf2/issues/198) reduce instances where photo is implied
+* Internal: switched from Travis to Github Actions for CI
+* Internal: renamed master branch to main
 
 #### v0.4.6
 
