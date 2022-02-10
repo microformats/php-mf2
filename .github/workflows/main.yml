@@ -40,7 +40,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Run Test Suite
-      run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-filter src --coverage-text
+      run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
     
     #- name: Run Static Analysis
     #  run: ./vendor/bin/psalm
