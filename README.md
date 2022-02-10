@@ -358,7 +358,7 @@ Currently php-mf2 passes the majority of it’s own test case, and a good percen
 
 #### v0.5.0
 
-Breaking change: bumped minimum PHP version from 5.4 to 5.6 (#220)
+Breaking change: bumped minimum PHP version from 5.4 to 5.6 ([#220](https://github.com/microformats/php-mf2/issues/220))
 
 Other changes:
 
