@@ -42,5 +42,8 @@ jobs:
     - name: Run Test Suite
       run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
     
+    - name: Run Code Sniffer
+      run: ./vendor/bin/phpcs
+    
     #- name: Run Static Analysis
     #  run: ./vendor/bin/psalm
