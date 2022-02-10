@@ -1,6 +1,6 @@
 # php-mf2
 
-[![Latest Stable Version](http://poser.pugx.org/mf2/mf2/v)](https://packagist.org/packages/mf2/mf2) [![Total Downloads](http://poser.pugx.org/mf2/mf2/downloads)](https://packagist.org/packages/mf2/mf2) [![Latest Unstable Version](http://poser.pugx.org/mf2/mf2/v/unstable)](https://packagist.org/packages/mf2/mf2) [![License](http://poser.pugx.org/mf2/mf2/license)](https://packagist.org/packages/mf2/mf2) [![PHP Version Require](http://poser.pugx.org/mf2/mf2/require/php)](https://packagist.org/packages/mf2/mf2)<a href="https://github.com/microformats/php-mf2/actions/workflows/main.yml"><img src="https://github.com/microformats/php-mf2/actions/workflows/main.yml/badge.svg?branch=main" alt="" /></a> 
+[![Latest Stable Version](http://poser.pugx.org/mf2/mf2/v)](https://packagist.org/packages/mf2/mf2) [![Total Downloads](http://poser.pugx.org/mf2/mf2/downloads)](https://packagist.org/packages/mf2/mf2) [![Latest Unstable Version](http://poser.pugx.org/mf2/mf2/v/unstable)](https://packagist.org/packages/mf2/mf2) [![License](http://poser.pugx.org/mf2/mf2/license)](https://packagist.org/packages/mf2/mf2) [![PHP Version Require](http://poser.pugx.org/mf2/mf2/require/php)](https://packagist.org/packages/mf2/mf2) <a href="https://github.com/microformats/php-mf2/actions/workflows/main.yml"><img src="https://github.com/microformats/php-mf2/actions/workflows/main.yml/badge.svg?branch=main" alt="" /></a> 
 
 php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
 
