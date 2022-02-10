@@ -21,7 +21,6 @@
         "phpunit/phpunit": "4.8.*",
         "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49"
     },
-	"phpunit": "./vendor/bin/phpunit",
     "autoload": {
         "files": ["Mf2/Parser.php"]
     },
