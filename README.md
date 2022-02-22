@@ -82,7 +82,7 @@ All parsing functions return a canonical microformats 2 representation of any mi
 
 ## Examples
 
-### Fetching microformats from a URL
+### Fetching Microformats from a URL
 
 ```php
 <?php
@@ -97,13 +97,17 @@ use Mf2;
 
 $mf = Mf2\fetch('http://microformats.org');
 
-foreach ($mf['items'] as $microformat) {
-  echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+// $mf is either a canonical mf2 array, or null on an error.
+if (is_array($mf)) {
+  foreach ($mf['items'] as $microformat) {
+    // Note: in real code, never assume that a property exists, or that a particular property value is a string!
+    echo "A {$microformat['type'][0]} called {$microformat['properties']['name'][0]}\n";
+  }
 }
 
 ```
 
-### Parsing microformats from a HTML string
+### Parsing Microformats from a HTML String
 
 Here we demonstrate parsing of microformats2 implied property parsing, where an entire h-card with name and URL properties is created using a single `h-card` class.
 
@@ -136,7 +140,7 @@ If no microformats are found, `items` will be an empty array.
 
 Note that, whilst the property prefixes are stripped, the prefix of the `h-*` classname(s) in the "type" array are retained.
 
-### Parsing a document with relative URLs
+### Parsing a Document with Relative URLs
 
 Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org/post/1`:
 
@@ -162,9 +166,9 @@ will result in the following output, with relative URLs made absolute:
     "properties": {
       "name": ["Mr. Example"],
       "photo": [{
-				"value": "http://example.org/photo.png",
-				"alt": ""
-			}]
+        "value": "http://example.org/photo.png",
+        "alt": ""
+      }]
     }
   }],
   "rels": {},
@@ -174,16 +178,16 @@ will result in the following output, with relative URLs made absolute:
 
 php-mf2 correctly handles relative URL resolution according to the URI and HTML specs, including correct use of the `<base>` element.
 
-### Parsing `rel` and `rel=alternate` values
+### Parsing Link `rel` Values
 
-php-mf2 also parses any link relations in the document, placing them into two top-level arrays — one for `rel=alternate` and another for all other rel values, e.g. when parsing:
+php-mf2 also parses any link relations in the document, placing them into two top-level arrays, one indexed by each individual rel value, the other by each URL. For example, this HTML:
 
 ```html
 <a rel="me" href="https://twitter.com/barnabywalters">Me on twitter</a>
 <link rel="alternate etc" href="http://example.com/notes.atom" />
 ```
 
-parsing will result in the following keys:
+parses to the following canonical representation:
 
 ```json
 {
@@ -203,7 +207,7 @@ parsing will result in the following keys:
 }
 ```
 
-Protip: if you’re not bothered about the microformats2 data and just want rels and alternates, you can improve performance by creating a `Mf2\Parser` object (see below) and calling `->parseRelsAndAlternates()` instead of `->parse()`, e.g.
+If you’re not bothered about the microformats2 data and just want rels and alternates, you can (very slightly) improve performance by creating a `Mf2\Parser` object (see below) and calling `->parseRelsAndAlternates()` instead of `->parse()`, e.g.
 
 ```php
 <?php
@@ -237,7 +241,7 @@ The `Mf2\parse()` function covers the most common usage patterns by internally c
 
 The constructor takes two arguments, the input HTML (or a DOMDocument) and the URL to use as a base URL. Once you have a parser, there are a few other things you can do:
 
-### Selectively parsing a document
+### Selectively Parsing a Document
 
 There are several ways to selectively parse microformats from a document. If you wish to only parse microformats from an element with a particular ID, `Parser::parseFromId($id) ` is the easiest way.
 
@@ -300,7 +304,6 @@ $result = $parser->parse();
 
 Note that this option is still considered experimental and in development, and the parsed output may change between minor releases.
 
-
 ### Generating output for JSON serialization with JSON-mode
 
 Due to a quirk with the way PHP arrays work, there is an edge case ([reported](https://github.com/microformats/php-mf2/issues/29) by Tom Morris) in which a document with no rel values, when serialised as JSON, results in an empty object as the rels value rather than an empty array. Replacing this in code with a stdClass breaks PHP iteration over the values.
@@ -314,12 +317,9 @@ $jsonParser = new Mf2\Parser($html, $url, true);
 
 ### Classic Microformats Markup
 
-php-mf2 has some support for parsing classic microformats markup. It’s enabled by default, but can be turned off by calling `Mf2\parse($html, $url, false);` or `$parser->parse(false);` if you’re instanciating a parser yourself.
+php-mf2 has some support for parsing classic microformats markup. It’s enabled by default, but can be turned off by calling `Mf2\parse($html, $url, false);` or `$parser->parse(false);` if you’re instantiating a parser yourself.
 
-In previous versions of php-mf2 you could also add your own class mappings — officially this is no longer supported.
-
-* If the built in mappings don’t successfully parse some classic microformats markup then raise an issue and we’ll fix it.
-* If you *really* need to make one-off changes to the default mappings… It is possible. But you have to figure it out for yourself ;)
+If the built in mappings don’t successfully parse some classic microformats markup, please raise an issue and we’ll fix it.
 
 ## Security
 
@@ -341,13 +341,12 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 1. Fork the repo to your github account
 2. Clone a copy to your computer (simply installing php-mf2 using composer only works for using it, not developing it)
 3. Install the dev dependencies with `composer install`.
-4. Run PHPUnit with `composer phpunit`
-5. Check PHP Compatibility with the current minimum version supported (`composer phpcs`)
+4. Run PHPUnit with `./vendor/bin/phpunit`
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
 7. Make your changes
-8. Make sure your tests pass (`composer phpunit`)
+8. Make sure your tests pass (`./vendor/bin/phpunit`) and that your code is compatible with all supported versions of PHP (`./vendor/bin/phpcs -p`)
 9. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
-10. Bask in the warm feeling of having contributed to a piece of free software
+10. Bask in the warm feeling of having contributed to a piece of free software (optional)
 
 ### Testing
 
