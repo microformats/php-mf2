@@ -180,7 +180,9 @@ php-mf2 correctly handles relative URL resolution according to the URI and HTML 
 
 ### Parsing Link `rel` Values
 
-php-mf2 also parses any link relations in the document, placing them into two top-level arrays, one indexed by each individual rel value, the other by each URL. For example, this HTML:
+php-mf2 also parses any link relations in the document, placing them into two top-level arrays. For convenience and completeness, one is indexed by each individual rel value, and the other by each URL.
+
+For example, this HTML:
 
 ```html
 <a rel="me" href="https://twitter.com/barnabywalters">Me on twitter</a>
@@ -193,7 +195,9 @@ parses to the following canonical representation:
 {
   "items": [],
   "rels": {
-    "me": ["https://twitter.com/barnabywalters"]
+    "me": ["https://twitter.com/barnabywalters"],
+    "alternate": ["http://example.com/notes.atom"],
+    "etc": ["http://example.com/notes.atom"]
   },
   "rel-urls": {
     "https://twitter.com/barnabywalters": {
@@ -201,7 +205,7 @@ parses to the following canonical representation:
       "rels": ["me"]
     },
     "http://example.com/notes.atom": {
-      "rels": ["alternate","etc"]
+      "rels": ["alternate", "etc"]
     }
   }
 }
