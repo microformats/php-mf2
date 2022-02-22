@@ -127,7 +127,8 @@ $output = Mf2\parse($html, 'https://waterpigs.co.uk/');
       }
     }
   ],
-  "rels": {}
+  "rels": {},
+  "rel-urls": {}
 }
 ```
 
@@ -318,7 +319,6 @@ php-mf2 has some support for parsing classic microformats markup. It’s enabled
 In previous versions of php-mf2 you could also add your own class mappings — officially this is no longer supported.
 
 * If the built in mappings don’t successfully parse some classic microformats markup then raise an issue and we’ll fix it.
-* If you want to screen-scrape websites which don’t use mf2 into mf2 data structures, consider contributing to [php-mf2-shim](https://github.com/microformats/php-mf2-shim)
 * If you *really* need to make one-off changes to the default mappings… It is possible. But you have to figure it out for yourself ;)
 
 ## Security
