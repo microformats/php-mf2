@@ -78,6 +78,8 @@ php-mf2 is PSR-0 autoloadable, so simply include Composer’s auto-generated aut
 * To fetch microformats from a URL, call `Mf2\fetch($url)`
 * To parse microformats from HTML, call `Mf2\parse($html, $url)`, where `$url` is the URL from which `$html` was loaded, if any. This parameter is required for correct relative URL parsing and must not be left out unless parsing HTML which is not loaded from the web.
 
+All parsing functions return a canonical microformats 2 representation of any microformats found on the page, as an array. For a general guide to safely and successfully processing parsed microformats data, see [How to Consume Microformats 2 Data](https://waterpigs.co.uk/articles/consuming-microformats/).
+
 ## Examples
 
 ### Fetching microformats from a URL
@@ -327,8 +329,6 @@ Some tips:
 
 * All content apart from the 'html' key in dictionaries produced by parsing an `e-*` property is not HTML-escaped. For example, `<span class="p-name">&lt;code&gt;</span>` will result in `"name": ["<code>"]`. At the very least, HTML-escape all properties before echoing them out in HTML
 * If you’re using the raw HTML content under the 'html' key of dictionaries produced by parsing `e-*` properties, you SHOULD purify the HTML before displaying it to prevent injection of arbitrary code. For PHP we recommend using [HTML Purifier](http://htmlpurifier.org)
-
-For more tips and good practises for safely and successfully processing parsed microformats data, see [How to Consume Microformats 2 Data](https://waterpigs.co.uk/articles/consuming-microformats/).
 
 ## Contributing
 
