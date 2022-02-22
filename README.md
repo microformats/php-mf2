@@ -1,6 +1,6 @@
 # php-mf2
 
-[![Latest Stable Version](http://poser.pugx.org/mf2/mf2/v)](https://packagist.org/packages/mf2/mf2) [![Total Downloads](http://poser.pugx.org/mf2/mf2/downloads)](https://packagist.org/packages/mf2/mf2) [![Latest Unstable Version](http://poser.pugx.org/mf2/mf2/v/unstable)](https://packagist.org/packages/mf2/mf2) [![License](http://poser.pugx.org/mf2/mf2/license)](https://packagist.org/packages/mf2/mf2) [![PHP Version Require](http://poser.pugx.org/mf2/mf2/require/php)](https://packagist.org/packages/mf2/mf2) <a href="https://github.com/microformats/php-mf2/actions/workflows/main.yml"><img src="https://github.com/microformats/php-mf2/actions/workflows/main.yml/badge.svg?branch=main" alt="" /></a> 
+[![Latest Stable Version](http://poser.pugx.org/mf2/mf2/v)](https://packagist.org/packages/mf2/mf2) [![Total Downloads](http://poser.pugx.org/mf2/mf2/downloads)](https://packagist.org/packages/mf2/mf2) [![Latest Unstable Version](http://poser.pugx.org/mf2/mf2/v/unstable)](https://packagist.org/packages/mf2/mf2) [![License](http://poser.pugx.org/mf2/mf2/license)](https://packagist.org/packages/mf2/mf2) [![PHP Version Require](http://poser.pugx.org/mf2/mf2/require/php)](https://packagist.org/packages/mf2/mf2) <a href="https://github.com/microformats/php-mf2/actions/workflows/main.yml"><img src="https://github.com/microformats/php-mf2/actions/workflows/main.yml/badge.svg?branch=main" alt="" /></a>
 
 php-mf2 is a pure, generic [microformats-2](http://microformats.org/wiki/microformats-2) parser. It makes HTML as easy to consume as JSON.
 
@@ -136,7 +136,7 @@ Note that, whilst the property prefixes are stripped, the prefix of the `h-*` cl
 ### Parsing a document with relative URLs
 
 Most of the time you’ll be getting your input HTML from a URL. You should pass that URL as the second parameter to `Mf2\parse()` so that any relative URLs in the document can be resolved. For example, say you got the following HTML from `http://example.org/post/1`:
-  
+
 ```html
 <div class="h-card">
   <h1 class="p-name">Mr. Example</h1>
@@ -328,7 +328,7 @@ Some tips:
 * All content apart from the 'html' key in dictionaries produced by parsing an `e-*` property is not HTML-escaped. For example, `<span class="p-name">&lt;code&gt;</span>` will result in `"name": ["<code>"]`. At the very least, HTML-escape all properties before echoing them out in HTML
 * If you’re using the raw HTML content under the 'html' key of dictionaries produced by parsing `e-*` properties, you SHOULD purify the HTML before displaying it to prevent injection of arbitrary code. For PHP we recommend using [HTML Purifier](http://htmlpurifier.org)
 
-TODO: move this section to a security/consumption best practises page on the wiki
+For more tips and good practises for safely and successfully processing parsed microformats data, see [How to Consume Microformats 2 Data](https://waterpigs.co.uk/articles/consuming-microformats/).
 
 ## Contributing
 
