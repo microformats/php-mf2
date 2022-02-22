@@ -237,7 +237,7 @@ if ($curlInfo['http_code'] == '404') {
 
 ```
 
-If it was HTML then it is still parsed, as there are cases where error pages contain microformats — for example a deleted h-entry resulting in a 410 Gone response containing a stub h-entry with amn explanation for the deletion.
+If it was HTML then it is still parsed, as there are cases where error pages contain microformats — for example a deleted h-entry resulting in a 410 Gone response containing a stub h-entry with an explanation for the deletion.
 
 ### Getting more control by creating a Parser object
 
