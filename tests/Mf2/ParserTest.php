@@ -860,5 +860,36 @@ EOD;
 		$this->assertEquals('2016-12-31', Mf2\normalizeOrdinalDate('2016-366'));
 		$this->assertEquals('', Mf2\normalizeOrdinalDate('2016-367'));
 	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/230
+	 */
+	public function testPropertyWithInvalidHPrefixedRootClassParsed() {
+		$input = <<<EOF
+<div class="h-card">
+	<img class="u-photo w-32 h-32" alt="Jon Doe" src="/image.jpg"/>
+</div>
+EOF;
+
+		$output = Mf2\parse($input);
+		$this->assertEquals(array('value' => '/image.jpg', 'alt' => 'Jon Doe'), $output['items'][0]['properties']['photo'][0]);
+	}
+
+	public function testGetRootMfOnlyFindsValidElements() {
+		$input = <<<EOF
+<div class="h-entry>"> <a href="https://example.com" class="u-url">content</a></div>
+<div class="h-entry1>"> <a href="https://example.com" class="u-url">content</a></div>
+<div class="h-👍"> <a href="https://example.com" class="u-url">content</a></div>
+<div class="h-hentry_"> <a href="https://example.com" class="u-url">content</a></div>
+<div class="h-"> <a href="https://example.com" class="u-url">content</a></div>
+<div class="h-vendor123-name"><a href="https://example.com" class="u-url">content</a></div>
+EOF;
+
+		$p = new Mf2\Parser($input);
+		$rootEls = $p->getRootMF();
+
+		$this->assertEquals(1, count($rootEls));
+		$this->assertEquals('h-vendor123-name', $rootEls->item(0)->getAttribute('class'));
+	}
 }
 

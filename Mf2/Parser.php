@@ -145,6 +145,15 @@ function mfNamesFromClass($class, $prefix='h-') {
 }
 
 /**
+ * Registered with the XPath object and used within XPaths for finding root elements.
+ * @param string $class
+ * @return bool
+ */
+function classHasMf2RootClassname($class) {
+	return count(mfNamesFromClass($class, 'h-')) > 0;
+}
+
+/**
  * Get Nested µf Property Name From Class
  *
  * Returns all the p-, u-, dt- or e- prefixed classnames it finds in a
@@ -371,7 +380,10 @@ class Parser {
 			@$doc->loadHTML('');
 		}
 
+		// Create an XPath object and allow some PHP functions to be used within XPath queries.
 		$this->xpath = new DOMXPath($doc);
+		$this->xpath->registerNamespace('php', 'http://php.net/xpath');
+		$this->xpath->registerPhpFunctions('\\Mf2\\classHasMf2RootClassname');
 
 		$baseurl = $url;
 		foreach ($this->xpath->query('//base[@href]') as $base) {
@@ -1164,7 +1176,7 @@ class Parser {
 			'type' => $mfTypes,
 			'properties' => $return
 		);
-		
+
 		if(trim($e->getAttribute('id')) !== '') {
 			$parsed['id'] = trim($e->getAttribute("id"));
 		}
@@ -1506,7 +1518,7 @@ class Parser {
 	public function getRootMF(DOMElement $context = null) {
 		// start with mf2 root class name xpath
 		$xpaths = array(
-			'contains(concat(" ",normalize-space(@class)), " h-")'
+			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
 		);
 
 		// add mf1 root class names
@@ -1687,15 +1699,9 @@ class Parser {
 	 */
 	public function hasRootMf2(\DOMElement $el) {
 		$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
-		$classes = array_filter(explode(' ', $class));
 
-		foreach ( $classes as $classname ) {
-			if ( strpos($classname, 'h-') === 0 ) {
-				return true;
-			}
-		}
-
-		return false;
+		// Check for valid mf2 root classnames, not just any classname with a h- prefix.
+		return count(mfNamesFromClass($class, 'h-')) > 0;
 	}
 
 	/**
