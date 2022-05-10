@@ -1761,6 +1761,7 @@ class Parser {
 		'hresume' => 'h-resume',
 		'vevent' => 'h-event',
 		'hreview' => 'h-review',
+		'hreview-aggregate' => 'h-review-aggregate',
 		'hproduct' => 'h-product',
 		'adr' => 'h-adr',
 		'geo' => 'h-geo'
@@ -2029,6 +2030,36 @@ class Parser {
 			),
 			'category' => array(
 				'replace' => 'p-category'
+			),
+		),
+		'hreview-aggregate' => array(
+			'summary' => array(
+				'replace' => 'p-name'
+			),
+			# fn: see item.fn below
+			# photo: see item.photo below
+			# url: see item.url below
+			'item' => array(
+				'replace' => 'p-item h-item',
+				'context' => 'item'
+			),
+			'rating' => array(
+				'replace' => 'p-rating'
+			),
+			'best' => array(
+				'replace' => 'p-best'
+			),
+			'worst' => array(
+				'replace' => 'p-worst'
+			),
+			'average' => array(
+				'replace' => 'p-average'
+			),
+			'count' => array(
+				'replace' => 'p-count'
+			),
+			'votes' => array(
+				'replace' => 'p-votes'
 			),
 		),
 		'hproduct' => array(
