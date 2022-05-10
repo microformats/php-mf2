@@ -1763,6 +1763,7 @@ class Parser {
 		'hreview' => 'h-review',
 		'hproduct' => 'h-product',
 		'adr' => 'h-adr',
+		'geo' => 'h-geo'
 	);
 
 	/**
