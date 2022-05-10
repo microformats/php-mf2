@@ -24,6 +24,19 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
 	    "phpcompatibility/php-compatibility": "^9.3"
     },
+    "scripts": {
+        "cs-check": "phpcs",
+        "tests": "XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text --whitelist Mf2",
+        "test-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
+        "check-and-test": [
+            "@cs-check",
+            "@tests"
+        ],
+        "check-and-test-all": [
+            "@check-and-test",
+            "@test-mf1"
+        ]
+    },
     "autoload": {
         "files": ["Mf2/Parser.php"]
     },

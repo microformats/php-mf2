@@ -1,0 +1,3 @@
+*.Dockerfile
+vendor/
+composer.lock
