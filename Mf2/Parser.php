@@ -1888,7 +1888,19 @@ class Parser {
 			),
 		),
 		'hfeed' => array(
-			# nothing currently
+			'author' => array(
+				'replace' => 'p-author h-card',
+				'context' => 'vcard'
+			),
+			'url' => array(
+				'replace' => 'u-url'
+			),
+			'photo' => array(
+				'replace' => 'u-photo'
+			),
+			'category' => array(
+				'replace' => 'p-category'
+			),
 		),
 		'hentry' => array(
 			'entry-title' => array(
