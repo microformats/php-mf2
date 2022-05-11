@@ -1577,6 +1577,7 @@ class Parser {
 					$this->upgradeRelTagToCategory($el);
 				break;
 
+				case 'hreview-aggregate':
 				case 'hreview':
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
@@ -1633,7 +1634,6 @@ class Parser {
 
 			// root class has mf1 properties to be upgraded
 			if ( isset($this->classicPropertyMap[$classname]) ) {
-				$skips = [];
 				// loop through each property of the mf1 root
 				foreach ( $this->classicPropertyMap[$classname] as $property => $data ) {
 					$propertyElements = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " ' . $property . ' ")]', $el);
@@ -1646,12 +1646,6 @@ class Parser {
 						if ( !$this->isElementUpgraded($propertyEl, $property) && !$isParentMf2 )
 						{
 							$temp_context = ( isset($data['context']) ) ? $data['context'] : null;
-							if (isset($skips[$temp_context])) {
-								continue;
-							}
-							if (isset($data['skips'])) {
-								$skips[$data['skips']] = true;
-							}
 							$this->backcompat($propertyEl, $temp_context, $hasRootMf2);
 							$this->addMfClasses($propertyEl, $data['replace']);
 						}
@@ -2058,16 +2052,6 @@ class Parser {
 		'hreview-aggregate' => array(
 			'summary' => array(
 				'replace' => 'p-name'
-			),
-			'item vcard' => array(
-				'replace' => 'p-item vcard',
-				'context' => 'item vcard',
-				'skips' => 'item'
-			),
-			'item vevent' => array(
-				'replace' => 'p-item vevent',
-				'context' => 'item vevent',
-				'skips' => 'item'
 			),
 			# fn: see item.fn below
 			# photo: see item.photo below
