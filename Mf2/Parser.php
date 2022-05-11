@@ -2048,6 +2048,11 @@ class Parser {
 				'context' => 'item vcard',
 				'skips' => 'item'
 			),
+			'item vevent' => array(
+				'replace' => 'p-item vevent',
+				'context' => 'item vevent',
+				'skips' => 'item'
+			),
 			# fn: see item.fn below
 			# photo: see item.photo below
 			# url: see item.url below
