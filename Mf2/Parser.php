@@ -1577,6 +1577,33 @@ class Parser {
 					$this->upgradeRelTagToCategory($el);
 				break;
 
+				case 'hproduct':
+					$review_and_hreview_aggregate = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview-aggregate ")]', $el);
+
+					if ( $review_and_hreview_aggregate->length ) {
+						foreach ( $review_and_hreview_aggregate as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->backcompat($tempEl, 'hreview-aggregate');
+								$this->addMfClasses($tempEl, 'p-review h-review-aggregate');
+								$this->addUpgraded($tempEl, array('review hreview-aggregate'));
+							}
+						}
+					}
+
+					$review_and_hreview = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview ")]', $el);
+
+					if ( $review_and_hreview->length ) {
+						foreach ( $review_and_hreview as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->backcompat($tempEl, 'hreview');
+								$this->addMfClasses($tempEl, 'p-review h-review');
+								$this->addUpgraded($tempEl, array('review hreview'));
+							}
+						}
+					}
+
+				break;
+
 				case 'hreview-aggregate':
 				case 'hreview':
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
@@ -2101,9 +2128,7 @@ class Parser {
 			'url' => array(
 				'replace' => 'u-url',
 			),
-			'review' => array(
-				'replace' => 'p-review h-review',
-			),
+			// review is handled in the special processing section to allow for 'review hreview-aggregate'
 			'price' => array(
 				'replace' => 'p-price'
 			),
