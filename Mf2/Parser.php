@@ -1646,12 +1646,12 @@ class Parser {
 				break;
 
 				case 'vevent':
-					$location = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " location ")]', $el);
+					$location_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " location ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
-					if ( $location->length ) {
-						foreach ( $location as $tempEl ) {
+					if ( $location_and_vcard->length ) {
+						foreach ( $location_and_vcard as $tempEl ) {
 							if ( !$this->hasRootMf2($tempEl) ) {
-								$this->addMfClasses($tempEl, 'h-card');
+								$this->addMfClasses($tempEl, 'p-location h-card');
 								$this->backcompat($tempEl, 'vcard');
 							}
 						}
@@ -2035,12 +2035,15 @@ class Parser {
 				'replace' => 'p-category'
 			),
 			'location' => array(
-				'replace' => 'h-card',
-				'context' => 'vcard'
+				'replace' => 'p-location',
 			),
 			'geo' => array(
 				'replace' => 'p-location h-geo'
 			),
+			'attendee' => array(
+				'replace' => 'p-attendee h-card',
+				'context' => 'vcard'
+			)
 		),
 		'hreview' => array(
 			'summary' => array(
