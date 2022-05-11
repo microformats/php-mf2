@@ -1573,6 +1573,10 @@ class Parser {
 					}
 				break;
 
+				case 'hfeed':
+					$this->upgradeRelTagToCategory($el);
+				break;
+
 				case 'hreview':
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
