@@ -4,7 +4,7 @@ namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
 use Mf2;
-use PHPUnit_Framework_TestCase;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 /**
  * Parser Test
@@ -14,9 +14,8 @@ use PHPUnit_Framework_TestCase;
  *
  * Stuff for parsing E goes in here until there is enough of it to go elsewhere (like, never?)
  */
-class ParserTest extends PHPUnit_Framework_TestCase {
-
-	public function setUp() {
+class ParserTest extends TestCase {
+	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
 
