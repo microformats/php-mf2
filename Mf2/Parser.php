@@ -366,6 +366,10 @@ class Parser {
 	public function __construct($input, $url = null, $jsonMode = false) {
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
+			if (empty($input)) {
+					$input = '<html><body></body></html>';
+			}
+				
 			if (class_exists('Masterminds\\HTML5')) {
 					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
 					$doc = $doc->loadHTML($input);
