@@ -364,10 +364,11 @@ class Parser {
 	 * @param boolean $jsonMode Whether or not to use a stdClass instance for an empty `rels` dictionary. This breaks PHP looping over rels, but allows the output to be correctly serialized as JSON.
 	 */
 	public function __construct($input, $url = null, $jsonMode = false) {
+		$emptyDocDefault = '<html><body></body></html>';
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
 			if (empty($input)) {
-					$input = '<html><body></body></html>';
+					$input = $emptyDocDefault;
 			}
 				
 			if (class_exists('Masterminds\\HTML5')) {
@@ -381,7 +382,7 @@ class Parser {
 			$doc = clone $input;
 		} else {
 			$doc = new DOMDocument();
-			@$doc->loadHTML('');
+			@$doc->loadHTML($emptyDocDefault);
 		}
 
 		// Create an XPath object and allow some PHP functions to be used within XPath queries.
