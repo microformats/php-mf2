@@ -5,6 +5,8 @@ namespace Mf2\Parser\Test;
 use Mf2\Parser;
 use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertStringContains;
 
 /**
  * Parser Test
@@ -15,6 +17,9 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  * Stuff for parsing E goes in here until there is enough of it to go elsewhere (like, never?)
  */
 class ParserTest extends TestCase {
+	use AssertIsType;
+	use AssertStringContains;
+
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -264,7 +269,7 @@ EOT;
 
 		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
 		$this->assertNull($mf);
-		$this->assertContains('jpeg', $curlInfo['content_type']);
+		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
 	}
 
 	/**
@@ -392,8 +397,11 @@ EOT;
 		$output = $parser->parse();
 
 		$this->assertContains('h-entry', $output['items'][0]['type']);
-		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]);
-		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]);
+		$this->assertStringContainsString(
+			'Hello World',
+			$output['items'][0]['properties']['content'][0]
+		);
+		$this->assertStringNotContainsString('alert', $output['items'][0]['properties']['content'][0]);
 	}
 
 	public function testScriptElementContentsRemovedFromAllPlaintextValues() {
@@ -407,8 +415,8 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertNotContains('not contained', $output['items'][0]['properties']['published'][0]);
-		$this->assertNotContains('not contained', $output['items'][0]['properties']['url'][0]);
+		$this->assertStringNotContainsString('not contained', $output['items'][0]['properties']['published'][0]);
+		$this->assertStringNotContainsString('not contained', $output['items'][0]['properties']['url'][0]);
 	}
 
 	public function testScriptTagContentsNotRemovedFromHTMLValue() {
@@ -430,13 +438,13 @@ EOT;
 		$output = $parser->parse();
 
 		$this->assertContains('h-entry', $output['items'][0]['type']);
-		$this->assertContains('Hello World', $output['items'][0]['properties']['content'][0]['value']);
-		$this->assertContains('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertStringContainsString('Hello World', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertStringContainsString('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
 		# The script and style tags should be removed from plaintext results but left in HTML results.
-		$this->assertContains('alert', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertNotContains('alert', $output['items'][0]['properties']['content'][0]['value']);
-		$this->assertContains('visibility', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertNotContains('visibility', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertStringContainsString('alert', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertStringNotContainsString('alert', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertStringContainsString('visibility', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertStringNotContainsString('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	public function testWhitespaceBetweenElements() {
@@ -841,8 +849,8 @@ END;
 EOD;
 
 		$output = Mf2\parse($input);
-		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['properties']);
-		$this->assertInternalType('array', $output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
+		$this->assertIsArray($output['items'][0]['properties']['comment'][0]['properties']);
+		$this->assertIsArray($output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
 		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['properties']);
 		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
   }

@@ -5,6 +5,7 @@ namespace Mf2\Parser\Test;
 use Mf2\Parser;
 use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
 
 /**
  * Combined Microformats Test
@@ -15,6 +16,8 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  * @todo implement
  */
 class CombinedMicroformatsTest extends TestCase {
+	use AssertIsType;
+
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -429,7 +432,7 @@ END;
 		// Repeat in non-JSON-mode: expect the raw PHP to be an array. Check that its serialization is not what we need for mf2 JSON.
 		$parser = new Parser($input, null, false);
 		$output = $parser->parse();
-		$this->assertInternalType('array', $output['items'][0]['properties']);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertSame('[]', json_encode($output['items'][0]['properties']));
 	}
 
