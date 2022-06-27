@@ -17,7 +17,6 @@ jobs:
 
     steps:
     - name: Set up PHP environment
-      if: steps.check_files.outputs.files_exists == 'true'
       uses: shivammathur/setup-php@v2
       with:
         php-version: '${{ matrix.php }}'
@@ -26,7 +25,6 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install Composer dependencies & cache dependencies
-      if: steps.check_files.outputs.files_exists == 'true'
       uses: "ramsey/composer-install@v2"
       with:
         composer-options: "--prefer-dist"
