@@ -16,28 +16,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@2.11.0
+    - name: Set up PHP environment
+      uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php }}
+        php-version: '${{ matrix.php }}'
+        tools: composer
         extensions: 'xdebug'
-
     - uses: actions/checkout@v2
+
+    - name: Install Composer dependencies & cache dependencies
+      uses: "ramsey/composer-install@v2"
+      with:
+        composer-options: "--prefer-dist"
+        custom-cache-key: "{{ runner.os }}-composer-${{ matrix.php }}"
+      env:
+        COMPOSER_ROOT_VERSION: dev-${{ github.event.repository.default_branch }}
 
     - name: Validate composer.json and composer.lock
       #run: composer validate --strict  # Currently we’re installing mf2/tests from a commit ref.
       run: composer validate
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
 
     - name: Run Test Suite
       run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
