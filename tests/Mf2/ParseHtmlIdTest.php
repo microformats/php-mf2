@@ -7,13 +7,13 @@ namespace Mf2\Parser\Test;
 
 use Mf2;
 use Mf2\Parser;
-use PHPUnit_Framework_TestCase;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 /**
- * 
+ *
  */
-class ParseHtmlIdTest extends PHPUnit_Framework_TestCase {
-	public function setUp() {
+class ParseHtmlIdTest extends TestCase {
+	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
 

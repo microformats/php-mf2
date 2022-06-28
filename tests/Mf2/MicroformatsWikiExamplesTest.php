@@ -7,7 +7,7 @@
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
-use PHPUnit_Framework_TestCase;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 /**
  * Microformats Wiki Examples
@@ -19,9 +19,8 @@ use PHPUnit_Framework_TestCase;
  *
  * @author Barnaby Walters waterpigs.co.uk <barnaby@waterpigs.co.uk>
  */
-class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
-
-	public function setUp() {
+class MicroformatsWikiExamplesTest extends TestCase {
+	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
 
@@ -179,7 +178,7 @@ class MicroformatsWikiExamplesTest extends PHPUnit_Framework_TestCase {
 	"type": ["h-card"],
 	"properties": {
 	  "photo": [
-	     {  
+	     {
 		"value": "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg",
 		"alt": "photo of Mitchell"
 	     }
