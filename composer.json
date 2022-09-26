@@ -14,14 +14,17 @@
         "php": ">=5.6.0"
     },
     "config": {
-       "platform": {
-       }
+        "platform": {
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "require-dev": {
         "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
         "squizlabs/php_codesniffer": "^3.6.2",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-	      "phpcompatibility/php-compatibility": "^9.3",
+        "phpcompatibility/php-compatibility": "^9.3",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "scripts": {
