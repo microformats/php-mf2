@@ -113,10 +113,16 @@ EOT;
 		$this->assertContains('txjs', $e['properties']['category']);
 	}
 
-	public function testParsesSnarfedOrgArticleCorrectly() {
+	/**
+	 * This test appears to have never made assertions. When initially
+	 * added it was only printing out the parsed results, probably for
+	 * debugging. Left for reference in case assertions need to be added.
+	 * @see https://github.com/microformats/php-mf2/commit/5fd2c961447f305f50f73e17bd8decf7ec77fa1d#diff-45371c4a595b936f718ab44eb3ff35c326e00a01f2f5cb3d327f34d03750b872
+	 */
+	/*public function testParsesSnarfedOrgArticleCorrectly() {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
-	}
+	}*/
 
 	public function testParsesHProduct() {
 		$input = <<<'EOT'
