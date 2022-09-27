@@ -947,6 +947,54 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertContains('Garçon', $output['items'][0]['properties']['category']);
 	}
 
+	public function testHReviewItemVevent()
+	{
+		$input = '<div class="hreview">
+		<span><span class="rating">5</span> out of 5 stars</span>
+		<span class="item vevent">
+				<span class="summary">IndieWebCamp 2014</span> -
+				<a href="http://indiewebcamp.com/2014/" class="url">indiewebcamp.com/2014/</a>
+		</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
+
+		# assert item type is h-event
+		$this->assertCount(1, $output['items'][0]['properties']['item'][0]['type']);
+		$this->assertEquals('h-event', $output['items'][0]['properties']['item'][0]['type'][0]);
+
+		# assert expected h-event properties
+		$properties = $output['items'][0]['properties']['item'][0]['properties'];
+		$this->assertArrayHasKey('name', $properties);
+		$this->assertArrayHasKey('url', $properties);
+	}
+
+	public function testHReviewItemHproduct()
+	{
+		$input = '<div class="hreview">
+	<span><span class="rating">4</span> out of 5 stars</span>
+	<span class="item hproduct">
+		<span class="fn">Widget</span> -
+		<a href="http://example.com/widget/" class="url">example.com/widget/</a>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
+
+		# assert item type is h-product
+		$this->assertCount(1, $output['items'][0]['properties']['item'][0]['type']);
+		$this->assertEquals('h-product', $output['items'][0]['properties']['item'][0]['type'][0]);
+
+		# assert expected h-product properties
+		$properties = $output['items'][0]['properties']['item'][0]['properties'];
+		$this->assertArrayHasKey('name', $properties);
+		$this->assertArrayHasKey('url', $properties);
+	}
+
 	/**
 	 * Should return the last non-empty URL segment
 	 * @see https://github.com/indieweb/php-mf2/issues/157

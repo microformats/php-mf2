@@ -1641,7 +1641,7 @@ class Parser {
 						foreach ( $item_and_hproduct as $tempEl ) {
 							if ( !$this->hasRootMf2($tempEl) ) {
 								$this->addMfClasses($tempEl, 'p-item h-product');
-								$this->backcompat($tempEl, 'vevent');
+								$this->backcompat($tempEl, 'hproduct');
 								$this->addUpgraded($tempEl, array('item', 'hproduct'));
 							}
 						}
