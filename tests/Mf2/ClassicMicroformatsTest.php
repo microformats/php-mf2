@@ -761,6 +761,7 @@ END;
 	</div>
 	<p>Visit date: <span>April 2005</span></p>
 	<p>Food eaten: <span>Florentine crepe</span></p>
+	<p>Permanent link for review: <a rel="self bookmark" href="http://example.com/crepe">http://example.com/crepe</a></p>
 </div>
 END;
 		$parser = new Parser($input);

@@ -1647,6 +1647,15 @@ class Parser {
 						}
 					}
 
+					$rel_self_bookmark = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@rel), " "), " self ") and contains(concat(" ", normalize-space(@rel), " "), " bookmark ")]', $el);
+
+					if ( $rel_self_bookmark->length ) {
+						foreach ( $rel_self_bookmark as $tempEl ) {
+							$this->addMfClasses($tempEl, 'u-url');
+							$this->addUpgraded($tempEl, array('self', 'bookmark'));
+						}
+					}
+
 					$this->upgradeRelTagToCategory($el);
 				break;
 
