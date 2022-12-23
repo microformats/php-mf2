@@ -370,7 +370,7 @@ class Parser {
 			if (empty($input)) {
 					$input = $emptyDocDefault;
 			}
-				
+
 			if (class_exists('Masterminds\\HTML5')) {
 					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
 					$doc = $doc->loadHTML($input);
@@ -530,13 +530,35 @@ class Parser {
 	 */
 	public function parseImg(DOMElement $el)
 	{
-		if ($el->hasAttribute('alt')) {
-			return [
-				'value' => $this->resolveUrl( $el->getAttribute('src') ),
-				'alt' => $el->getAttribute('alt')
-			];
+		$value = $this->resolveUrl($el->getAttribute('src'));
+
+		if (! $el->hasAttribute('alt') && ! $el->hasAttribute('srcset')) {
+			return $value;
 		}
-		return $el->getAttribute('src');
+
+		$return = ['value' => $value];
+
+		if ($el->hasAttribute('alt')) {
+			$return['alt'] = $el->getAttribute('alt');
+		}
+
+		if ($el->hasAttribute('srcset')) {
+			$srcset = [];
+
+			foreach (explode(', ', $el->getAttribute('srcset')) as $item) {
+				if (preg_match('/^(.+?)(\s+.+)?$/', $item, $matches)) {
+					$key = trim(isset($matches[2]) ? $matches[2] : '');
+					$key = ! empty($key) ? $key : '1x';
+					$srcset[$key] = $this->resolveUrl(trim($matches[1]));
+				}
+			}
+
+			if (! empty($srcset)) {
+				$return['srcset'] = $srcset;
+			}
+		}
+
+		return $return;
 	}
 	/**
 	 * This method parses the language of an element

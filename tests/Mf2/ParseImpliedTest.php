@@ -108,6 +108,33 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals($result, $output['items'][0]['properties']['photo'][0]);
 	}
 
+	public function testParsesImpliedUPhotoFromImgSrcWithAltAndSrcsetWidthDescriptors() {
+		$input = '<img class="h-card" src="http://example.com/img-480w.png" srcset="http://example.com/img-480w.png 480w, http://example.com/img-800w.png 800w" alt="Example" />';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img-480w.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
+		$this->assertEquals(
+			['480w' => 'http://example.com/img-480w.png', '800w' => 'http://example.com/img-800w.png'],
+			$output['items'][0]['properties']['photo'][0]['srcset']
+		);
+	}
+
+	public function testParsesImpliedUPhotoFromImgSrcWithAltAndSrcsetPixelDensities() {
+		$input = '<img class="h-card" src="http://example.com/img-480w.png" srcset="http://example.com/img-320w.png, http://example.com/img-480w.png 1.5x, http://example.com/img-640w.png 2x" alt="Example" />';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
+		$this->assertEquals('http://example.com/img-480w.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
+		$this->assertEquals(
+			['1x' => 'http://example.com/img-320w.png', '1.5x' => 'http://example.com/img-480w.png', '2x' => 'http://example.com/img-640w.png'],
+			$output['items'][0]['properties']['photo'][0]['srcset']
+		);
+	}
+
 	/*
 	 * see testImpliedPhotoFromNestedObject() and testImpliedPhotoFromNestedObject()
 	public function testIgnoresImgIfNotOnlyChild() {
@@ -147,22 +174,22 @@ class ParseImpliedTest extends TestCase {
 	}
 
   public function testParsesImpliedUUrlWithExplicitName() {
-    $input = '<span class="h-card"><a href="http://example.com/" class="p-name">Some Name</a></span>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<span class="h-card"><a href="http://example.com/" class="p-name">Some Name</a></span>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+	$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
   }
 
   public function testParsesImpliedNameWithExplicitURL() {
-    $input = '<span class="h-card"><a href="http://example.com/" class="u-url">Some Name</a></span>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<span class="h-card"><a href="http://example.com/" class="u-url">Some Name</a></span>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
-    $this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
+	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+	$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+	$this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
   }
 
 	public function testMultipleImpliedHCards() {
