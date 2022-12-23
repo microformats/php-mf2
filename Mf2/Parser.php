@@ -549,7 +549,7 @@ class Parser {
 				if (preg_match('/^(.+?)(\s+.+)?$/', $item, $matches)) {
 					$key = trim(isset($matches[2]) ? $matches[2] : '');
 					$key = ! empty($key) ? $key : '1x';
-					$srcset[$key] = $this->resolveUrl($matches[1]);
+					$srcset[$key] = $this->resolveUrl(trim($matches[1]));
 				}
 			}
 
