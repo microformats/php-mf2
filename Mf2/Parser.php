@@ -545,7 +545,7 @@ class Parser {
 		if ($el->hasAttribute('srcset')) {
 			$srcset = [];
 
-			foreach (explode(',', $el->getAttribute('srcset')) as $item) {
+			foreach (explode(', ', $el->getAttribute('srcset')) as $item) {
 				if (preg_match('/^(.+?)(\s+.+)?$/', $item, $matches)) {
 					$key = trim(isset($matches[2]) ? $matches[2] : '');
 					$key = ! empty($key) ? $key : '1x';
