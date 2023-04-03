@@ -2,6 +2,8 @@
 
 namespace Mf2\Parser\Test;
 
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+
 final class TestSuiteParser extends \Mf2\Parser
 {
     /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
@@ -49,7 +51,7 @@ final class TestSuiteParser extends \Mf2\Parser
     }
 }
 
-class MicroformatsTestSuiteTest extends \PHPUnit_Framework_TestCase
+class MicroformatsTestSuiteTest extends TestCase
 {
     /**
      * @dataProvider mf1TestsProvider

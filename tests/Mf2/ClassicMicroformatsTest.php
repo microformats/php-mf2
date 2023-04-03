@@ -8,7 +8,7 @@ namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
 use Mf2;
-use PHPUnit_Framework_TestCase;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 /**
  * Classic Microformats Test
@@ -17,8 +17,8 @@ use PHPUnit_Framework_TestCase;
  *
  * Mainly based off BC tables on http://microformats.org/wiki/microformats2#v2_vocabularies
  */
-class ClassicMicroformatsTest extends PHPUnit_Framework_TestCase {
-	public function setUp() {
+class ClassicMicroformatsTest extends TestCase {
+	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
 

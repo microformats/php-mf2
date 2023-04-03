@@ -14,23 +14,32 @@
         "php": ">=5.6.0"
     },
     "config": {
-       "platform": {
-       }
+        "platform": {
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "require-dev": {
-        "phpunit/phpunit": "4.8.*",
         "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
-	"squizlabs/php_codesniffer": "^2.6 || ^3.1.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
-	"phpcompatibility/php-compatibility": "^9.3"
+        "squizlabs/php_codesniffer": "^3.6.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "yoast/phpunit-polyfills": "^1.0"
     },
     "scripts": {
-	"install-codestandards": [
-		"Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run"
-	],
-	"phpcs": "./vendor/bin/phpcs -p",
-	"phpunit": "./vendor/bin/phpunit"
-   },
+        "cs-check": "phpcs",
+        "tests": "XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text --whitelist Mf2",
+        "test-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
+        "check-and-test": [
+            "@cs-check",
+            "@tests"
+        ],
+        "check-and-test-all": [
+            "@check-and-test",
+            "@test-mf1"
+        ]
+    },
     "autoload": {
         "files": ["Mf2/Parser.php"]
     },
