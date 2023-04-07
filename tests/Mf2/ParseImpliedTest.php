@@ -166,7 +166,7 @@ class ParseImpliedTest extends TestCase {
   }
 
 	public function testMultipleImpliedHCards() {
-		$input = '<meta charset="UTF-8"><span class="h-card">Frances Berriman</span>
+		$input = '<span class="h-card">Frances Berriman</span>
 
 <a class="h-card" href="http://benward.me">Ben Ward</a>
 

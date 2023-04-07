@@ -76,8 +76,6 @@ class MicroformatsTestSuiteTest extends TestCase
             $this->markTestIncomplete('This test does not match because we implement a proposed spec: https://github.com/microformats/microformats2-parsing/issues/4#issuecomment-373457720.');
         }
 
-        // Add a byte order mark to the input to ensure encoding is correctly detected
-        $input = "\xEF\xBB\xBF".$input;
         $parser = new TestSuiteParser($input, 'http://example.com/');
         $this->assertEquals(
             $this->makeComparible(json_decode($expectedOutput, true)),
