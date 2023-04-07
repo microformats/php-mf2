@@ -103,9 +103,10 @@ function load_dom_document($input, $contentType = "") {
 	DOMDocument, on the other hand, takes encoding from the following
 	sources from most to least authoritative:
 
-	1. Meta element in document
-	2. Byte order mark
-	3. Default encoding (ISO 8859-1)
+	1. UTF-16 byte order mark
+	2. Meta element in document
+	3. UTF-8 byte order mark
+	4. Default encoding (ISO 8859-1)
 
 	Thus this function finds the most authoritative encoding in the order
 	required by the specification, and then inserts a meta element where 
@@ -120,34 +121,50 @@ function load_dom_document($input, $contentType = "") {
 		@$d->loadHTML($input, \LIBXML_NOWARNING);
 		return $d;
 	};
-	// parse the document and find the first valid meta element with encoding information
-	// even if this initial parsing uses the wrong encoding, it's more reliable than trying to do this with the string directly
-	$d = $load($input);
 	$meta = "";
 	$effective = "";
-	foreach ($d->getElementsByTagName("meta") as $e) {
-		$meta = Encoding::matchEncodingLabel($e->getAttribute("charset"));
-		if (strlen($meta)) {
-			$effective = Encoding::matchEncodingLabel($e->getAttribute("charset"), true);
-			break;
-		}
-		if (strtolower(trim($e->getAttribute("http-equiv"))) === "content-type") {
-			$candidate = Encoding::parseContentType($e->getAttribute("content"));
-			$meta = Encoding::matchEncodingLabel($candidate['charset']);
+	// determine the encoding which DOMDocument has detected from the document, starting by looking for a UTF-16 BOM
+	if (substr($input, 0, 2) === Encoding::BOM_UTF16BE) {
+		$effective = "UTF-16BE";
+	} elseif (substr($input, 0, 2) === Encoding::BOM_UTF16LE) {
+		$effective = "UTF-16LE";
+	} else {
+		// parse the document and find the first valid meta element with 
+		//   encoding information; even if this initial parsing uses the
+		//   wrong encoding, it's more reliable than trying to do this
+		//   with the string directly
+		// we keep note of both what DOMDocument understands (the $effective
+		//   encoding), as well as what the standard says is valid (the $meta
+		//   encoding) as the two can differ
+		$d = $load($input);
+		foreach ($d->getElementsByTagName("meta") as $e) {
+			$meta = Encoding::matchEncodingLabel($e->getAttribute("charset"));
 			if (strlen($meta)) {
-				$effective = Encoding::matchEncodingLabel($candidate['charset'], true);
+				$effective = Encoding::matchEncodingLabel($e->getAttribute("charset"), true);
 				break;
 			}
+			if (strtolower(trim($e->getAttribute("http-equiv"))) === "content-type") {
+				$candidate = Encoding::parseContentType($e->getAttribute("content"));
+				$meta = Encoding::matchEncodingLabel($candidate['charset']);
+				if (strlen($meta)) {
+					$effective = Encoding::matchEncodingLabel($candidate['charset'], true);
+					break;
+				}
+			}
+		}
+		// if no effective encoding was found, check for a UTF-8 BOM
+		if (!$effective && substr($input, 0, 3) === Encoding::BOM_UTF8) {
+			$effective = "UTF-8";
 		}
 	}
 	// now find the authoritative encoding according to the standard HTML order
 	$uthoritative = "";
 	// start by looking for BOMs
-	if (substr($input, 0, 3) === "\xEF\xBB\xBF") {
+	if (substr($input, 0, 3) === Encoding::BOM_UTF8) {
 		$authoritative = "UTF-8";
-	} elseif (substr($input, 0, 2) === "\xFE\xFF") {
+	} elseif (substr($input, 0, 2) === Encoding::BOM_UTF16BE) {
 		$authoritative = "UTF-16BE";
-	} elseif (substr($input, 0, 2) === "\xFF\xFE") {
+	} elseif (substr($input, 0, 2) === Encoding::BOM_UTF16LE) {
 		$authoritative = "UTF-16LE";
 	} else {
 		// now parse the HTTP Content-Type looking for an encoding
@@ -174,14 +191,14 @@ function load_dom_document($input, $contentType = "") {
 			$authoritative = Encoding::ENCODING_ALIAS_MAP[$authoritative];
 		}
 		if ($authoritative === "UTF-16BE") {
-			if (!substr($input, 0, 2) === "\xFE\xFF") {
+			if (!substr($input, 0, 2) === Encoding::BOM_UTF16BE) {
 				// add a BOM and reparse
-				$d = $load("\xFE\xFF".$input);
+				$d = $load(Encoding::BOM_UTF16BE.$input);
 			}
-		} elseif ($authoritative === "UTF-16BLE") {
-			if (!substr($input, 0, 2) === "\xFF\xFE") {
+		} elseif ($authoritative === "UTF-16LE") {
+			if (!substr($input, 0, 2) === Encoding::BOM_UTF16LE) {
 				// add a BOM and reparse
-				$d = $load("\xFF\xFE".$input);
+				$d = $load(Encoding::BOM_UTF16LE.$input);
 			}
 		} else {
 			$offset = 0;
@@ -2840,6 +2857,12 @@ PATTERN;
 		'Big5'         => "big5-hkscs",
 		'EUC-KR'       => "korean",
 	];
+	/** @var string A UTF-8 byte order mark */
+	const BOM_UTF8 = "\xEF\xBB\xBF";
+	/** @var string A UTF-16 (big-endian) byte order mark */
+	const BOM_UTF16BE = "\xFE\xFF";
+	/** @var string A UTF-16 (little-endian) byte order mark */
+	const BOM_UTF16LE = "\xFF\xFE";
 
 	/** Matches an encoding label to a known encoding name in the WHATWG encoding list
 	 * 
