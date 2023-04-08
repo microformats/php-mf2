@@ -191,15 +191,18 @@ function load_dom_document($input, $contentType = "") {
 			$authoritative = Encoding::ENCODING_ALIAS_MAP[$authoritative];
 		}
 		if ($authoritative === "UTF-16BE") {
-			if (!substr($input, 0, 2) === Encoding::BOM_UTF16BE) {
+			if (substr($input, 0, 2) !== Encoding::BOM_UTF16BE) {
 				// add a BOM and reparse
 				$d = $load(Encoding::BOM_UTF16BE.$input);
 			}
 		} elseif ($authoritative === "UTF-16LE") {
-			if (!substr($input, 0, 2) === Encoding::BOM_UTF16LE) {
+			if (substr($input, 0, 2) !== Encoding::BOM_UTF16LE) {
 				// add a BOM and reparse
 				$d = $load(Encoding::BOM_UTF16LE.$input);
 			}
+		} elseif ($authoritative === "replacement") {
+			// the replacement encoding is actually a denylist of problematic encodings; the document is reduced to a single replacement character
+			$d = $load(Encoding::BOM_UTF8."\xEF\xBF\xBD");
 		} else {
 			$offset = 0;
 			// look for an HTML <head> element and insert the meta tag within
@@ -2851,14 +2854,15 @@ PATTERN;
 		"x-mac-ukrainian", "chinese", "csgb2312", "csiso58gb231280", "gb2312",
 		"gb_2312", "gb_2312-80", "gbk", "iso-ir-58", "big5", "cn-big5",
 		"csbig5", "x-x-big5", "x-euc-jp", "ms932", "windows-31j", "x-sjis",
-		"cseuckr", "euc-kr"
+		"cseuckr", "euc-kr", "x-user-defined", "replacement",
 	];
 	/** @var array A List of canonical encoding names DOMDocument does not understand, with liases to labels it does understand */
 	const ENCODING_ALIAS_MAP = [
 		'windows-1258' => "x-cp1258",
-		'GBK'          => "x-gbk",
-		'Big5'         => "big5-hkscs",
-		'EUC-KR'       => "korean",
+		'GBK' => "x-gbk",
+		'Big5' => "big5-hkscs",
+		'EUC-KR' => "korean",
+		'x-user-defined' => "windows-1256", // this is technically not correct, but x-user-defined is not likely to be used in HTML documents; it is used to represent binary data in JavaScript; windows-1256 is used as a substitute as every byte is assigned to a character, so text can be converted back into bytes with no loss
 	];
 	/** @var string A UTF-8 byte order mark */
 	const BOM_UTF8 = "\xEF\xBB\xBF";
