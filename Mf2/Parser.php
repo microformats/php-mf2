@@ -202,8 +202,11 @@ function load_dom_document($input, $contentType = "") {
 			}
 		} else {
 			$offset = 0;
-			// look for a DOCTYPE, possibly preceded by a UTF-8 BOM and/or whitespace; we'll insert our meta tag after this to avoid any quirks mode the parser may have
-			if (preg_match('/^\x{EF}\x{BB}\x{BF}\s*<!DOCTYPE(?:\s+html(?:\s+PUBLIC(?:\s+"[^"]*"|\s+\'[^\']*\'(?:\s+"[^"]*"|\s+\'[^\']*\')?)?)?)?\s*>/is', $input, $match)) {
+			// look for an HTML <head> element and insert the meta tag within
+			//   it, or at the nearest appropriate point; if the tag is 
+			//   inserted too soon, attributes on <head> or <html> (which
+			//   may hold mf data) can be stripped
+			if (preg_match(Encoding::HTML_HEADER_PATTERN, $input, $match)) {
 				$offset = strlen($match[0]);
 			}
 			$tag = '<meta http-equiv="Content-Type" content="text/html;charset=' . $authoritative . '">';
@@ -2863,6 +2866,51 @@ PATTERN;
 	const BOM_UTF16BE = "\xFE\xFF";
 	/** @var string A UTF-16 (little-endian) byte order mark */
 	const BOM_UTF16LE = "\xFF\xFE";
+	/** @var string A PCRE pattern which finds the insertion point inside the HTML <head> element of a document; the pattern takes some shortcuts, but nothing which is likely to affect documents which actually have microformat metadata */
+	const HTML_HEADER_PATTERN = <<<PATTERN
+	/^(?:\x{EF}\x{BB}\x{BF})?							# Optional UTF-8 BOM at start of string
+	(?:													# Followed by...
+		\s+												# Whitespace or
+		|<!DOCTYPE[^>]*>								# DOCTYPE or
+		|<!--(?:-?>|(?:[^-]|-(?!->))*-->)				# Comment or
+		|<\?[^>]*>										# Processing instruction or XML declaration
+	)*													# ... zero or more times
+	(?:<html											# Followed by a possible <html> start tag
+		(?:\s+											# ... with possible attributes
+			(?:\s*[^\s=>]*
+				(?:=
+					(?:
+						"[^"]*"
+						|'[^']*'
+						|[^ >]*
+					)?
+				)?
+			)*
+		)?
+		\/?\s*>
+	)?
+	(?:													# Followed by...
+		\s+												# Whitespace or
+		|<!DOCTYPE[^>]*>								# DOCTYPE or
+		|<!--(?:-?>|(?:[^-]|-(?!->))*-->)				# Comment or
+		|<\?[^>]*>										# Processing instruction or XML declaration
+	)*													# ... zero or more times
+	(?:<head											# Followed by a possible <head> start tag
+		(?:\s+											# ... with possible attributes
+			(?:\s*[^\s=>]*
+				(?:=
+					(?:
+						"[^"]*"
+						|'[^']*'
+						|[^ >]*
+					)?
+				)?
+			)*
+		)?
+		\/?\s*>
+	)?
+	/six
+PATTERN;
 
 	/** Matches an encoding label to a known encoding name in the WHATWG encoding list
 	 * 
