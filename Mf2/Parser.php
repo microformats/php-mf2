@@ -121,6 +121,9 @@ function load_dom_document($input, $contentType = "") {
 		@$d->loadHTML($input, \LIBXML_NOWARNING);
 		return $d;
 	};
+	// perform an initial parsing of the document. We may parse it again
+	//   if the encoding is wrong, or use the result if everything is correct
+	$d = $load($input);
 	$meta = "";
 	$effective = "";
 	// determine the encoding which DOMDocument has detected from the document, starting by looking for a UTF-16 BOM
@@ -129,14 +132,13 @@ function load_dom_document($input, $contentType = "") {
 	} elseif (substr($input, 0, 2) === Encoding::BOM_UTF16LE) {
 		$effective = "UTF-16LE";
 	} else {
-		// parse the document and find the first valid meta element with 
+		// find the first valid meta element in the document with 
 		//   encoding information; even if this initial parsing uses the
 		//   wrong encoding, it's more reliable than trying to do this
 		//   with the string directly
 		// we keep note of both what DOMDocument understands (the $effective
 		//   encoding), as well as what the standard says is valid (the $meta
 		//   encoding) as the two can differ
-		$d = $load($input);
 		foreach ($d->getElementsByTagName("meta") as $e) {
 			$meta = Encoding::matchEncodingLabel($e->getAttribute("charset"));
 			if (strlen($meta)) {
@@ -2925,7 +2927,7 @@ PATTERN;
 	 * @return string The canonical name of the encoding if matched (e.g. "UTF-8"), or an empty string in case of failure 
 	 */
 	public static function matchEncodingLabel($label, $excludeNaughty = false) {
-		$label = strtolower(trim($label));
+		$label = strtolower(trim($label, " \t\r\n\x0C")); // see https://infra.spec.whatwg.org/#ascii-whitespace
 		if ($excludeNaughty && in_array($label, self::ENCODING_NAUGHTY_LIST)) {
 			return "";
 		}
