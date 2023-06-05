@@ -602,7 +602,7 @@ class Parser {
 	 * @return string|null the parsed value or null if value-class or -title aren’t in use
 	 */
 	public function parseValueClassTitle(\DOMElement $e, $separator = '') {
-		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ")]', $e);
+		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ")]', $e);
 
 		if ($valueClassElements->length !== 0) {
 			// Process value-class stuff
@@ -614,7 +614,7 @@ class Parser {
 			return unicodeTrim($val);
 		}
 
-		$valueTitleElements = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value-title ")]', $e);
+		$valueTitleElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $e);
 
 		if ($valueTitleElements->length !== 0) {
 			// Process value-title stuff
@@ -702,7 +702,7 @@ class Parser {
 	 */
 	public function parseDT(\DOMElement $dt, &$dates = array(), &$impliedTimezone = null) {
 		// Check for value-class pattern
-		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", @class, " "), " value ") or contains(concat(" ", @class, " "), " value-title ")]', $dt);
+		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ") or contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $dt);
 		$dtValue = false;
 
 		if ($valueClassChildren->length > 0) {
@@ -978,7 +978,7 @@ class Parser {
 		}
 
 		// Handle p-*
-		foreach ($this->xpath->query('.//*[contains(concat(" ", @class) ," p-")]', $e) as $p) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)) ," p-")]', $e) as $p) {
 			// element is already parsed
 			if ($this->isElementParsed($p, 'p')) {
 				continue;
@@ -1003,7 +1003,7 @@ class Parser {
 		}
 
 		// Handle u-*
-		foreach ($this->xpath->query('.//*[contains(concat(" ",  @class)," u-")]', $e) as $u) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," u-")]', $e) as $u) {
 			// element is already parsed
 			if ($this->isElementParsed($u, 'u')) {
 				continue;
@@ -1028,7 +1028,7 @@ class Parser {
 		$temp_dates = array();
 
 		// Handle dt-*
-		foreach ($this->xpath->query('.//*[contains(concat(" ", @class), " dt-")]', $e) as $dt) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)), " dt-")]', $e) as $dt) {
 			// element is already parsed
 			if ($this->isElementParsed($dt, 'dt')) {
 				continue;
@@ -1063,7 +1063,7 @@ class Parser {
 		}
 
 		// Handle e-*
-		foreach ($this->xpath->query('.//*[contains(concat(" ", @class)," e-")]', $e) as $em) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," e-")]', $e) as $em) {
 			// element is already parsed
 			if ($this->isElementParsed($em, 'e')) {
 				continue;
@@ -1755,7 +1755,7 @@ class Parser {
 
 		// replace all roots
 		foreach ($this->classicRootMap as $old => $new) {
-			foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $new . ' "))]') as $el) {
+			foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $new . ' "))]') as $el) {
 				$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
 			}
 		}
@@ -1763,7 +1763,7 @@ class Parser {
 		foreach ($this->classicPropertyMap as $oldRoot => $properties) {
 			$newRoot = $this->classicRootMap[$oldRoot];
 			foreach ($properties as $old => $data) {
-				foreach ($xp->query('//*[contains(concat(" ", @class, " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", @class, " "), " ' . $old . ' ") and not(contains(concat(" ", @class, " "), " ' . $data['replace'] . ' "))]') as $el) {
+				foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $data['replace'] . ' "))]') as $el) {
 					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $data['replace']);
 				}
 			}
