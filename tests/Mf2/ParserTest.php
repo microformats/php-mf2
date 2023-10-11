@@ -898,5 +898,21 @@ EOF;
 		$this->assertEquals(1, count($rootEls));
 		$this->assertEquals('h-vendor123-name', $rootEls->item(0)->getAttribute('class'));
 	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/245
+	 */
+	public function testNewlineBeforePrefix() {
+		$input = <<<EOT
+<div class="h-entry">
+<h1 class="post_title__text
+p-name">Page Title</h1>
+<p class="p-summary">A summary so the p-name won't be implied. This test demonstrates p-name is not being parsed.</p>
+</div>
+EOT;
+		$result = Mf2\parse($input);
+		$this->assertEquals('Page Title', $result['items'][0]['properties']['name'][0]);
+		$this->assertEquals('A summary so the p-name won\'t be implied. This test demonstrates p-name is not being parsed.', $result['items'][0]['properties']['summary'][0]);
+	}
 }
 
