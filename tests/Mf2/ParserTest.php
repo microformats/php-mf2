@@ -56,7 +56,7 @@ class ParserTest extends TestCase {
 		$test = 'someclass p-location someotherclass u-author p-author';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
 
-		$this->assertEquals($expected, $actual);
+		$this->assertEqualsCanonicalizing($expected, $actual);
 	}
 
 	public function testMicroformatNamesFromClassIgnoresPrefixesWithoutNames() {
@@ -897,6 +897,59 @@ EOF;
 
 		$this->assertEquals(1, count($rootEls));
 		$this->assertEquals('h-vendor123-name', $rootEls->item(0)->getAttribute('class'));
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/249
+	 */
+	public function testInvalidNestedPropertiesIgnored1() {
+		$input = <<<EOF
+<div class=" h-feed pt-2">
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/bar">bar </a>
+	</div>
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/foo">foo</a>
+	</div>
+</div>
+EOF;
+		$output = Mf2\parse($input);
+
+		# `properties` should be empty
+		$this->assertEquals(0, count($output['items'][0]['properties']));
+
+		# `children` should have length=2
+		$this->assertArrayHasKey('children', $output['items'][0]);
+		$this->assertEquals(2, count($output['items'][0]['children']));
+
+		# each child should be an h-entry
+		$this->assertEquals('h-entry', $output['items'][0]['children'][0]['type'][0]);
+		$this->assertEquals('h-entry', $output['items'][0]['children'][1]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/246
+	 */
+	public function testInvalidNestedPropertiesIgnored2() {
+		$input = <<<EOF
+<article class="h-card">
+	 <h1> TITLE </h1>
+	 <img class="h-36 photo u-logo"
+					alt="An example alt title"
+					src="https://example.com/img.png"
+		/>
+		<p class="h-21 u-nickname"> John Doe </p>
+</article>
+EOF;
+		$output = Mf2\parse($input);
+
+		# `properties` should have length=3
+		$this->assertEquals(3, count($output['items'][0]['properties']));
+
+		# should have these properties
+		$this->assertArrayHasKey('logo', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('nickname', $output['items'][0]['properties']);
+		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 	}
 }
 
