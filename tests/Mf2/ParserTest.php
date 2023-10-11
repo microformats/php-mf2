@@ -902,6 +902,57 @@ EOF;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/249
 	 */
+	public function testInvalidRootsIgnored() {
+		$input = <<<EOF
+<div class=" h-5 pt-2">
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/bar">bar </a>
+	</div>
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/foo">foo</a>
+	</div>
+</div>
+EOF;
+		$output = Mf2\parse($input);
+
+		# `items` should have length=2
+		$this->assertEquals(2, count($output['items']));
+
+		# each should be an h-entry
+		$this->assertEquals('h-entry', $output['items'][0]['type'][0]);
+		$this->assertEquals('h-entry', $output['items'][1]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/249
+	 */
+	public function testInvalidNestedRootsIgnored() {
+		$input = <<<EOF
+<div class=" h-5 pt-2">
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/bar">bar </a>
+	</div>
+	<div class="p-4 h-entry">
+		<a class="u-url" href="https://example.com/foo">foo</a>
+	</div>
+	<div class="p-4 h-5">
+		<a class="u-url" href="https://example.com/baz">baz</a>
+	</div>
+</div>
+EOF;
+		$output = Mf2\parse($input);
+
+		# `items` should have length=2
+		$this->assertEquals(2, count($output['items']));
+
+		# each should be an h-entry
+		$this->assertEquals('h-entry', $output['items'][0]['type'][0]);
+		$this->assertEquals('h-entry', $output['items'][1]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/249
+	 */
 	public function testInvalidNestedPropertiesIgnored1() {
 		$input = <<<EOF
 <div class=" h-feed pt-2">
