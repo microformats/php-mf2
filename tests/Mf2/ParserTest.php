@@ -139,6 +139,8 @@ class ParserTest extends TestCase {
 	 * @group parseH
 	 */
 	public function testInvalidClassnamesContainingHAreIgnored() {
+		self::expectNotToPerformAssertions();
+
 		$input = '<div class="asdfgh-jkl"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
