@@ -1658,6 +1658,7 @@ class Parser {
 							if ( !$this->hasRootMf2($tempEl) ) {
 								$this->addMfClasses($tempEl, 'p-location h-card');
 								$this->backcompat($tempEl, 'vcard');
+								$this->addUpgraded($tempEl, array('location', 'vcard'));
 							}
 						}
 					}

@@ -1005,5 +1005,71 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']['geo'][0]['properties']);
 	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/184
+	 */
+	public function testVeventLocationVcardProperty() {
+		// Note: The venue for IWC 2012 no longer exists so we switched
+		// this to Powell's since it's a long-term Portland institution
+		$input = '<div class="vevent">
+	<a class="summary url" href="https://indieweb.org/2012">
+		IndieWebCamp 2012
+	</a>
+	from <time class="dtstart">2012-06-30</time>
+	to <time class="dtend">2012-07-01</time> at
+	<span class="location vcard">
+		<a class="fn org url" href="https://www.powells.com/">Powell’s</a>,
+		<span class="adr">
+				<span class="street-address">1005 W Burnside St.</span>,
+				<span class="locality">Portland</span>,
+				<abbr class="region" title="Oregon">OR</abbr>
+		</span>
+	</span>
+</div>';
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
+		$this->assertCount(1, $output['items'][0]['properties']['location'][0]['type']);
+		$this->assertEquals('h-card', $output['items'][0]['properties']['location'][0]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/184
+	 */
+	public function testVeventLocationAdrProperty() {
+		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
+		// "second annual Online Press Freedom Summit in San Francisco on October 10"
+		$input = '<div class="vevent">
+		<span class="summary">CPJ Online Press Freedom Summit</span>
+		(<time class="dtstart" datetime="2012-10-10">10 Oct 2012</time>) in
+		<span class="location adr"><span class="street-address">665 3rd St.</span><span class="locality">San Francisco</span>, <span class="region">CA</span>  </span>.
+</div>';
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
+		$this->assertCount(1, $output['items'][0]['properties']['location'][0]['type']);
+		$this->assertEquals('h-adr', $output['items'][0]['properties']['location'][0]['type'][0]);
+	}
+
+	/**
+	 * @see https://github.com/microformats/php-mf2/issues/184
+	 */
+	public function testVeventLocationProperty() {
+		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
+		// "second annual Online Press Freedom Summit in San Francisco on October 10"
+		$input = '<div class="vevent">
+		<span class="summary">CPJ Online Press Freedom Summit</span>
+		(<time class="dtstart" datetime="2012-10-10">10 Oct 2012</time>) in
+		<span class="location">San Francisco</span>.
+</div>';
+		$parser = new Parser($input, 'https://example.com');
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
+		$this->assertEquals('San Francisco', $output['items'][0]['properties']['location'][0]);
+	}
 }
 
