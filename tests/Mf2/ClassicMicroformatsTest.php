@@ -959,7 +959,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		<span><span class="rating">5</span> out of 5 stars</span>
 		<span class="item vevent">
 				<span class="summary">IndieWebCamp 2014</span> -
-				<a href="http://indiewebcamp.com/2014/" class="url">indiewebcamp.com/2014/</a>
+				<a href="https://indieweb.org/2014" class="url">indieweb.org/2014</a>
 		</span>
 </div>';
 		$parser = new Parser($input);
@@ -983,7 +983,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	<span><span class="rating">4</span> out of 5 stars</span>
 	<span class="item hproduct">
 		<span class="fn">Widget</span> -
-		<a href="http://example.com/widget/" class="url">example.com/widget/</a>
+		<a href="https://example.com/widget/" class="url">example.com/widget/</a>
 	</span>
 </div>';
 		$parser = new Parser($input);
