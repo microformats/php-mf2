@@ -1039,9 +1039,11 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	 * @see https://github.com/microformats/php-mf2/issues/184
 	 */
 	public function testVeventLocationAdrProperty() {
+		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
+		// "second annual Online Press Freedom Summit in San Francisco on October 10"
 		$input = '<div class="vevent">
 		<span class="summary">CPJ Online Press Freedom Summit</span>
-		(<time class="dtstart" datetime="2012-10-10">10 Nov 2012</time>) in
+		(<time class="dtstart" datetime="2012-10-10">10 Oct 2012</time>) in
 		<span class="location adr"><span class="street-address">665 3rd St.</span><span class="locality">San Francisco</span>, <span class="region">CA</span>  </span>.
 </div>';
 		$parser = new Parser($input, 'https://example.com');
@@ -1056,9 +1058,11 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	 * @see https://github.com/microformats/php-mf2/issues/184
 	 */
 	public function testVeventLocationProperty() {
+		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
+		// "second annual Online Press Freedom Summit in San Francisco on October 10"
 		$input = '<div class="vevent">
 		<span class="summary">CPJ Online Press Freedom Summit</span>
-		(<time class="dtstart" datetime="2012-10-10">10 Nov 2012</time>) in
+		(<time class="dtstart" datetime="2012-10-10">10 Oct 2012</time>) in
 		<span class="location">San Francisco</span>.
 </div>';
 		$parser = new Parser($input, 'https://example.com');
