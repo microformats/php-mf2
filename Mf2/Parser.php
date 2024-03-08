@@ -1656,6 +1656,16 @@ class Parser {
 						}
 					}
 
+					$reviewer_nodes = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " reviewer ")]', $el);
+
+					if ( $reviewer_nodes->length ) {
+						foreach ( $reviewer_nodes as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->addMfClasses($tempEl, 'p-author h-card');
+							}
+						}
+					}
+
 					$this->upgradeRelTagToCategory($el);
 				break;
 
@@ -2070,10 +2080,7 @@ class Parser {
 				'replace' => 'p-item h-item',
 				'context' => 'item'
 			),
-			'reviewer' => array(
-				'replace' => 'p-author h-card',
-				'context' => 'vcard',
-			),
+			# reviewer: see backcompat()
 			'dtreviewed' => array(
 				'replace' => 'dt-published'
 			),
