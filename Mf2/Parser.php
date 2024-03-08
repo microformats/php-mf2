@@ -166,14 +166,10 @@ function nestedMfPropertyNamesFromClass($class) {
 	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
 
-	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
-	foreach (explode(' ', $class) as $classname) {
-		foreach ($prefixes as $prefix) {
-			// Check if $classname is a valid property classname for $prefix.
-			if (mb_substr($classname, 0, mb_strlen($prefix)) == $prefix && $classname != $prefix) {
-				$propertyName = mb_substr($classname, mb_strlen($prefix));
-				$propertyNames[$propertyName][] = $prefix;
-			}
+	foreach ($prefixes as $prefix) {
+		$classes = mfNamesFromClass($class, $prefix);
+		foreach ($classes as $property) {
+			$propertyNames[$property][] = $prefix;
 		}
 	}
 
