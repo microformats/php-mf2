@@ -54,56 +54,56 @@ class ParseImpliedTest extends TestCase {
 	}
 
 	public function testParsesImpliedUPhotoFromImgSrcWithoutAlt() {
-		$input = '<img class="h-card" src="http://example.com/img.png" />';
+		$input = '<img class="h-card" src="https://example.com/img.png" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testParsesImpliedUPhotoFromImgSrcWithEmptyAlt() {
-		$input = '<img class="h-card" src="http://example.com/img.png" alt="" />';
+		$input = '<img class="h-card" src="https://example.com/img.png" alt="" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
 		$this->assertEquals('', $output['items'][0]['properties']['photo'][0]['alt']);
 	}
 
 	public function testParsesImpliedUPhotoFromImgSrcWithAlt() {
-		$input = '<img class="h-card" src="http://example.com/img.png" alt="Example" />';
+		$input = '<img class="h-card" src="https://example.com/img.png" alt="Example" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
+		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
 		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
 	}
 
 	public function testParsesImpliedUPhotoFromNestedImgSrc() {
-		$input = '<div class="h-card"><img src="http://example.com/img.png" alt="" /></div>';
+		$input = '<div class="h-card"><img src="https://example.com/img.png" alt="" /></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$return = [
-			'value' => 'http://example.com/img.png',
+			'value' => 'https://example.com/img.png',
 			'alt'=> ''
 			];
 		$this->assertEquals( $return, $output['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc() {
-		$input = '<div class="h-card"><span><img src="http://example.com/img.png" alt="" /></span></div>';
+		$input = '<div class="h-card"><span><img src="https://example.com/img.png" alt="" /></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$result = [
 			'alt' => '',
-			'value' => 'http://example.com/img.png'
+			'value' => 'https://example.com/img.png'
 			];
 		$this->assertEquals($result, $output['items'][0]['properties']['photo'][0]);
 	}
@@ -111,7 +111,7 @@ class ParseImpliedTest extends TestCase {
 	/*
 	 * see testImpliedPhotoFromNestedObject() and testImpliedPhotoFromNestedObject()
 	public function testIgnoresImgIfNotOnlyChild() {
-		$input = '<div class="h-card"><img src="http://example.com/img.png" /> <p>Moar text</p></div>';
+		$input = '<div class="h-card"><img src="https://example.com/img.png" /> <p>Moar text</p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
@@ -119,7 +119,7 @@ class ParseImpliedTest extends TestCase {
 	}
 
 	public function testIgnoresDoublyNestedImgIfNotOnlyDoublyNestedChild() {
-		$input = '<div class="h-card"><span><img src="http://example.com/img.png" /> <p>Moar text</p></span></div>';
+		$input = '<div class="h-card"><span><img src="https://example.com/img.png" /> <p>Moar text</p></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
@@ -128,40 +128,40 @@ class ParseImpliedTest extends TestCase {
 	*/
 
 	public function testParsesImpliedUUrlFromAHref() {
-		$input = '<a class="h-card" href="http://example.com/">Some Name</a>';
+		$input = '<a class="h-card" href="https://example.com/">Some Name</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 
 
 	public function testParsesImpliedUUrlFromNestedAHref() {
-		$input = '<span class="h-card"><a href="http://example.com/">Some Name</a></span>';
+		$input = '<span class="h-card"><a href="https://example.com/">Some Name</a></span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 
   public function testParsesImpliedUUrlWithExplicitName() {
-    $input = '<span class="h-card"><a href="http://example.com/" class="p-name">Some Name</a></span>';
+    $input = '<span class="h-card"><a href="https://example.com/" class="p-name">Some Name</a></span>';
     $parser = new Parser($input);
     $output = $parser->parse();
 
     $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
   }
 
   public function testParsesImpliedNameWithExplicitURL() {
-    $input = '<span class="h-card"><a href="http://example.com/" class="u-url">Some Name</a></span>';
+    $input = '<span class="h-card"><a href="https://example.com/" class="u-url">Some Name</a></span>';
     $parser = new Parser($input);
     $output = $parser->parse();
 
     $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
     $this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
   }
 
@@ -249,7 +249,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * Correcting previous test testIgnoresImgIfNotOnlyChild()
 	 * This *should* return the photo since h-x>img[src]:only-of-type:not[.h-*]
-	 * @see https://indiewebcamp.com/User:Tantek.com
+	 * @see https://indieweb.org/User:Tantek.com
 	 */
 	public function testImpliedPhotoFromNestedImg() {
 		$input = '<span class="h-card"><a href="http://tantek.com/" class="external text" style="border: 0px none;"><img src="https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg" style="width:128px;float:right;margin-left:1em"><b><span style="font-size:2em">Tantek Çelik</span></b></a></span>';
@@ -348,7 +348,7 @@ class ParseImpliedTest extends TestCase {
 
 	/**
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
 	public function testBackcompatNoImpliedName() {
 		$input = '<div class="hentry"> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
@@ -361,7 +361,7 @@ class ParseImpliedTest extends TestCase {
 
 	/**
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
 	public function testBackcompatNoImpliedPhoto() {
 		$input = '<div class="hentry"> <img src="https://example.com/photo.jpg" alt="photo" /> </div>';
@@ -373,7 +373,7 @@ class ParseImpliedTest extends TestCase {
 
 	/**
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
 	public function testBackcompatNoImpliedUrl() {
 		$input = '<div class="hentry"> <a href="https://example.com/this-post" class="entry-title">Title</a> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
@@ -387,11 +387,11 @@ class ParseImpliedTest extends TestCase {
 
 	/**
 	 * Don't imply u-url if there are other u-*
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 * @see https://github.com/microformats/php-mf2/issues/183
 	 */
 	public function testNoImpliedUrl() {
-		$input = '<div class="h-entry"> <h1 class="p-name"><a href="https://example.com/this-post">Title</a></h1> <div class="e-content"> <p> blah blah blah </p> </div> <a href="https://example.org/syndicate" class="u-syndication"></a> </div>';
+		$input = '<div class="h-entry"> <h1 class="p-name"><a href="https://example.com/this-post">Title</a></h1> <div class="e-content"> <p> blah blah blah </p> </div> <a href="https://othersite.example.com/syndicate" class="u-syndication"></a> </div>';
 		$result = Mf2\parse($input);
 
 		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);

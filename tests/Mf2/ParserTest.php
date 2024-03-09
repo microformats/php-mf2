@@ -104,11 +104,11 @@ class ParserTest extends TestCase {
 
 	public function testParseEResolvesRelativeLinks() {
 		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>. <object data="/object"></object> <img src="/img" /></p></div>';
-		$parser = new Parser($input, 'http://example.com');
+		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
-		$this->assertEquals('Blah blah <a href="http://example.com/a-url">thing</a>. <object data="http://example.com/object"></object> <img src="http://example.com/img">', $output['items'][0]['properties']['content'][0]['html']);
-		$this->assertEquals('Blah blah thing. http://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
+		$this->assertEquals('Blah blah <a href="https://example.com/a-url">thing</a>. <object data="https://example.com/object"></object> <img src="https://example.com/img">', $output['items'][0]['properties']['content'][0]['html']);
+		$this->assertEquals('Blah blah thing. https://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
 	public function testParseEWithBR() {
@@ -191,23 +191,23 @@ class ParserTest extends TestCase {
 	}
 
 	public function testParsesRelValues() {
-		$input = '<a rel="author" href="http://example.com">Mr. Author</a>';
+		$input = '<a rel="author" href="https://example.com">Mr. Author</a>';
 		$parser = new Parser($input);
 
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('rels', $output);
-		$this->assertEquals('http://example.com', $output['rels']['author'][0]);
+		$this->assertEquals('https://example.com', $output['rels']['author'][0]);
 	}
 
 	public function testParsesRelAlternateValues() {
-		$input = '<a rel="alternate home" href="http://example.org" hreflang="de", media="screen" type="text/html" title="German Homepage Link">German Homepage</a>';
+		$input = '<a rel="alternate home" href="https://example.com" hreflang="de", media="screen" type="text/html" title="German Homepage Link">German Homepage</a>';
 		$parser = new Parser($input);
 		$parser->enableAlternates = true;
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('alternates', $output);
-		$this->assertEquals('http://example.org', $output['alternates'][0]['url']);
+		$this->assertEquals('https://example.com', $output['alternates'][0]['url']);
 		$this->assertEquals('home', $output['alternates'][0]['rel']);
 		$this->assertEquals('de', $output['alternates'][0]['hreflang']);
 		$this->assertEquals('screen', $output['alternates'][0]['media']);
@@ -300,7 +300,7 @@ EOT;
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/53
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
 	 */
 	public function testConvertsNestedImgElementToAltOrSrc() {
 		$input = <<<EOT
@@ -616,7 +616,7 @@ EOT;
 	{
 		$input = '<article class="h-entry">
 	<div class="u-like-of h-cite">
-		<p>I really like <a class="p-name u-url" href="http://microformats.org/">Microformats</a></p>
+		<p>I really like <a class="p-name u-url" href="https://microformats.org/">Microformats</a></p>
 	</div>
 	<footer>
 		<p>Footer to be ignored.</p>
@@ -755,7 +755,7 @@ END;
 	 */
 	public function testConsecutiveDashes() {
 		$input = '<div class="h-entry h-----">
-<p> <a href="http://example.com/post" class="u-in-reply--to">http://example.com/post posted:</a> </p>
+<p> <a href="https://example.com/post" class="u-in-reply--to">https://example.com/post posted:</a> </p>
 <span class="p-name">Too many dashes</span>
 <span class="p--acme-leading">leading dash</span>
 <span class="p-acme--middle">middle dash</span>

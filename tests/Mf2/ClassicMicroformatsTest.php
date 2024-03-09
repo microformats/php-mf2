@@ -15,7 +15,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  *
  * Contains tests of the classic microformat => µf2 functionality.
  *
- * Mainly based off BC tables on http://microformats.org/wiki/microformats2#v2_vocabularies
+ * Mainly based off BC tables on https://microformats.org/wiki/microformats2#v2_vocabularies
  */
 class ClassicMicroformatsTest extends TestCase {
 	protected function set_up() {
@@ -152,7 +152,7 @@ EOT;
 <div class="vevent">
 <h3 class="summary">XYZ Project Review</h3>
 <p class="description">Project XYZ Review Meeting</p>
-<p> <a class="url" href="http://example.com/xyz-meeting">http://example.com/xyz-meeting</a> </p>
+<p> <a class="url" href="https://example.com/xyz-meeting">https://example.com/xyz-meeting</a> </p>
 <p>To be held on
  <span class="dtstart">
   <abbr class="value" title="1998-03-12">the 12th of March</abbr>
@@ -181,7 +181,7 @@ EOT;
 
 		$this->assertEquals('XYZ Project Review', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('Project XYZ Review Meeting', $output['items'][0]['properties']['description'][0]);
-		$this->assertEquals('http://example.com/xyz-meeting', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/xyz-meeting', $output['items'][0]['properties']['url'][0]);
 		$this->assertEquals('1998-03-12 08:30-0500', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('1998-03-12 09:30-0500', $output['items'][0]['properties']['end'][0]);
 	}
@@ -255,7 +255,7 @@ END;
 
 
 	/**
-	 * @see http://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
+	 * @see https://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
 	 */
 	public function testMf2RootStopsBackcompatRoot() {
 		$input = '<div class="adr h-adr">
@@ -273,7 +273,7 @@ END;
 
 
 	/**
-	 * @see http://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
+	 * @see https://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
 	 */
 	public function testMf2CustomRootStopsBackcompatRoot() {
 		$input = '<div class="adr h-acme-address">
@@ -291,7 +291,7 @@ END;
 
 
 	/**
-	 * @see http://microformats.org/wiki/microformats2-parsing-issues#uf2_children_on_backcompat_properties
+	 * @see https://microformats.org/wiki/microformats2-parsing-issues#uf2_children_on_backcompat_properties
 	 */
 	public function testMf2ChildrenOnBackcompatProperties() {
 		$input = '<div class="vcard">
@@ -753,7 +753,7 @@ END;
 
 
 	/**
-	 * @see http://microformats.org/wiki/hReview#Examples
+	 * @see https://microformats.org/wiki/hReview#Examples
 	 */
 	public function testParsesClassicHreview() {
 		$input = <<< END
@@ -767,7 +767,7 @@ END;
 	</div>
 	<p>Visit date: <span>April 2005</span></p>
 	<p>Food eaten: <span>Florentine crepe</span></p>
-	<p>Permanent link for review: <a rel="self bookmark" href="http://example.com/crepe">http://example.com/crepe</a></p>
+	<p>Permanent link for review: <a rel="self bookmark" href="https://example.com/crepe">https://example.com/crepe</a></p>
 </div>
 END;
 		$parser = new Parser($input);

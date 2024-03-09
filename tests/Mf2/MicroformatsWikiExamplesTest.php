@@ -54,7 +54,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats-2
+	 * From https://microformats.org/wiki/microformats-2
 	 */
 	public function testSimplePersonReference() {
 		$input = '<span class="h-card">Frances Berriman</span>';
@@ -75,7 +75,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats-2
+	 * From https://microformats.org/wiki/microformats-2
 	 */
 	public function testSimpleHyperlinkedPersonReference() {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
@@ -97,10 +97,10 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats-2-implied-properties
+	 * From https://microformats.org/wiki/microformats-2-implied-properties
 	 */
 	public function testSimplePersonImage() {
-		$input = '<img class="h-card" src="http://example.org/pic.jpg" alt="Chris Messina" />';
+		$input = '<img class="h-card" src="http://example.com/pic.jpg" alt="Chris Messina" />';
 		// Added root items key
 		$expected = '{
 	"rels": {},
@@ -110,7 +110,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
   "properties": {
 	"name": ["Chris Messina"],
 	"photo": [{
-		"value": "http://example.org/pic.jpg",
+		"value": "http://example.com/pic.jpg",
 		"alt": "Chris Messina"
 	}]
   }
@@ -122,7 +122,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats-2-implied-properties
+	 * From https://microformats.org/wiki/microformats-2-implied-properties
 	 */
 	public function testHyperlinkedImageNameAndPhotoProperties() {
 		$input = '<a class="h-card" href="http://rohit.khare.org/">
@@ -151,7 +151,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats-2
+	 * From https://microformats.org/wiki/microformats-2
 	 */
 	public function testMoreDetailedPerson() {
 		$input = '<div class="h-card">

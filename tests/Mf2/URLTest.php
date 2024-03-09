@@ -113,14 +113,14 @@ class URLTest extends TestCase {
 	}
 
 	public function testNoPathOnBase() {
-		$actual = mf2\resolveUrl('http://example.com', '');
-		$this->assertEquals('http://example.com/', $actual);
+		$actual = mf2\resolveUrl('https://example.com', '');
+		$this->assertEquals('https://example.com/', $actual);
 
-		$actual = mf2\resolveUrl('http://example.com', '#');
-		$this->assertEquals('http://example.com/#', $actual);
+		$actual = mf2\resolveUrl('https://example.com', '#');
+		$this->assertEquals('https://example.com/#', $actual);
 
-		$actual = mf2\resolveUrl('http://example.com', '#thing');
-		$this->assertEquals('http://example.com/#thing', $actual);
+		$actual = mf2\resolveUrl('https://example.com', '#thing');
+		$this->assertEquals('https://example.com/#thing', $actual);
 	}
 
 	public function testMisc() {
@@ -139,12 +139,12 @@ class URLTest extends TestCase {
 
 	/** as per https://github.com/indieweb/php-mf2/issues/35 */
 	public function testResolvesProtocolRelativeUrlsCorrectly() {
-		$expected = 'http://cdn.example.org/thing/asset.css';
-		$actual = Mf2\resolveUrl('http://example.com', '//cdn.example.org/thing/asset.css');
+		$expected = 'https://cdn.example.com/thing/asset.css';
+		$actual = Mf2\resolveUrl('https://example.com', '//cdn.example.com/thing/asset.css');
 		$this->assertEquals($expected, $actual);
 
-		$expected = 'https://cdn.example.org/thing/asset.css';
-		$actual = Mf2\resolveUrl('https://example.com', '//cdn.example.org/thing/asset.css');
+		$expected = 'https://cdn.example.com/thing/asset.css';
+		$actual = Mf2\resolveUrl('https://example.com', '//cdn.example.com/thing/asset.css');
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -162,49 +162,49 @@ class URLTest extends TestCase {
 		// fail message, base, url, expected
 		$cases = array(
 			array('Should return absolute URL unchanged',
-				'http://example.com', 'http://example.com', 'http://example.com'),
+				'https://example.com', 'https://example.com', 'https://example.com'),
 
 			array('Should return root given blank path',
-				'http://example.com', '', 'http://example.com/'),
+				'https://example.com', '', 'https://example.com/'),
 
 			array('Should return input unchanged given full URL and blank path',
-				'http://example.com/something', '', 'http://example.com/something'),
+				'https://example.com/something', '', 'https://example.com/something'),
 
 			array('Should handle blank base URL',
-				'', 'http://example.com', 'http://example.com'),
+				'', 'https://example.com', 'https://example.com'),
 
 			array('Should resolve fragment ID',
-				'http://example.com', '#thing', 'http://example.com/#thing'),
+				'https://example.com', '#thing', 'https://example.com/#thing'),
 
 			array('Should resolve blank fragment ID',
-				'http://example.com', '#', 'http://example.com/#'),
+				'https://example.com', '#', 'https://example.com/#'),
 
 			array('Should resolve same level URL',
-				'http://example.com', 'thing', 'http://example.com/thing'),
+				'https://example.com', 'thing', 'https://example.com/thing'),
 
 			array('Should resolve directory level URL',
-				'http://example.com', './thing', 'http://example.com/thing'),
+				'https://example.com', './thing', 'https://example.com/thing'),
 
 			array('Should resolve parent level URL at root level',
-				'http://example.com', '../thing', 'http://example.com/thing'),
+				'https://example.com', '../thing', 'https://example.com/thing'),
 
 			array('Should resolve nested URL',
-				'http://example.com/something', 'another', 'http://example.com/another'),
+				'https://example.com/something', 'another', 'https://example.com/another'),
 
 			array('Should ignore query strings in base url',
-				'http://example.com/index.php?url=http://example.org', '/thing', 'http://example.com/thing'),
+				'https://example.com/index.php?url=https://example.org', '/thing', 'https://example.com/thing'),
 
 			array('Should resolve query strings',
-				'http://example.com/thing', '?stuff=yes', 'http://example.com/thing?stuff=yes'),
+				'https://example.com/thing', '?stuff=yes', 'https://example.com/thing?stuff=yes'),
 
 			array('Should resolve dir level query strings',
-				'http://example.com', './?thing=yes', 'http://example.com/?thing=yes'),
+				'https://example.com', './?thing=yes', 'https://example.com/?thing=yes'),
 
 			array('Should resolve up one level from root domain',
-				'http://example.com', 'path/to/the/../file', 'http://example.com/path/to/file'),
+				'https://example.com', 'path/to/the/../file', 'https://example.com/path/to/file'),
 
 			array('Should resolve up one level from base with path',
-				'http://example.com/path/the', 'to/the/../file', 'http://example.com/path/to/file'),
+				'https://example.com/path/the', 'to/the/../file', 'https://example.com/path/to/file'),
 
 			// Tests from webignition library
 
@@ -218,7 +218,7 @@ class URLTest extends TestCase {
 				'http://user:pass@www.example.com', 'server.php', 'http://user:pass@www.example.com/server.php'),
 
 			array('relative base has file path',
-				'http://example.com/index.html', 'example.html', 'http://example.com/example.html'),
+				'https://example.com/index.html', 'example.html', 'https://example.com/example.html'),
 
 			array('input has absolute path',
 				'http://www.example.com/pathOne/pathTwo/pathThree', '/server.php?param1=value1', 'http://www.example.com/server.php?param1=value1'),
@@ -248,7 +248,7 @@ class URLTest extends TestCase {
 				'http://www.example.com/pathOne', './jquery.js', 'http://www.example.com/jquery.js'),
 
 			array('testAbsolutePathIncludesPortNumber',
-				'http://example.com:8080/index.html', '/photo.jpg', 'http://example.com:8080/photo.jpg')
+				'https://example.com:8080/index.html', '/photo.jpg', 'https://example.com:8080/photo.jpg')
 
 		);
 
