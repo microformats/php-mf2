@@ -139,15 +139,21 @@ class ParserTest extends TestCase {
 	 * @group parseH
 	 */
 	public function testInvalidClassnamesContainingHAreIgnored() {
-		$input = '<div class="asdfgh-jkl"></div>';
+		$classname = 'asdfgh-jkl';
+		$input = sprintf('<div class="%s"></div>', $classname);
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		// Look through $output for an item which indicate failure
+		// Look through parsed items for `type` matching the classname.
+		// There shouldn't be any
+		$matches = 0;
 		foreach ($output['items'] as $item) {
-			if (in_array('asdfgh-jkl', $item['type']))
-				$this->fail();
+			if (in_array($classname, $item['type'])) {
+				$matches++;
+			}
 		}
+
+		$this->assertEquals(0, $matches, sprintf('Class name "%s" should not have parsed as a root microformat', $classname));
 	}
 
 	public function testHtmlSpecialCharactersWorks() {

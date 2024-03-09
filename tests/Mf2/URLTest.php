@@ -9,7 +9,7 @@ namespace Mf2\Parser\Test;
 use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
-class UrlTest extends TestCase {
+class URLTest extends TestCase {
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -149,7 +149,7 @@ class UrlTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider testData
+	 * @dataProvider dataProvider
 	 */
   public function testReturnsUrlIfAbsolute($assert, $base, $url, $expected) {
     $actual = mf2\resolveUrl($base, $url);
@@ -157,7 +157,7 @@ class UrlTest extends TestCase {
     $this->assertEquals($expected, $actual, $assert);
   }
 
-	public function testData() {
+	public function dataProvider() {
 		// seriously, please update to PHP 5.4 so I can use nice array syntax ;)
 		// fail message, base, url, expected
 		$cases = array(

@@ -1637,8 +1637,27 @@ class Parser {
 						foreach ( $item_and_hproduct as $tempEl ) {
 							if ( !$this->hasRootMf2($tempEl) ) {
 								$this->addMfClasses($tempEl, 'p-item h-product');
-								$this->backcompat($tempEl, 'vevent');
+								$this->backcompat($tempEl, 'hproduct');
 								$this->addUpgraded($tempEl, array('item', 'hproduct'));
+							}
+						}
+					}
+
+					$rel_self_bookmark = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@rel), " "), " self ") and contains(concat(" ", normalize-space(@rel), " "), " bookmark ")]', $el);
+
+					if ( $rel_self_bookmark->length ) {
+						foreach ( $rel_self_bookmark as $tempEl ) {
+							$this->addMfClasses($tempEl, 'u-url');
+							$this->addUpgraded($tempEl, array('self', 'bookmark'));
+						}
+					}
+
+					$reviewer_nodes = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " reviewer ")]', $el);
+
+					if ( $reviewer_nodes->length ) {
+						foreach ( $reviewer_nodes as $tempEl ) {
+							if ( !$this->hasRootMf2($tempEl) ) {
+								$this->addMfClasses($tempEl, 'p-author h-card');
 							}
 						}
 					}
@@ -2058,10 +2077,7 @@ class Parser {
 				'replace' => 'p-item h-item',
 				'context' => 'item'
 			),
-			'reviewer' => array(
-				'replace' => 'p-author h-card',
-				'context' => 'vcard',
-			),
+			# reviewer: see backcompat()
 			'dtreviewed' => array(
 				'replace' => 'dt-published'
 			),

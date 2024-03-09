@@ -113,10 +113,16 @@ EOT;
 		$this->assertContains('txjs', $e['properties']['category']);
 	}
 
-	public function testParsesSnarfedOrgArticleCorrectly() {
+	/**
+	 * This test appears to have never made assertions. When initially
+	 * added it was only printing out the parsed results, probably for
+	 * debugging. Left for reference in case assertions need to be added.
+	 * @see https://github.com/microformats/php-mf2/commit/5fd2c961447f305f50f73e17bd8decf7ec77fa1d#diff-45371c4a595b936f718ab44eb3ff35c326e00a01f2f5cb3d327f34d03750b872
+	 */
+	/*public function testParsesSnarfedOrgArticleCorrectly() {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
-	}
+	}*/
 
 	public function testParsesHProduct() {
 		$input = <<<'EOT'
@@ -761,6 +767,7 @@ END;
 	</div>
 	<p>Visit date: <span>April 2005</span></p>
 	<p>Food eaten: <span>Florentine crepe</span></p>
+	<p>Permanent link for review: <a rel="self bookmark" href="http://example.com/crepe">http://example.com/crepe</a></p>
 </div>
 END;
 		$parser = new Parser($input);
@@ -944,6 +951,54 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertCount(2, $output['items'][0]['properties']['category']);
 		$this->assertContains('Garcon', $output['items'][0]['properties']['category']);
 		$this->assertContains('Garçon', $output['items'][0]['properties']['category']);
+	}
+
+	public function testHReviewItemVevent()
+	{
+		$input = '<div class="hreview">
+		<span><span class="rating">5</span> out of 5 stars</span>
+		<span class="item vevent">
+				<span class="summary">IndieWebCamp 2014</span> -
+				<a href="https://indieweb.org/2014" class="url">indieweb.org/2014</a>
+		</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
+
+		# assert item type is h-event
+		$this->assertCount(1, $output['items'][0]['properties']['item'][0]['type']);
+		$this->assertEquals('h-event', $output['items'][0]['properties']['item'][0]['type'][0]);
+
+		# assert expected h-event properties
+		$properties = $output['items'][0]['properties']['item'][0]['properties'];
+		$this->assertArrayHasKey('name', $properties);
+		$this->assertArrayHasKey('url', $properties);
+	}
+
+	public function testHReviewItemHproduct()
+	{
+		$input = '<div class="hreview">
+	<span><span class="rating">4</span> out of 5 stars</span>
+	<span class="item hproduct">
+		<span class="fn">Widget</span> -
+		<a href="https://example.com/widget/" class="url">example.com/widget/</a>
+	</span>
+</div>';
+		$parser = new Parser($input);
+		$output = $parser->parse();
+
+		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
+
+		# assert item type is h-product
+		$this->assertCount(1, $output['items'][0]['properties']['item'][0]['type']);
+		$this->assertEquals('h-product', $output['items'][0]['properties']['item'][0]['type'][0]);
+
+		# assert expected h-product properties
+		$properties = $output['items'][0]['properties']['item'][0]['properties'];
+		$this->assertArrayHasKey('name', $properties);
+		$this->assertArrayHasKey('url', $properties);
 	}
 
 	/**
