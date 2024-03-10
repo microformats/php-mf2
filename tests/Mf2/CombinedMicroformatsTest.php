@@ -11,7 +11,7 @@ use Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
  * Combined Microformats Test
  *
  * Tests the ability of Parser::parse() to handle nested microformats correctly.
- * More info at http://microformats.org/wiki/microformats-2#combining_microformats
+ * More info at https://microformats.org/wiki/microformats-2#combining_microformats
  *
  * @todo implement
  */
@@ -23,18 +23,20 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
 	public function testHEventLocationHCard() {
+		// Note: The venue for IWC 2012 no longer exists so we switched
+		// this to Powell's since it's a long-term Portland institution
 		$input = '<div class="h-event">
-	<a class="p-name u-url" href="http://indiewebcamp.com/2012">
+	<a class="p-name u-url" href="https://indieweb.org/2012">
 	IndieWebCamp 2012
 	</a>
 	from <time class="dt-start">2012-06-30</time>
 	to <time class="dt-end">2012-07-01</time> at
 	<span class="p-location h-card">
-	<a class="p-name p-org u-url" href="http://geoloqi.com/">
-	Geoloqi</a>, <span class="p-street-address">920 SW 3rd Ave. Suite 400</span>, <span class="p-locality">Portland</span>, <abbr class="p-region" title="Oregon">OR</abbr>
+	<a class="p-name p-org u-url" href="https://www.powells.com/">
+	Powell’s</a>, <span class="p-street-address">1005 W Burnside St.</span>, <span class="p-locality">Portland</span>, <abbr class="p-region" title="Oregon">OR</abbr>
   </span>
 </div>';
 		$expected = '{
@@ -44,17 +46,17 @@ class CombinedMicroformatsTest extends TestCase {
 		"type": ["h-event"],
 		"properties": {
 			"name": ["IndieWebCamp 2012"],
-			"url": ["http://indiewebcamp.com/2012"],
+			"url": ["https://indieweb.org/2012"],
 			"start": ["2012-06-30"],
 			"end": ["2012-07-01"],
 			"location": [{
-				"value": "Geoloqi",
+				"value": "Powell’s",
 				"type": ["h-card"],
 				"properties": {
-					"name": ["Geoloqi"],
-					"org": ["Geoloqi"],
-					"url": ["http://geoloqi.com/"],
-					"street-address": ["920 SW 3rd Ave. Suite 400"],
+					"name": ["Powell’s"],
+					"org": ["Powell’s"],
+					"url": ["https://www.powells.com/"],
+					"street-address": ["1005 W Burnside St."],
 					"locality": ["Portland"],
 					"region": ["Oregon"]
 				}
@@ -71,7 +73,7 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
 	public function testHCardOrgPOrg() {
 		$input = '<div class="h-card">
@@ -101,7 +103,7 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
 	public function testHCardOrgHCard() {
 		$input = '<div class="h-card">
@@ -140,7 +142,7 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
 	public function testHCardPOrgHCardHOrg() {
 		$input = '<div class="h-card">
@@ -178,7 +180,7 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
 	/**
-	 * From http://microformats.org/wiki/microformats2#combining_microformats
+	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
 	public function testHCardChildHCard() {
 		$input = '<div class="h-card">
@@ -257,9 +259,9 @@ class CombinedMicroformatsTest extends TestCase {
 		  <p class="e-content">Hello World</p>
 		  <ul>
 		    <li class="u-comment h-cite">
-		    	<a class="u-author h-card" href="http://jane.example.com/">Jane Bloggs</a>
+		    	<a class="u-author h-card" href="https://jane.example.com/">Jane Bloggs</a>
 		    	<p class="p-content p-name">lol</p>
-		    	<a class="u-url" href="http://example.org/post1234"><time class="dt-published">2015-07-12 12:03</time></a>
+		    	<a class="u-url" href="https://example.com/post1234"><time class="dt-published">2015-07-12 12:03</time></a>
 		    </li>
 		  </ul>
 		</div>';
@@ -279,16 +281,16 @@ class CombinedMicroformatsTest extends TestCase {
                 "type": ["h-card"],
                 "properties": {
                   "name": ["Jane Bloggs"],
-                  "url": ["http:\/\/jane.example.com\/"]
+                  "url": ["https:\/\/jane.example.com\/"]
                 },
-                "value": "http:\/\/jane.example.com\/"
+                "value": "https:\/\/jane.example.com\/"
               }],
               "content": ["lol"],
               "name": ["lol"],
-              "url": ["http:\/\/example.org\/post1234"],
+              "url": ["https:\/\/example.com\/post1234"],
               "published": ["2015-07-12 12:03"]
             },
-            "value": "http:\/\/example.org\/post1234"
+            "value": "https:\/\/example.com\/post1234"
           }]
 	      }
 	    }],
@@ -298,8 +300,8 @@ class CombinedMicroformatsTest extends TestCase {
 	  	$mf = Mf2\parse($input);
 
 		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
-		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'http://example.org/post1234');
-		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'http://jane.example.com/');
+		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'https://example.com/post1234');
+		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'https://jane.example.com/');
 	}
 
 	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {

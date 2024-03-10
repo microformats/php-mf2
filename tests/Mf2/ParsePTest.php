@@ -92,14 +92,14 @@ class ParsePTest extends TestCase {
 	}
 
 	public function testParsesInputValue() {
-		$input = '<span class="h-card"><input class="u-url" value="http://example.com" /></span>';
+		$input = '<span class="h-card"><input class="u-url" value="https://example.com" /></span>';
 		$result = Mf2\parse($input);
-		$this->assertEquals('http://example.com', $result['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com', $result['items'][0]['properties']['url'][0]);
 	}
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/53
-	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
+	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
 	 */
 	public function testConvertsNestedImgElementToAltOrSrc() {
 		$input = <<<EOT

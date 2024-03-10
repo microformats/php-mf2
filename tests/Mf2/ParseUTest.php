@@ -18,12 +18,12 @@ class ParseUTest extends TestCase {
 	 * @group parseU
 	 */
 	public function testParseUHandlesA() {
-		$input = '<div class="h-card"><a class="u-url" href="http://example.com">Awesome example website</a></div>';
+		$input = '<div class="h-card"><a class="u-url" href="https://example.com">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com', $output['items'][0]['properties']['url'][0]);
 	}
 
 	/**
@@ -31,11 +31,11 @@ class ParseUTest extends TestCase {
 	 */
 	public function testParseUHandlesEmptyHrefAttribute() {
 		$input = '<div class="h-card"><a class="u-url" href="">Awesome example website</a></div>';
-		$parser = new Parser($input, "http://example.com/");
+		$parser = new Parser($input, "https://example.com/");
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 
 	/**
@@ -43,36 +43,36 @@ class ParseUTest extends TestCase {
 	 */
 	public function testParseUHandlesMissingHrefAttribute() {
 		$input = '<div class="h-card"><a class="u-url">Awesome example website</a></div>';
-		$parser = new Parser($input, "http://example.com/");
+		$parser = new Parser($input, "https://example.com/");
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/Awesome example website', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/Awesome example website', $output['items'][0]['properties']['url'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesImg() {
-		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png"></div>';
+		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesImgwithAlt() {
-		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png" alt="Test Alt"></div>';
+		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png" alt="Test Alt"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$result = array(
-			'value' => 'http://example.com/someimage.png',
+			'value' => 'https://example.com/someimage.png',
 			'alt' => 'Test Alt'
 		);
 		$this->assertEquals( $result, $output['items'][0]['properties']['photo'][0]);
@@ -82,48 +82,48 @@ class ParseUTest extends TestCase {
 	 * @group parseU
 	 */
 	public function testParseUHandlesImgwithoutAlt() {
-		$input = '<div class="h-card"><img class="u-photo" src="http://example.com/someimage.png"></div>';
+		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals( 'http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals( 'https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesArea() {
-		$input = '<div class="h-card"><area class="u-photo" href="http://example.com/someimage.png"></area></div>';
+		$input = '<div class="h-card"><area class="u-photo" href="https://example.com/someimage.png"></area></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesObject() {
-		$input = '<div class="h-card"><object class="u-photo" data="http://example.com/someimage.png"></object></div>';
+		$input = '<div class="h-card"><object class="u-photo" data="https://example.com/someimage.png"></object></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesAbbr() {
-		$input = '<div class="h-card"><abbr class="u-photo" title="http://example.com/someimage.png"></abbr></div>';
+		$input = '<div class="h-card"><abbr class="u-photo" title="https://example.com/someimage.png"></abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
@@ -142,12 +142,12 @@ class ParseUTest extends TestCase {
 	 * @group parseU
 	 */
 	public function testParseUHandlesData() {
-		$input = '<div class="h-card"><data class="u-photo" value="http://example.com/someimage.png"></data></div>';
+		$input = '<div class="h-card"><data class="u-photo" value="https://example.com/someimage.png"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
@@ -155,21 +155,21 @@ class ParseUTest extends TestCase {
 	 */
 	public function testResolvesRelativeUrlsFromDocumentUrl() {
 		$input = '<div class="h-card"><img class="u-photo" src="../image.png" /></div>';
-		$parser = new Parser($input, 'http://example.com/things/more/more.html');
+		$parser = new Parser($input, 'https://example.com/things/more/more.html');
 		$output = $parser->parse();
 
-		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group baseUrl
 	 */
 	public function testResolvesRelativeUrlsFromBaseUrl() {
-		$input = '<head><base href="http://example.com/things/more/andmore/" /></head><body><div class="h-card"><img class="u-photo" src="../image.png" /></div></body>';
-		$parser = new Parser($input, 'http://example.com/things/more.html');
+		$input = '<head><base href="https://example.com/things/more/andmore/" /></head><body><div class="h-card"><img class="u-photo" src="../image.png" /></div></body>';
+		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
 
-		$this->assertEquals('http://example.com/things/more/image.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/things/more/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
@@ -177,10 +177,10 @@ class ParseUTest extends TestCase {
 	 */
 	public function testResolvesRelativeUrlsInImpliedMicroformats() {
 		$input = '<a class="h-card"><img src="image.png" /></a>';
-		$parser = new Parser($input, 'http://example.com/things/more.html');
+		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
 
-		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
@@ -188,41 +188,41 @@ class ParseUTest extends TestCase {
 	 */
 	public function testResolvesRelativeBaseRelativeUrlsInImpliedMicroformats() {
 		$input = '<base href="things/"/><a class="h-card"><img src="image.png" /></a>';
-		$parser = new Parser($input, 'http://example.com/');
+		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
-		$this->assertEquals('http://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/** @see https://github.com/indieweb/php-mf2/issues/33 */
 	public function testParsesHrefBeforeValueClass() {
-		$input = '<span class="h-card"><a class="u-url" href="http://example.com/right"><span class="value">WRONG</span></a></span>';
+		$input = '<span class="h-card"><a class="u-url" href="https://example.com/right"><span class="value">WRONG</span></a></span>';
 		$result = Mf2\parse($input);
-		$this->assertEquals('http://example.com/right', $result['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/right', $result['items'][0]['properties']['url'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesAudio() {
-		$input = '<div class="h-entry"><audio class="u-audio" src="http://example.com/audio.mp3"></div>';
+		$input = '<div class="h-entry"><audio class="u-audio" src="https://example.com/audio.mp3"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('audio', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/audio.mp3', $output['items'][0]['properties']['audio'][0]);
+		$this->assertEquals('https://example.com/audio.mp3', $output['items'][0]['properties']['audio'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesVideo() {
-		$input = '<div class="h-entry"><video class="u-video" src="http://example.com/video.mp4"></video></div>';
+		$input = '<div class="h-entry"><video class="u-video" src="https://example.com/video.mp4"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
+		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 	}
 
 	/**
@@ -241,38 +241,38 @@ class ParseUTest extends TestCase {
 	 * @group parseU
 	 */
 	public function testParseUHandlesSource() {
-		$input = '<div class="h-entry"><video><source class="u-video" src="http://example.com/video.mp4" type="video/mp4"><source class="u-video" src="http://example.com/video.ogg" type="video/ogg"></video></div>';
+		$input = '<div class="h-entry"><video><source class="u-video" src="https://example.com/video.mp4" type="video/mp4"><source class="u-video" src="https://example.com/video.ogg" type="video/ogg"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
-		$this->assertEquals('http://example.com/video.ogg', $output['items'][0]['properties']['video'][1]);
+		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
+		$this->assertEquals('https://example.com/video.ogg', $output['items'][0]['properties']['video'][1]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUHandlesVideoPoster() {
-		$input = '<div class="h-entry"><video class="u-photo" poster="http://example.com/posterimage.jpg"><source class="u-video" src="http://example.com/video.mp4" type="video/mp4"></video></div>';
+		$input = '<div class="h-entry"><video class="u-photo" poster="https://example.com/posterimage.jpg"><source class="u-video" src="https://example.com/video.mp4" type="video/mp4"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
-		$this->assertEquals('http://example.com/posterimage.jpg', $output['items'][0]['properties']['photo'][0]);
+		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
+		$this->assertEquals('https://example.com/posterimage.jpg', $output['items'][0]['properties']['photo'][0]);
 	}
 
 	/**
 	 * @group parseU
 	 */
 	public function testParseUWithSpaces() {
-		$input = '<div class="h-card"><a class="u-url" href=" http://example.com ">Awesome example website</a></div>';
+		$input = '<div class="h-card"><a class="u-url" href=" https://example.com ">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com', $output['items'][0]['properties']['url'][0]);
 	}
 
 	/**
@@ -284,23 +284,23 @@ class ParseUTest extends TestCase {
 <div class="h-card" ><a href="">Jane Doe</a><p></p></div>
 <div class="h-card" ><area href="">Jane Doe</area><p></p></div>
 <div class="h-card" ><a class="h-card" href="">Jane Doe</a><p></p></div>';
-		$parser = new Parser($input, 'http://example.com');
+		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 
 		$this->assertArrayHasKey('url', $output['items'][1]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][1]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][1]['properties']['url'][0]);
 
 		$this->assertArrayHasKey('url', $output['items'][2]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][2]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][2]['properties']['url'][0]);
 
 		$this->assertArrayHasKey('url', $output['items'][3]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][3]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][3]['properties']['url'][0]);
 
 		$this->assertArrayHasKey('url', $output['items'][4]['children'][0]['properties']);
-		$this->assertEquals('http://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
+		$this->assertEquals('https://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
 	}
 
 	public function testValueFromLinkTag() {

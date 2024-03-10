@@ -297,7 +297,7 @@ class ParseDTTest extends TestCase {
 	/**
 	 * TZ offsets normalized only for VCP.
 	 * This behavior is implied from "However the colons ":" separating the hours and minutes of any timezone offset are optional and discouraged in order to make it less likely that a timezone offset will be confused for a time."
-	 * @see http://microformats.org/wiki/index.php?title=value-class-pattern&oldid=66473##However+the+colons
+	 * @see https://microformats.org/wiki/index.php?title=value-class-pattern&oldid=66473##However+the+colons
 	 */
 	public function testNormalizeTZOffsetVCP() {
 		$input = '<div class="h-event">
