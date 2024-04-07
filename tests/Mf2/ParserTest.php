@@ -382,11 +382,21 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/84
 	 * @group internet
+	 *
+	 * 2024-04-07: The final photo URL in this test changed over time.
+	 * Updated it to only check that the final URL's hostname was correct,
+	 * not the full photo URL.
 	 */
 	public function testRelativeURLResolvedWithFinalURL() {
 		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
 
-		$this->assertEquals('https://aaronparecki.com/img/1240x0/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+		$this->assertArrayHasKey('photo', $mf['items'][0]['properties']);
+
+		$hostname = parse_url($mf['items'][0]['properties']['photo'][0], PHP_URL_HOST);
+		$this->assertEquals('aaronparecki.com', $hostname);
+
+		// previous assertion: not the photo URL changed over time
+		// $this->assertEquals('https://aaronparecki.com/img/1240x0/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testScriptTagContentsRemovedFromTextValue() {
