@@ -1,6 +1,6 @@
 FROM php:5.6-cli
 
-COPY --from=composer:2.2.12 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.2.23 /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y \
       zip \
