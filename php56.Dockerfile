@@ -4,7 +4,7 @@ COPY --from=composer:2.2.12 /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y \
       zip \
-    && rm -rf /var/cache/apt/
+    && rm -rf /var/cache/apt/lists/*
 
 RUN pecl install xdebug-2.5.5 \
     && docker-php-ext-enable xdebug
