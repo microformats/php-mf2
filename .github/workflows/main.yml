@@ -10,8 +10,38 @@ on:
   workflow_dispatch:
 
 jobs:
+  phpcs:
+    name: 'PHPCS'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up PHP environment
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 'latest'
+        coverage: none
+        tools: cs2pr
+
+    - name: Install Composer dependencies & cache dependencies
+      uses: "ramsey/composer-install@v3"
+      with:
+        composer-options: "--prefer-dist"
+      env:
+        COMPOSER_ROOT_VERSION: dev-${{ github.event.repository.default_branch }}
+
+    - name: Run Code Sniffer
+      id: phpcs
+      run: ./vendor/bin/phpcs -ps --report-full --report-checkstyle=./phpcs-report.xml
+
+    - name: Show PHPCS results in PR
+      if: ${{ always() && steps.phpcs.outcome == 'failure' }}
+      run: cs2pr ./phpcs-report.xml
+
   build:
-    
+
     strategy:
       matrix:
         php: ['5.6', '7.3', '7.4', '8.0', '8.1']
@@ -41,9 +71,6 @@ jobs:
 
     - name: Run Test Suite
       run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
-    
-    - name: Run Code Sniffer
-      run: ./vendor/bin/phpcs
-    
+
     #- name: Run Static Analysis
     #  run: ./vendor/bin/psalm
