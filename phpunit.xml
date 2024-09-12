@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<phpunit bootstrap="tests/Mf2/bootstrap.php">
+<phpunit bootstrap="tests/Mf2/bootstrap.php" convertDeprecationsToExceptions="true">
 	<testsuites>
 		<testsuite name="php-mf2">
 			<directory suffix="Test.php">tests/Mf2</directory>
