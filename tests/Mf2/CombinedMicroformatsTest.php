@@ -66,7 +66,6 @@ class CombinedMicroformatsTest extends TestCase {
 }';
 
 		$parser = new Parser($input, '', true);
-		$parser->stringDateTimes = true;
 		$output = $parser->parse();
 
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
@@ -96,7 +95,6 @@ class CombinedMicroformatsTest extends TestCase {
 }';
 
 		$parser = new Parser($input, '', true);
-		$parser->stringDateTimes = true;
 		$output = $parser->parse();
 
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
@@ -135,7 +133,6 @@ class CombinedMicroformatsTest extends TestCase {
 }';
 
 		$parser = new Parser($input, '', true);
-		$parser->stringDateTimes = true;
 		$output = $parser->parse();
 
 		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
