@@ -22,8 +22,8 @@
     },
     "require-dev": {
         "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
-        "squizlabs/php_codesniffer": "^3.6.2",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+        "squizlabs/php_codesniffer": "^3.10.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/php-compatibility": "^9.3",
         "yoast/phpunit-polyfills": "^1.0"
     },
