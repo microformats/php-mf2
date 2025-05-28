@@ -1383,7 +1383,7 @@ class Parser {
 	 * @param DOMElement $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, DOMElement $context = null) {
+	public function parse($convertClassic = true, ?DOMElement $context = null) {
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parse_recursive($context);
 
@@ -1411,7 +1411,7 @@ class Parser {
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+	public function parse_recursive(?DOMElement $context = null, $depth = 0) {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1516,7 +1516,7 @@ class Parser {
 	 * @param DOMElement $context
 	 * @return DOMNodeList
 	 */
-	public function getRootMF(DOMElement $context = null) {
+	public function getRootMF(?DOMElement $context = null) {
 		// start with mf2 root class name xpath
 		$xpaths = array(
 			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
