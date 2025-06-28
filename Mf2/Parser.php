@@ -1380,10 +1380,15 @@ class Parser {
 	/**
 	 * Kicks off the parsing routine
 	 * @param bool $convertClassic whether to do backcompat parsing on microformats1. Defaults to true.
-	 * @param DOMElement $context optionally specify an element from which to parse microformats
+	 * @param ?DOMElement $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, DOMElement $context = null) {
+	public function parse($convertClassic = true) {
+		$context = func_num_args() > 1 ? func_get_arg(1) : null;
+		if ($context !== null && !$context instanceof DOMElement) {
+			throw new \InvalidArgumentException(__METHOD__ . ': Argument #1 ($context) must be of type ?DOMElement, ' . gettype($context) . ' given');
+		}
+
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parse_recursive($context);
 
@@ -1407,11 +1412,21 @@ class Parser {
 	/**
 	 * Parse microformats recursively
 	 * Keeps track of whether inside a backcompat root or not
-	 * @param DOMElement $context: node to start with
+	 * @param ?DOMElement $context: node to start with
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+	public function parse_recursive() {
+		$numArgs = func_num_args();
+		$context = $numArgs > 0 ? func_get_arg(0) : null;
+		$depth = $numArgs > 1 ? func_get_arg(1) : 0;
+		if ($context !== null && !$context instanceof DOMElement) {
+			throw new \InvalidArgumentException(__METHOD__ . ': Argument #0 ($context) must be of type ?DOMElement, ' . gettype($context) . ' given');
+		}
+		if ($depth !== null && !is_int($depth)) {
+			throw new \InvalidArgumentException(__METHOD__ . ': Argument #1 ($depth) must be of type int, ' . gettype($depth) . ' given');
+		}
+
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1513,10 +1528,15 @@ class Parser {
 
 	/**
 	 * Get the root microformat elements
-	 * @param DOMElement $context
+	 * @param ?DOMElement $context
 	 * @return DOMNodeList
 	 */
-	public function getRootMF(DOMElement $context = null) {
+	public function getRootMF() {
+		$context = func_num_args() > 0 ? func_get_arg(0) : null;
+		if ($context !== null && !$context instanceof DOMElement) {
+			throw new \InvalidArgumentException(__METHOD__ . ': Argument #0 ($context) must be of type ?DOMElement, ' . gettype($context) . ' given');
+		}
+
 		// start with mf2 root class name xpath
 		$xpaths = array(
 			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
