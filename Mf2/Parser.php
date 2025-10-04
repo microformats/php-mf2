@@ -59,7 +59,7 @@ function parse($input, $url = null, $convertClassic = true) {
  *
  * @param string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
- * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @param-out array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
 function fetch($url, $convertClassic = true, &$curlInfo=null) {
