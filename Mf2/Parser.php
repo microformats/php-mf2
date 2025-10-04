@@ -1499,7 +1499,7 @@ class Parser {
 	 * will be returned.
 	 *
 	 * @param string $id
-	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
+	 * @param bool $convertClassic whether or not to convert classic microformats
 	 * @return array
 	 */
 	public function parseFromId($id, $convertClassic=true) {
