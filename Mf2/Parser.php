@@ -96,20 +96,6 @@ function unicodeToHtmlEntities($input) {
 	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
 }
 
-/**
- * Collapse Whitespace
- *
- * Collapses any sequences of whitespace within a string into a single space
- * character.
- *
- * @deprecated since v0.2.3
- * @param string $str
- * @return string
- */
-function collapseWhitespace($str) {
-	return preg_replace('/[\s|\n]+/', ' ', $str);
-}
-
 function unicodeTrim($str) {
 	// this is cheating. TODO: find a better way if this causes any problems
 	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), ' ', $str);
