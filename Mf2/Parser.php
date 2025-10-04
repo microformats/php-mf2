@@ -111,9 +111,7 @@ function collapseWhitespace($str) {
 }
 
 function unicodeTrim($str) {
-	// this is cheating. TODO: find a better way if this causes any problems
-	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), ' ', $str);
-	return preg_replace('/^\s+|\s+$/', '', $str);
+	return preg_replace('/^\s+|\s+$/u', '', $str);
 }
 
 /**
