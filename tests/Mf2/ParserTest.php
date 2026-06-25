@@ -2,6 +2,8 @@
 
 namespace Mf2\Parser\Test;
 
+use donatj\MockWebServer\MockWebServer;
+use donatj\MockWebServer\Response as MockWebServerResponse;
 use Mf2\Parser;
 use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
@@ -266,16 +268,30 @@ EOT;
 		$this->assertEquals('Name', $output['items'][0]['properties']['in-reply-to'][0]['properties']['name'][0]);
 	}
 
-	/**
-	 * @group internet
-	 */
 	public function testFetchMicroformats() {
-		$mf = Mf2\fetch('http://waterpigs.co.uk/');
+		$server = new MockWebServer();
+		$server->start();
+
+		// Obtained from http://waterpigs.co.uk/
+		$indexUrl = $server->setResponseOfPath(
+		    '/',
+		    new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_index.html'), [], 200)
+		);
+
+		// Obtained from http://waterpigs.co.uk/photo.jpg
+		$photoUrl = $server->setResponseOfPath(
+		    '/photo.jpg',
+		    new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_photo.jpg'), ['content-type: image/jpeg'], 200)
+		);
+
+		$mf = Mf2\fetch($indexUrl);
 		$this->assertArrayHasKey('items', $mf);
 
-		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
+		$mf = Mf2\fetch($photoUrl, null, $curlInfo);
 		$this->assertNull($mf);
 		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
+
+		$server->stop();
 	}
 
 	/**
@@ -381,22 +397,27 @@ EOT;
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/84
-	 * @group internet
-	 *
-	 * 2024-04-07: The final photo URL in this test changed over time.
-	 * Updated it to only check that the final URL's hostname was correct,
-	 * not the full photo URL.
 	 */
 	public function testRelativeURLResolvedWithFinalURL() {
-		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
+		$server = new MockWebServer();
+		$server->start();
+
+		// Obtained from http://aaron.pk/4Zn5
+		$url = $server->setResponseOfPath(
+		    '/4Zn5',
+		    new MockWebServerResponse(file_get_contents(__DIR__ . '/aaron.pk_4Zn5.html'), [], 200)
+		);
+
+		$mf = Mf2\fetch($url);
+
+		$server->stop();
 
 		$this->assertArrayHasKey('photo', $mf['items'][0]['properties']);
 
 		$hostname = parse_url($mf['items'][0]['properties']['photo'][0], PHP_URL_HOST);
-		$this->assertEquals('aaronparecki.com', $hostname);
+		$this->assertEquals('127.0.0.1', $hostname);
 
-		// previous assertion: not the photo URL changed over time
-		// $this->assertEquals('https://aaronparecki.com/img/1240x0/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+		$this->assertEquals($server->getServerRoot() . '/img/1240x,q60/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
 	}
 
 	public function testScriptTagContentsRemovedFromTextValue() {
