@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.5.0
+## [Unreleased]
+
+## [0.5.0]
 
 **Breaking changes**:
 
@@ -16,7 +18,7 @@ Other changes:
 * [#198](https://github.com/microformats/php-mf2/issues/198) reduce instances where photo is implied
 * Internal: switched from Travis to Github Actions for CI
 
-## v0.4.6
+## [0.4.6]
 
 Bugfixes:
 
@@ -33,7 +35,7 @@ Other Updates:
 * Moved this repo to the microformats GitHub organization ([#179](https://github.com/microformats/php-mf2/issues/179))
 
 
-## v0.4.5
+## [0.4.5]
 
 2018-08-02
 
@@ -46,7 +48,7 @@ Other Updates:
 * Added `.editorconfig` to the project and cleaned up whitespace across all files
 
 
-## v0.4.4
+## [0.4.4]
 
 2018-08-01
 
@@ -66,7 +68,7 @@ Other Updates:
 * Improved test coverage
 
 
-## v0.4.3
+## [0.4.3]
 
 2018-03-29
 
@@ -78,7 +80,7 @@ To include the HTML5 parser in your project, run:
 composer require masterminds/html5
 ```
 
-## v0.4.2
+## [0.4.2]
 
 2018-03-29
 
@@ -94,7 +96,7 @@ Backcompat:
 
 * [#157](https://github.com/microformats/php-mf2/issues/157) - Parse `rel=tag` as `p-category` for hEntry and hReview
 
-## v0.4.1
+## [0.4.1]
 
 2018-03-15
 
@@ -104,7 +106,7 @@ Fixes:
 * [#151](https://github.com/microformats/php-mf2/issues/151) - Adds back "value" of nested microformats when no matching property exists
 
 
-## v0.4.0
+## [0.4.0]
 
 2018-03-13
 
@@ -125,7 +127,7 @@ Fixes:
 * [#116](https://github.com/microformats/php-mf2/issues/116) - Fix backcompat parsing for `summary` property in `hreview`
 * [#149](https://github.com/microformats/php-mf2/issues/149) - Fix for datetime parsing, no longer tries to interpret the value and passes through instead
 
-## v0.3.2
+## [0.3.2]
 
 2017-05-27
 
@@ -133,7 +135,7 @@ Fixes:
 * Moved experimental language parsing feature behind an opt-in flag
 * [#121](https://github.com/microformats/php-mf2/pull/121) Fixed language detection to support parsing of HTML fragments
 
-## v0.3.1
+## [0.3.1]
 
 2017-05-24
 
@@ -152,7 +154,7 @@ Fixes:
 
 Many thanks to @gRegorLove for the major overhaul of the backcompat parsing!
 
-## v0.3.0
+## [0.3.0]
 
 2016-03-14
 
@@ -164,7 +166,7 @@ Many thanks to @gRegorLove for the major overhaul of the backcompat parsing!
 
 Many thanks to @aaronpk, @diplix, @dissolve, @dymcx @gRegorLove, @jeena, @veganstraightedge and @voxpelli for all your hard work opening issues and sending and merging PRs!
 
-## v0.2.12
+## [0.2.12]
 
 2015-07-12
 
@@ -173,24 +175,24 @@ Many thanks to @aaronpk, @diplix, @dissolve, @dymcx @gRegorLove, @jeena, @vegans
 
 Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and @kevinmarks for PR management and @tantek for issue reporting!
 
-## v0.2.11
+## [0.2.11]
 
 2015-07-10
 
-## v0.2.10
+## [0.2.10]
 
 2015-04-29
 
 * Merged [#58](https://github.com/microformats/php-mf2/pull/58), fixing some parsing bugs and adding support for area element parsing. Thanks so much for your hard work and patience, <a class="h-card" href="http://ben.thatmustbe.me/">Ben</a>!
 
-## v0.2.9
+## [0.2.9]
 
 2014-08-06
 
 * Added backcompat classmap for hProduct, associated tests
 * Started GPG signing version tags as barnaby@waterpigs.co.uk, fingerprint CBC7 7876 BF7C 9637 B6AE 77BA 7D49 834B 0416 CFA3
 
-## v0.2.8
+## [0.2.8]
 
 2014-07-17
 
@@ -198,7 +200,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * Fixed issue #52 correctly handling the `<template>` element by ignoring it
 * Fixed issue #53 improving the plaintext parsing of `<img>` elements
 
-## v0.2.7
+## [0.2.7]
 
 2014-06-18
 
@@ -207,18 +209,18 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * Fixed issue causing classnames like `blah e- blah` to produce properties with numeric keys (thanks @aaronpk and @gRegorLove)
 * Fixed issue causing resolved URLs to not include port numbers (thanks @aaronpk)
 
-## v0.2.6
+## [0.2.6]
 
 * Added JSON mode as long-term fix for #29
 * Fixed bug causing microformats nested under multiple property names to be parsed only once
 
-## v0.2.5
+## [0.2.5]
 
 * Removed conditional replacing empty rel list with stdclass. Original purpose was to make JSON-encoding the output from the parser correct but it also caused Fatal Errors due to trying to treat stdclass as array.
 
-## v0.2.4
+## [0.2.4]
 
-## v0.2.3
+## [0.2.3]
 
 * Made p-* parsing consistent with implied name parsing
 * Stopped collapsing whitespace in p-* properties
@@ -229,16 +231,16 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * Added support for input[value] parsing
 * Tests for all the above
 
-## v0.2.2
+## [0.2.2]
 
 * Made resolveUrl method public, allowing advanced parsers and subclasses to make use of it
 * Fixed bug causing multiple duplicate property values to appear
 
-## v0.2.1
+## [0.2.1]
 
 * Fixed bug causing classic microformats property classnames to not be parsed correctly
 
-## v0.2.0 (BREAKING CHANGES)
+## [0.2.0] (BREAKING CHANGES)
 
 * Namespace change from mf2 to Mf2, for PSR-0 compatibility
 * `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
@@ -252,48 +254,83 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 * Moved a whole load of static functions out of the class and into standalone functions
 * Changed autoloading to always include Parser.php instead of using classmap
 
-## v0.1.23
+## [0.1.23]
 
 * Made some changes to the way back-compatibility with classic microformats are handled, ignoring classic property classnames inside mf2 roots and outside classic roots
 * Deprecated ability to add new classmaps, removed twitter classmap. Use [php-mf2-shim](http://github.com/microformats/php-mf2-shim) instead, it’s better
 
-## v0.1.22
+## [0.1.22]
 
 * Converts classic microformats by default
 
-## v0.1.21
+## [0.1.21]
 
 * Removed webignition dependency, also removing ext-intl dependency. php-mf2 is now a standalone, single file library again
 * Replaced webignition URL resolving with custom code passing almost all tests, courtesy of <a class="h-card" href="http://aaronparecki.com">Aaron Parecki</a>
 
-## v0.1.20
+## [0.1.20]
 
 * Added in almost-perfect custom URL resolving code
 
-## v0.1.19 (2013-06-11)
+## [0.1.19] (2013-06-11)
 
 * Required stable version of webigniton/absolute-url-resolver, hopefully resolving versioning problems
 
-## v0.1.18 (2013-06-05)
+## [0.1.18] (2013-06-05)
 
 * Fixed problems with isElementParsed, causing elements to be incorrectly parsed
 * Cleaned up some test files
 
-## v0.1.17
+## [0.1.17]
 
 * Rewrote some PHP 5.4 array syntax which crept into 0.1.16 so php-mf2 still works on PHP 5.3
 * Fixed a bug causing weird partial microformats to be added to parent microformats if they had doubly property-nested children
 * Finally actually licensed this project under a real license (MIT, in composer.json)
 * Suggested barnabywalters/mf-cleaner in composer.json
 
-## v0.1.16
+## [0.1.16]
 
 * Ability to parse from only an ID
 * Context DOMElement can be passed to $parse
 * Parser::query runs XPath queries on the current document
 * When parsing e-* properties, elements with @src, @data or @href have relative URLs resolved in the output
 
-## v0.1.15
+## [0.1.15]
 
 * Added html-safe options
 * Added rel+rel-alternate parsing
+
+
+[Unreleased]: https://github.com/microformats/php-mf2/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/microformats/php-mf2/compare/0.4.6...v0.5.0
+[0.4.6]: https://github.com/microformats/php-mf2/compare/v0.4.5...0.4.6
+[0.4.5]: https://github.com/microformats/php-mf2/compare/v0.4.4...v0.4.5
+[0.4.4]: https://github.com/microformats/php-mf2/compare/v0.4.3...v0.4.4
+[0.4.3]: https://github.com/microformats/php-mf2/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/microformats/php-mf2/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/microformats/php-mf2/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/microformats/php-mf2/compare/v0.3.2...v0.4.0
+[0.3.2]: https://github.com/microformats/php-mf2/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/microformats/php-mf2/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/microformats/php-mf2/compare/v0.2.12...v0.3.0
+[0.2.12]: https://github.com/microformats/php-mf2/compare/v0.2.11...v0.2.12
+[0.2.11]: https://github.com/microformats/php-mf2/compare/v0.2.10...v0.2.11
+[0.2.10]: https://github.com/microformats/php-mf2/compare/v0.2.9...v0.2.10
+[0.2.9]: https://github.com/microformats/php-mf2/compare/v0.2.8...v0.2.9
+[0.2.8]: https://github.com/microformats/php-mf2/compare/0.2.7...v0.2.8
+[0.2.7]: https://github.com/microformats/php-mf2/compare/v0.2.6...0.2.7
+[0.2.6]: https://github.com/microformats/php-mf2/compare/v0.2.5...v0.2.6
+[0.2.5]: https://github.com/microformats/php-mf2/compare/v0.2.4...v0.2.5
+[0.2.4]: https://github.com/microformats/php-mf2/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/microformats/php-mf2/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/microformats/php-mf2/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/microformats/php-mf2/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/microformats/php-mf2/compare/v0.1.23...v0.2.0
+[0.1.23]: https://github.com/microformats/php-mf2/compare/v0.1.22...v0.1.23
+[0.1.22]: https://github.com/microformats/php-mf2/compare/v0.1.21...v0.1.22
+[0.1.21]: https://github.com/microformats/php-mf2/compare/v0.1.20...v0.1.21
+[0.1.20]: https://github.com/microformats/php-mf2/compare/v0.1.19...v0.1.20
+[0.1.19]: https://github.com/microformats/php-mf2/compare/v0.1.18...v0.1.19
+[0.1.18]: https://github.com/microformats/php-mf2/compare/v0.1.17...v0.1.18
+[0.1.17]: https://github.com/microformats/php-mf2/compare/v0.1.16...v0.1.17
+[0.1.16]: https://github.com/microformats/php-mf2/compare/v0.1.15...v0.1.16
