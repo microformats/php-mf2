@@ -12,6 +12,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 
 class ParsePTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -36,7 +37,6 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
@@ -60,7 +60,6 @@ class ParsePTest extends TestCase {
 		$input = '<div class="h-card"><data class="p-name" value="Example User"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-
 
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);

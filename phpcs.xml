@@ -1,7 +1,49 @@
 <?xml version="1.0"?>
 <ruleset name="PHP-MF2">
-	<description>PHP-MF2 Standards</description>
+	<description>PHP-MF2 Coding Standards</description>
+
 	<file>./Mf2/Parser.php</file>
+	<file>./tests/</file>
+
+	<!-- PHP Compatibility -->
 	<rule ref="PHPCompatibility"/>
 	<config name="testVersion" value="5.6-"/>
+
+	<!-- Tabs for indentation -->
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+	<!-- PSR-1 naming conventions -->
+	<rule ref="PSR1.Classes.ClassDeclaration"/>
+	<rule ref="PSR1.Methods.CamelCapsMethodName">
+		<!-- Allow date format test methods (e.g., testYYYY_MM_DD__HH_MM) -->
+		<exclude-pattern>tests/Mf2/ParseDTTest.php</exclude-pattern>
+	</rule>
+
+	<!-- No trailing whitespace -->
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+
+	<!-- Single space after cast -->
+	<rule ref="Generic.Formatting.SpaceAfterCast"/>
+
+	<!-- PHP opening tag -->
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+
+	<!-- Use lowercase for PHP keywords -->
+	<rule ref="Generic.PHP.LowerCaseKeyword"/>
+	<rule ref="Generic.PHP.LowerCaseConstant"/>
+
+	<!-- Spaces around equals in function declarations -->
+	<rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+		<properties>
+			<property name="equalsSpacing" value="1"/>
+		</properties>
+	</rule>
+
+	<!-- Single quotes when no variable substitution needed -->
+	<rule ref="Squiz.Strings.DoubleQuoteUsage.NotRequired"/>
+
+	<!-- Allow multiple classes in test files (helper classes) -->
+	<rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 </ruleset>

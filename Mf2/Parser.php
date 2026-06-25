@@ -62,7 +62,7 @@ function parse($input, $url = null, $convertClassic = true) {
  * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
-function fetch($url, $convertClassic = true, &$curlInfo=null) {
+function fetch($url, $convertClassic = true, &$curlInfo = null) {
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -127,7 +127,7 @@ function unicodeTrim($str) {
  * @param string $prefix The prefix to look for
  * @return string|array The prefixed name of the first microfomats class found or false
  */
-function mfNamesFromClass($class, $prefix='h-') {
+function mfNamesFromClass($class, $prefix = 'h-') {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
 	$classes = preg_grep('#^(h|p|u|dt|e)-([a-z0-9]+-)?[a-z]+(-[a-z]+)*$#', $classes);
@@ -366,7 +366,7 @@ class Parser {
 			if (empty($input)) {
 					$input = $emptyDocDefault;
 			}
-				
+
 			if (class_exists('Masterminds\\HTML5')) {
 					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
 					$doc = $doc->loadHTML($input);
@@ -482,7 +482,7 @@ class Parser {
 	 * @param bool $implied
 	 * @see https://wiki.zegnat.net/media/textparsing.html
 	 **/
-	public function textContent(DOMElement $element, $implied=false)
+	public function textContent(DOMElement $element, $implied = false)
 	{
 				return preg_replace(
 						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
@@ -490,7 +490,7 @@ class Parser {
 						$this->elementToString($element, $implied)
 				);
 	}
-	private function elementToString(DOMElement $input, $implied=false)
+	private function elementToString(DOMElement $input, $implied = false)
 	{
 			$output = '';
 			foreach ($input->childNodes as $child) {
@@ -1179,7 +1179,7 @@ class Parser {
 		);
 
 		if(trim($e->getAttribute('id')) !== '') {
-			$parsed['id'] = trim($e->getAttribute("id"));
+			$parsed['id'] = trim($e->getAttribute('id'));
 		}
 
 		if($this->lang) {
@@ -1385,7 +1385,7 @@ class Parser {
 	 */
 	public function parse($convertClassic = true, DOMElement $context = null) {
 		$this->convertClassic = $convertClassic;
-		$mfs = $this->parse_recursive($context);
+		$mfs = $this->parseRecursive($context);
 
 		// Parse rels
 		list($rels, $rel_urls, $alternates) = $this->parseRelsAndAlternates();
@@ -1411,7 +1411,7 @@ class Parser {
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+	public function parseRecursive(DOMElement $context = null, $depth = 0) {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1422,7 +1422,7 @@ class Parser {
 				$this->backcompat($node);
 			}
 
-			$recurse = $this->parse_recursive($node, $depth + 1);
+			$recurse = $this->parseRecursive($node, $depth + 1);
 
 			// set bool flag for nested mf
 			$has_nested_mf = (bool) $recurse;
@@ -1486,6 +1486,18 @@ class Parser {
 		return $mfs;
 	}
 
+	/**
+	 * Parse microformats recursively (deprecated)
+	 * @param DOMElement $context: node to start with
+	 * @param int $depth: recursion depth
+	 * @return array
+	 * @deprecated Use parseRecursive() instead
+	 */
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+		return $this->parseRecursive($context, $depth);
+	}
+
 
 	/**
 	 * Parse From ID
@@ -1502,7 +1514,7 @@ class Parser {
 	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
 	 * @return array
 	 */
-	public function parseFromId($id, $convertClassic=true) {
+	public function parseFromId($id, $convertClassic = true) {
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 
 		if (empty($matches))

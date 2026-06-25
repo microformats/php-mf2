@@ -18,6 +18,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  * Mainly based off BC tables on https://microformats.org/wiki/microformats2#v2_vocabularies
  */
 class ClassicMicroformatsTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -147,7 +148,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/81
 	 */
-	public function test_vevent() {
+	public function testVevent() {
 		$input = <<< EOT
 <div class="vevent">
 <h3 class="summary">XYZ Project Review</h3>
@@ -896,7 +897,7 @@ END;
 	}
 
   public function testHEntryRelTagInContent() {
-    $input = <<< END
+	$input = <<< END
 <article class="hentry">
   <div class="entry-content">
     Entry content should not include the generated <code>data</code> element for rel tag backcompat <a href="/tag/test" rel="tag">test</a>
@@ -904,13 +905,13 @@ END;
 </article>
 END;
 
-    $parser = new Parser($input);
-    $output = $parser->parse();
-    $item = $output['items'][0];
+	$parser = new Parser($input);
+	$output = $parser->parse();
+	$item = $output['items'][0];
 
-    $this->assertEquals(['test'], $item['properties']['category']);
-    $this->assertEquals('Entry content should not include the generated data element for rel tag backcompat test', $item['properties']['content'][0]['value']);
-    $this->assertEquals('Entry content should not include the generated <code>data</code> element for rel tag backcompat <a href="/tag/test" rel="tag">test</a>', $item['properties']['content'][0]['html']);
+	$this->assertEquals(['test'], $item['properties']['category']);
+	$this->assertEquals('Entry content should not include the generated data element for rel tag backcompat test', $item['properties']['content'][0]['value']);
+	$this->assertEquals('Entry content should not include the generated <code>data</code> element for rel tag backcompat <a href="/tag/test" rel="tag">test</a>', $item['properties']['content'][0]['html']);
   }
 
 	/**

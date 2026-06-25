@@ -20,6 +20,7 @@ class ParserTest extends TestCase {
 	use AssertIsType;
 	use AssertStringContains;
 
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -930,7 +931,7 @@ EOT;
 		$this->assertEquals('Page Title', $result['items'][0]['properties']['name'][0]);
 		$this->assertEquals('A summary so the p-name won\'t be implied. This test demonstrates p-name is not being parsed.', $result['items'][0]['properties']['summary'][0]);
 	}
-	
+
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/249
 	 */

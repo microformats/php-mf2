@@ -11,6 +11,7 @@ use Mf2\Parser;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class ParseValueClassTitleTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}

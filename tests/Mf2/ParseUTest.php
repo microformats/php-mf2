@@ -10,6 +10,7 @@ use Mf2\Parser;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class ParseUTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -31,7 +32,7 @@ class ParseUTest extends TestCase {
 	 */
 	public function testParseUHandlesEmptyHrefAttribute() {
 		$input = '<div class="h-card"><a class="u-url" href="">Awesome example website</a></div>';
-		$parser = new Parser($input, "https://example.com/");
+		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
@@ -43,7 +44,7 @@ class ParseUTest extends TestCase {
 	 */
 	public function testParseUHandlesMissingHrefAttribute() {
 		$input = '<div class="h-card"><a class="u-url">Awesome example website</a></div>';
-		$parser = new Parser($input, "https://example.com/");
+		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
