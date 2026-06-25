@@ -13,8 +13,8 @@
 Other changes:
 
 * [#195](https://github.com/microformats/php-mf2/issues/195) Fix backcompat parsing for geo property
-* [#182](https://github.com/microformats/php-mf2/issues/182) Fix parsing for iframe.u-*\[src]
-* [#206](https://github.com/microformats/php-mf2/issues/206) Add optional ID for h-* elements
+* [#182](https://github.com/microformats/php-mf2/issues/182) Fix parsing for iframe.`u-*[src]`
+* [#206](https://github.com/microformats/php-mf2/issues/206) Add optional ID for `h-*` elements
 * [#198](https://github.com/microformats/php-mf2/issues/198) reduce instances where photo is implied
 * Internal: switched from Travis to Github Actions for CI
 
@@ -25,7 +25,7 @@ Bugfixes:
 * Don't include img src attribute in implied p-name ([#180](https://github.com/microformats/php-mf2/issues/180))
 * Normalize ordinal dates in VCP values ([#167](https://github.com/microformats/php-mf2/issues/167))
 * Fix for accidental array access of stdClass in deeply nested structures ([#196](https://github.com/microformats/php-mf2/issues/196))
-* Reduce instances where u-url is implied according to a [spec update](http://microformats.org/wiki/index.php?title=microformats2-parsing&diff=66887&oldid=66871) ([#183](https://github.com/microformats/php-mf2/issues/183) and [parsing issue #36](https://github.com/microformats/microformats2-parsing/issues/36))
+* Reduce instances where `u-url` is implied according to a [spec update](http://microformats.org/wiki/index.php?title=microformats2-parsing&diff=66887&oldid=66871) ([#183](https://github.com/microformats/php-mf2/issues/183) and [parsing issue #36](https://github.com/microformats/microformats2-parsing/issues/36))
 * Fix for wrongly implied photo property ([#190](https://github.com/microformats/php-mf2/issues/190))
 
 Other Updates:
@@ -51,7 +51,7 @@ Other Updates:
 Bugfixes:
 
 * Ensure empty `properties` is an object `{}` rather than array  `[]` ([#171](https://github.com/microformats/php-mf2/issues/171))
-* Ensure the parser does not mutate the DOMDOcument passed in ([#174](https://github.com/microformats/php-mf2/issues/174))
+* Ensure the parser does not mutate the `DOMDocument` passed in ([#174](https://github.com/microformats/php-mf2/issues/174))
 * Fix for multiple class names in backcompat parsing ([#156](https://github.com/microformats/php-mf2/issues/156))
 
 Microformats Parsing Updates:
@@ -128,7 +128,7 @@ Fixes:
 * [#89](https://github.com/microformats/php-mf2/issues/89) - Fixed parsing empty `img alt=""` attributes
 * [#91](https://github.com/microformats/php-mf2/issues/91) - Ignore rel values from HTML tags that don't allow rel values
 * [#57](https://github.com/microformats/php-mf2/issues/57) - Implement hAtom rel=bookmark backcompat
-* [#94](https://github.com/microformats/php-mf2/pull/94) - Fixed HTML output when parsing e-* properties
+* [#94](https://github.com/microformats/php-mf2/pull/94) - Fixed HTML output when parsing `e-*` properties
 * [#97](https://github.com/microformats/php-mf2/pull/97) - Experimental language parsing
 * [#88](https://github.com/microformats/php-mf2/issues/88) - Fix for implied photo parsing
 * [#102](https://github.com/microformats/php-mf2/pull/102) - Ignore classes with numbers or capital letters
@@ -166,7 +166,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 ## [0.2.9] – 2014-08-06
 
 * Added backcompat classmap for hProduct, associated tests
-* Started GPG signing version tags as barnaby@waterpigs.co.uk, fingerprint CBC7 7876 BF7C 9637 B6AE 77BA 7D49 834B 0416 CFA3
+* Started GPG signing version tags as barnaby@waterpigs.co.uk, fingerprint `CBC7 7876 BF7C 9637 B6AE 77BA 7D49 834B 0416 CFA3`
 
 ## [0.2.8] – 2014-07-17
 
@@ -194,13 +194,13 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 ## [0.2.3] – 2013-11-12
 
-* Made p-* parsing consistent with implied name parsing
-* Stopped collapsing whitespace in p-* properties
-* Implemented unicodeTrim which removes &nbsp; characters as well as regex \s
-* Added support for implied name via abbr[title]
+* Made `p-*` parsing consistent with implied name parsing
+* Stopped collapsing whitespace in `p-*` properties
+* Implemented `unicodeTrim` which removes `&nbsp;` characters as well as regex `\s`
+* Added support for implied name via `abbr[title]`
 * Prevented excessively nested value-class elements from being parsed incorrectly, removed incorrect separator which was getting added in some cases
-* Updated u-* parsing to be spec-compliant, matching [href] before value-class and only attempting URL resolution for URL attributes
-* Added support for input[value] parsing
+* Updated `u-*` parsing to be spec-compliant, matching `[href]` before value-class and only attempting URL resolution for URL attributes
+* Added support for `input[value]` parsing
 * Tests for all the above
 
 ## [0.2.2] – 2013-10-30
@@ -214,15 +214,15 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 ## [0.2.0] (BREAKING CHANGES) – 2013-10-20
 
-* Namespace change from mf2 to Mf2, for PSR-0 compatibility
+* Namespace change from `mf2` to `Mf2`, for PSR-0 compatibility
 * `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
-* Updated e-* property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like <pre><code>
+* Updated `e-*` property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like <pre><code>
 {
 	"html": "<b>The Content</b>",
 	"value: "The Content"
 }
 </code></pre>
-* Removed `htmlSafe` options as new e-* parsing rules make them redundant
+* Removed `htmlSafe` options as new `e-*` parsing rules make them redundant
 * Moved a whole load of static functions out of the class and into standalone functions
 * Changed autoloading to always include Parser.php instead of using classmap
 
@@ -263,9 +263,9 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 ## [0.1.16] – 2013-06-23
 
 * Ability to parse from only an ID
-* Context DOMElement can be passed to $parse
-* Parser::query runs XPath queries on the current document
-* When parsing e-* properties, elements with @src, @data or @href have relative URLs resolved in the output
+* Context DOMElement can be passed to `$parse`
+* `Parser::query` runs XPath queries on the current document
+* When parsing `e-*` properties, elements with `@src`, `@data` or `@href` have relative URLs resolved in the output
 
 ## [0.1.15] – 2013-06-22
 
