@@ -73,6 +73,11 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		'Accept: text/html'
 	));
 	$html = curl_exec($ch);
+
+	if ($html === false) {
+		return null;
+	}
+
 	$info = $curlInfo = curl_getinfo($ch);
 	curl_close($ch);
 
