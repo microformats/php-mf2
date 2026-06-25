@@ -8,6 +8,9 @@ Instead of having a hard-coded list of all the different microformats, it follow
 
 ## Installation
 
+[!NOTE]
+> This will be the last release that supports PHP 5.6 as a minimum version. The next release, 0.6.0, will require PHP 7.4 as a minimum.
+
 There are two ways of installing php-mf2. We **highly recommend** installing php-mf2 using [Composer](http://getcomposer.org). The rest of the documentation assumes that you have done so.
 
 To install using Composer, run
