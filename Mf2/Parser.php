@@ -93,7 +93,12 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
  * @return string
  */
 function unicodeToHtmlEntities($input) {
-	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
+	// Convert all non-ASCII characters to HTML numeric entities.
+	$convmap = [
+		0x80, 0x1FFFFF, 0, 0x10FFFF,
+	];
+
+	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
 }
 
 /**
