@@ -4,19 +4,22 @@
 
 ## [0.5.0] – 2022-02-10
 
-**Breaking changes**:
+### Added
 
-- Bumped minimum PHP version from 5.4 to 5.6 ([#220](https://github.com/microformats/php-mf2/issues/220))
-- [#214](https://github.com/microformats/php-mf2/issues/214) parse an img element for src and alt — i.e. all property values parsed as image URLs where the img element has an `alt` attribute will now be a `{'value': 'url', 'alt': 'the alt value'}` structure rather than a single URL string
-- Renamed `master` branch to `main`. Anyone who had been installing the latest development version with `dev-master` will need to change their requirements to `dev-main`
+- [#206](https://github.com/microformats/php-mf2/issues/206) Add optional ID for `h-*` elements
 
-Other changes:
+### Changed
+
+- **Breaking:** Bumped minimum PHP version from 5.4 to 5.6 ([#220](https://github.com/microformats/php-mf2/issues/220))
+- **Breaking:** [#214](https://github.com/microformats/php-mf2/issues/214) parse an img element for src and alt — i.e. all property values parsed as image URLs where the img element has an `alt` attribute will now be a `{'value': 'url', 'alt': 'the alt value'}` structure rather than a single URL string
+- **Breaking:** Renamed `master` branch to `main`. Anyone who had been installing the latest development version with `dev-master` will need to change their requirements to `dev-main`
+- Internal: switched from Travis to Github Actions for CI
+- [#198](https://github.com/microformats/php-mf2/issues/198) reduce instances where photo is implied
+
+### Fixed
 
 - [#195](https://github.com/microformats/php-mf2/issues/195) Fix backcompat parsing for geo property
-- [#182](https://github.com/microformats/php-mf2/issues/182) Fix parsing for iframe.`u-*[src]`
-- [#206](https://github.com/microformats/php-mf2/issues/206) Add optional ID for `h-*` elements
-- [#198](https://github.com/microformats/php-mf2/issues/198) reduce instances where photo is implied
-- Internal: switched from Travis to Github Actions for CI
+- [#182](https://github.com/microformats/php-mf2/issues/182) Fix parsing for `iframe.u-*[src]`
 
 ## [0.4.6] – 2018-08-24
 
