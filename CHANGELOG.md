@@ -216,12 +216,13 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 
 * Namespace change from `mf2` to `Mf2`, for PSR-0 compatibility
 * `Mf2\parse()` function added to simplify the most common case of just parsing some HTML
-* Updated `e-*` property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like <pre><code>
-{
-	"html": "<b>The Content</b>",
-	"value: "The Content"
-}
-</code></pre>
+* Updated `e-*` property parsing rules to match mf2 parsing spec — instead of producing inconsistent HTML content, it now produces dictionaries like
+	```json
+	{
+		"html": "<b>The Content</b>",
+		"value": "The Content"
+	}
+	```
 * Removed `htmlSafe` options as new `e-*` parsing rules make them redundant
 * Moved a whole load of static functions out of the class and into standalone functions
 * Changed autoloading to always include Parser.php instead of using classmap
