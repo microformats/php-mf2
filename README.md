@@ -357,23 +357,24 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 
 ### Testing
 
-There are two separate test suites described in more detail below. At a minimum, you should run `composer check-and-tests`, which will run `phpcs` followed by the PHPUnit tests in `/tests/Mf2`.
+There are two test suites described in more detail below. At a minimum, you should run `composer check-and-tests`, which will run `phpcs`, php-mf2 tests, and microformats/tests (except mf1).
 
-The php-mf2 test suite is in `/tests/Mf2` and can be run on its own with `composer tests`. This contains many parsing examples, internal parser tests, and regression tests for specific issues over php-mf2’s history. If you do not have a live internet connection, you can exclude tests that depend on it by running: `./vendor/bin/phpunit --exclude-group internet`
+The php-mf2 tests are in `/tests/Mf2` and contain many parsing examples, internal parser tests, and regression tests for specific issues over php-mf2’s history. If you do not have a live internet connection, you can exclude tests that depend on it by running `composer tests-no-internet`
 
-The other test suite is the cross-platform [microformats/tests](https://github.com/microformats/tests). This has backwards-compatible tests for microformats1, some of which php-mf2 will fail, so php-mf2 does not automatically run them currently. To run these tests, first run `composer install`, then run `composer test-mf1`. There are additional composer scripts listed below for running other parts of this test suite.
+The other test suite is the cross-platform [microformats/tests](https://github.com/microformats/tests). This has backwards-compatible tests for microformats1, some of which php-mf2 will fail, so it does not automatically run them currently. To run these tests, first run `composer install`, then run `composer microformats-test-mf1`. There are additional composer scripts listed below for running other parts of this test suite.
 
 Currently php-mf2 passes its own test cases and a good percentage of the cross-platform tests. Contributors MUST always test against the PHPUnit suite to ensure any changes don’t negatively impact php-mf2, and SHOULD run the cross-platform suite, especially if you’re changing parsing behaviour.
 
 **Composer scripts**
 - phpcs: run with `composer cs-check`
-- php-mf2 tests: run with `composer tests`
+- php-mf2 tests + microformats/tests, except mf1: run with `composer tests`
+  - same, but exclude tests that require internet: `composer tests-no-internet`
 - microformats/tests suite:
-	- run mf1 tests with `./vendor/bin/phpunit --group microformats/tests/mf1`
-	- run mf2 tests with `./vendor/bin/phpunit --group microformats/tests/mf2`
-	- run mixed tests with `./vendor/bin/phpunit --group microformats/tests/mixed`
-- phpcs + php-mf2 tests: run `composer check-and-test`
-- phpcs + php-mf2 tests + microformats/tests: run `composer check-and-test-all`
+	- run mf1 tests with `composer microformats-tests-mf1`
+	- run mf2 tests with `composer microformats-tests-mf2`
+	- run mixed tests with `composer microformats-tests-mixed`
+- phpcs + php-mf2 tests + microformats/tests, except mf1: run `composer check-and-test`
+- phpcs + all tests: run `composer check-and-test-all`
 
 ## License
 
