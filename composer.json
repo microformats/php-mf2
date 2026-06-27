@@ -30,14 +30,17 @@
     "scripts": {
         "cs-check": "phpcs",
         "tests": "XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text --whitelist Mf2",
-        "test-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
+        "test-mf1": [
+            "echo test-mf1 script is deprecated, use composer tests @no_additional_args",
+            "composer tests"
+        ],
         "check-and-test": [
             "@cs-check",
             "@tests"
         ],
         "check-and-test-all": [
-            "@check-and-test",
-            "@test-mf1"
+            "echo check-and-test-all script is deprecated, use composer check-and-test @no_additional_args",
+            "@check-and-test"
         ]
     },
     "autoload": {
