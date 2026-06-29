@@ -30,7 +30,7 @@
     "scripts": {
         "cs-check": "phpcs",
         "tests": "XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text --whitelist Mf2",
-        "tests-no-internet": "@tests --exclude-group internet --exclude-group microformats/tests/mf1",
+        "tests-no-internet": "@tests --exclude-group internet,microformats/tests/mf1",
         "microformats-tests-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
         "microformats-tests-mf2": "./vendor/bin/phpunit --group microformats/tests/mf2",
         "microformats-tests-mixed": "./vendor/bin/phpunit --group microformats/tests/mixed",
