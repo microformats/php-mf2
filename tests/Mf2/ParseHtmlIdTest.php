@@ -13,6 +13,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  *
  */
 class ParseHtmlIdTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
