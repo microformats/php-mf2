@@ -63,12 +63,26 @@ function parse($input, $url = null, $convertClassic = true) {
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
 function fetch($url, $convertClassic = true, &$curlInfo=null) {
+	$version = '0';
+	if (is_array($curl = curl_version())) {
+		$version = $curl['version'];
+	}
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
+	if (version_compare($version, '7.21.6', '>=')) {
+		// see https://curl.se/libcurl/c/CURLOPT_ACCEPT_ENCODING.html
+		curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, '');
+	} elseif (version_compare($version, '7.10.5', '>=')) {
+		// see https://curl.se/ch/7.10.5.html
+		curl_setopt($ch, CURLOPT_ENCODING, '');
+	}
+
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Accept: text/html'
 	));
