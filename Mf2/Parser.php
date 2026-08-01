@@ -984,7 +984,6 @@ class Parser {
 
 		// Initalise var to store the representation in
 		$return = array();
-		$children = array();
 		$dates = array();
 		$prefixes = array();
 		$impliedTimezone = null;
@@ -1218,9 +1217,6 @@ class Parser {
 			$parsed['coords'] = $coords;
 		}
 
-		if (!empty($children)) {
-			$parsed['children'] = array_values(array_filter($children));
-		}
 		return $parsed;
 	}
 
