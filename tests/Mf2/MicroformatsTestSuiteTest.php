@@ -7,7 +7,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 final class TestSuiteParser extends \Mf2\Parser
 {
     /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
-    public function textContent(\DOMElement $el, $dummy=false) {
+    public function textContent($el, $dummy=false) {
         $excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
         if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
@@ -18,7 +18,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
         $clonedEl = $el->cloneNode(true);
 
-        foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
+        foreach ($this->xpath->query('.//*[local-name()="img"]', $clonedEl) as $imgEl) {
             if ($imgEl->hasAttribute('alt')) {
                 $replacement = $imgEl->getAttribute('alt');
             } else if ($imgEl->hasAttribute('src')) {
@@ -31,7 +31,7 @@ final class TestSuiteParser extends \Mf2\Parser
         }
 
         foreach ($excludeTags as $tagName) {
-            foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
+            foreach ($this->xpath->query(".//*[local-name()='{$tagName}']", $clonedEl) as $elToRemove) {
                 $elToRemove->parentNode->removeChild($elToRemove);
             }
         }
@@ -41,7 +41,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
     // Hack. Old textContent requires "resolveChildUrls", but that method is private.
     private $__resolveChildUrls = null;
-    private function _resolveChildUrls(\DOMElement $element) {
+    private function _resolveChildUrls($element) {
         if (null === $this->__resolveChildUrls) {
             $reflectUpon = new \ReflectionClass($this);
             $this->__resolveChildUrls = $reflectUpon->getMethod('resolveChildUrls');
