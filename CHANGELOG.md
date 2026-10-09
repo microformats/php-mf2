@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- [#285](https://github.com/microformats/php-mf2/issues/285) Use `Dom\HTMLDocument` to parse HTML strings on PHP 8.4 and newer, and accept a `Dom\HTMLDocument` as input
+
+### Changed
+
+- Removed the `DOMElement` parameter type declarations from the functions and `Parser` methods that take elements. Subclasses that override these methods with a `DOMElement` type must remove it
+
 ## [0.5.0] – 2022-02-10
 
 ### Added

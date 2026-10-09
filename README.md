@@ -30,7 +30,9 @@ require_once 'Mf2/Parser.php';
 $mf = Mf2\fetch('https://waterpigs.co.uk');
 ```
 
-It is recommended to install the HTML5 parser for proper handling of HTML5 elements. Using composer, run
+On PHP 8.4 and newer, php-mf2 parses HTML strings with the built-in `\Dom\HTMLDocument`, which handles HTML5 correctly. You do not need anything else.
+
+On older PHP versions, it is recommended to install the HTML5 parser for proper handling of HTML5 elements. Using composer, run
 
 ```
 composer require masterminds/html5
@@ -246,7 +248,7 @@ If it was HTML then it is still parsed, as there are cases where error pages con
 
 The `Mf2\parse()` function covers the most common usage patterns by internally creating an instance of `Mf2\Parser` and returning the output all in one step. For some advanced usage you can also create an instance of `Mf2\Parser` yourself.
 
-The constructor takes two arguments, the input HTML (or a DOMDocument) and the URL to use as a base URL. Once you have a parser, there are a few other things you can do:
+The constructor takes two arguments, the input HTML (or a `DOMDocument`, or on PHP 8.4 and newer a `\Dom\HTMLDocument`) and the URL to use as a base URL. Once you have a parser, there are a few other things you can do:
 
 ### Selectively Parsing a Document
 
