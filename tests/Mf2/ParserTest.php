@@ -273,9 +273,9 @@ EOT;
 		$mf = Mf2\fetch('http://waterpigs.co.uk/');
 		$this->assertArrayHasKey('items', $mf);
 
-		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
+		$mf = Mf2\fetch('http://placekittens.com/200/300', null, $curlInfo);
 		$this->assertNull($mf);
-		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
+		$this->assertStringContainsString('image/png', $curlInfo['content_type']);
 	}
 
 	/**
