@@ -1821,7 +1821,8 @@ class Parser {
 	 * @return Parser $this
 	 */
 	public function convertLegacy() {
-		$xp = $this->xpath;
+		$doc = $this->doc;
+		$xp = $doc instanceof DOMDocument ? new DOMXPath($doc) : new \Dom\XPath($doc);
 
 		// replace all roots
 		foreach ($this->classicRootMap as $old => $new) {
