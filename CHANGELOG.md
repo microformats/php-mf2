@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 ### Changed
 
 - Removed the `DOMElement` parameter type declarations from the functions and `Parser` methods that take elements. Subclasses that override these methods with a `DOMElement` type must remove it
+- Internal: added PHPStan static analysis to CI
 
 ### Fixed
 
