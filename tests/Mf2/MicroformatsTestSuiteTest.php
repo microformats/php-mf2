@@ -6,7 +6,11 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 final class TestSuiteParser extends \Mf2\Parser
 {
-    /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
+    /**
+     * Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d)
+     *
+     * @param DOMElement|\Dom\Element $el
+     */
     public function textContent($el, $dummy=false) {
         $excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
@@ -41,6 +45,9 @@ final class TestSuiteParser extends \Mf2\Parser
 
     // Hack. Old textContent requires "resolveChildUrls", but that method is private.
     private $__resolveChildUrls = null;
+    /**
+     * @param DOMElement|\Dom\Element $element
+     */
     private function _resolveChildUrls($element) {
         if (null === $this->__resolveChildUrls) {
             $reflectUpon = new \ReflectionClass($this);

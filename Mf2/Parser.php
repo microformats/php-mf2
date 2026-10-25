@@ -215,6 +215,8 @@ function mfNamesFromElement($e, $prefix = 'h-') {
 
 /**
  * Wraps nestedMfPropertyNamesFromClass to handle an element as input
+ *
+ * @param DOMElement|\Dom\Element $e The element to get the classname for
  */
 function nestedMfPropertyNamesFromElement($e) {
 	$class = (string) $e->getAttribute('class');
@@ -440,6 +442,9 @@ class Parser {
 		$this->jsonMode = $jsonMode;
 	}
 
+	/**
+	 * @param DOMElement|\Dom\Element $e
+	 */
 	private function elementPrefixParsed($e, $prefix) {
 		if (!$this->parsed->contains($e))
 			$this->parsed->attach($e, array());
@@ -485,6 +490,9 @@ class Parser {
 		return false;
 	}
 
+	/**
+	 * @param DOMElement|\Dom\Element $el
+	 */
 	private function resolveChildUrls($el) {
 		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
 
@@ -514,6 +522,9 @@ class Parser {
 						$this->elementToString($element, $implied)
 				);
 	}
+	/**
+	 * @param DOMElement|\Dom\Element $input
+	 */
 	private function elementToString($input, $implied=false)
 	{
 			$output = '';
@@ -521,7 +532,7 @@ class Parser {
 					if ($child->nodeType === XML_TEXT_NODE) {
 							$output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
 					} else if ($child->nodeType === XML_ELEMENT_NODE) {
-							$tagName = strtoupper($child->localName);
+							$tagName = strtoupper((string) $child->localName);
 							if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
 									continue;
 							} else if ($tagName === 'IMG') {
@@ -579,7 +590,7 @@ class Parser {
 					return unicodeTrim($node->getAttribute('content'));
 				}
 			}
-		} elseif ($el->parentNode && $el->parentNode->nodeType === XML_ELEMENT_NODE) {
+		} elseif ($el->parentNode instanceof DOMElement || $el->parentNode instanceof \Dom\Element) {
 			// check the parent node
 			return $this->language($el->parentNode);
 		}
@@ -745,21 +756,21 @@ class Parser {
 				}
 				elseif ($e->localName == 'data') {
 					// Use @value, otherwise innertext
-					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->textContent);
+					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim((string) $e->textContent);
 					if (!empty($value)) {
 						$dateParts[] = $value;
 					}
 				}
 				elseif ($e->localName == 'abbr') {
 					// Use @title, otherwise innertext
-					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->textContent);
+					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim((string) $e->textContent);
 					if (!empty($title)) {
 						$dateParts[] = $title;
 					}
 				}
 				elseif ($e->localName == 'del' or $e->localName == 'ins' or $e->localName == 'time') {
 					// Use @datetime if available, otherwise innertext
-					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->textContent);
+					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim((string) $e->textContent);
 					if (!empty($dtAttr)) {
 						$dateParts[] = $dtAttr;
 					}
@@ -1229,6 +1240,7 @@ class Parser {
 
 	/**
 	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @param DOMElement|\Dom\Element $e
 	 */
 	public function parseImpliedPhoto($e) {
 
