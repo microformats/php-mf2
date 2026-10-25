@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 
 - Removed the `DOMElement` parameter type declarations from the functions and `Parser` methods that take elements. Subclasses that override these methods with a `DOMElement` type must remove it
 
+### Fixed
+
+- [#268](https://github.com/microformats/php-mf2/issues/268) Fix PHP 8.4 deprecation for implicitly nullable `$context` parameters
+
 ## [0.5.0] – 2022-02-10
 
 ### Added
