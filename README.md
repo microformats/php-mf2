@@ -353,7 +353,7 @@ Pull requests very welcome, please try to maintain stylistic, structural and nam
 4. Run PHPUnit with `./vendor/bin/phpunit`
 6. Add PHPUnit tests for your changes, either in an existing test file if suitable, or a new one
 7. Make your changes
-8. Make sure your tests pass (`./vendor/bin/phpunit`) and that your code is compatible with all supported versions of PHP (`./vendor/bin/phpcs -p`)
+8. Make sure your tests pass (`./vendor/bin/phpunit`) and that your code is compatible with all supported versions of PHP (`./vendor/bin/phpcs -p`). CI also runs [PHPStan](https://phpstan.org) (`phpstan analyse`), which needs PHP 7.4 or later
 9. Go to your fork of the repo on github.com and make a pull request, preferably with a short summary, detailed description and references to issues/parsing specs as appropriate
 10. Bask in the warm feeling of having contributed to a piece of free software (optional)
 
