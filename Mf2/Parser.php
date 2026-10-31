@@ -94,7 +94,9 @@ function fetch($url, $convertClassic = true, &$curlInfo=array()) {
 	}
 
 	$info = $curlInfo = (curl_getinfo($ch) ?: array());
-	curl_close($ch);
+	if (PHP_VERSION_ID < 80000) {
+		curl_close($ch);
+	}
 
 	if (strpos(strtolower($info['content_type']), 'html') === false) {
 		// The content was not delivered as HTML, do not attempt to parse it.
@@ -449,8 +451,8 @@ class Parser {
 	 * @param DOMElement|\Dom\Element $e
 	 */
 	private function elementPrefixParsed($e, $prefix) {
-		if (!$this->parsed->contains($e))
-			$this->parsed->attach($e, array());
+		if (!$this->parsed->offsetExists($e))
+			$this->parsed->offsetSet($e, array());
 
 		$prefixes = $this->parsed[$e];
 		$prefixes[] = $prefix;
@@ -464,7 +466,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementParsed($e, $prefix) {
-		if (!$this->parsed->contains($e)) {
+		if (!$this->parsed->offsetExists($e)) {
 			return false;
 		}
 
@@ -484,7 +486,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementUpgraded($el, $property) {
-		if ( $this->upgraded->contains($el) ) {
+		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
 			}
@@ -988,7 +990,7 @@ class Parser {
 	 */
 	public function parseH($e, $is_backcompat = false, $has_nested_mf = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
-		if ($this->parsed->contains($e)) {
+		if ($this->parsed->offsetExists($e)) {
 			return null;
 		}
 
@@ -1778,8 +1780,8 @@ class Parser {
 		}
 
 		// add element to list of upgraded elements
-		if ( !$this->upgraded->contains($el) ) {
-			$this->upgraded->attach($el, $property);
+		if ( !$this->upgraded->offsetExists($el) ) {
+			$this->upgraded->offsetSet($el, $property);
 		} else {
 			$this->upgraded[$el] = array_merge($this->upgraded[$el], $property);
 		}

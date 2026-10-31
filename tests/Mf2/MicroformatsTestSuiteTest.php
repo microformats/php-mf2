@@ -52,7 +52,9 @@ final class TestSuiteParser extends \Mf2\Parser
         if (null === $this->__resolveChildUrls) {
             $reflectUpon = new \ReflectionClass($this);
             $this->__resolveChildUrls = $reflectUpon->getMethod('resolveChildUrls');
-            $this->__resolveChildUrls->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $this->__resolveChildUrls->setAccessible(true);
+            }
         }
         return $this->__resolveChildUrls->invoke($this, $element);
     }
