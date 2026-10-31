@@ -41,7 +41,11 @@ If this library is added to your project, the php-mf2 parser will use it automat
 
 ### Signed Code Verification
 
-From v0.2.9, php-mf2’s version tags are signed using GPG, allowing you to cryptographically verify that you’re using code which hasn’t been tampered with. To verify the code you will need the GPG keys for one of the people in the list of code signers:
+php-mf2’s version tags are signed and will show the [verified badge](https://docs.github.com/en/enterprise-cloud@latest/authentication/managing-commit-signature-verification/about-commit-signature-verification).
+
+#### Earlier Versions
+
+From v0.2.9 - v0.5.0, they were signed with GPG, allowing you to cryptographically verify that you’re using code which hasn’t been tampered with. To verify the code you will need the GPG keys for one of the people in the list of code signers:
 
 * Barnaby Walters barnaby@waterpigs.co.uk 1C00 430B 19C6 B426 922F E534 BEF8 CE58 118A D524
 * Aaron Parecki aaron@parecki.com F384 12A1 55FB 8B15 B7DD 8E07 4225 2B5E 65CE 0ADD
