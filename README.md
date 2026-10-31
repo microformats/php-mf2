@@ -41,7 +41,7 @@ If this library is added to your project, the php-mf2 parser will use it automat
 
 ### Signed Code Verification
 
-php-mf2’s version tags are signed and will show the [verified badge](https://docs.github.com/en/enterprise-cloud@latest/authentication/managing-commit-signature-verification/about-commit-signature-verification).
+php-mf2’s version tags are signed and will show the [verified badge](https://docs.github.com/en/enterprise-cloud@latest/authentication/managing-commit-signature-verification/about-commit-signature-verification). Public keys for a maintainer can be retrieved from GitHub at `https://github.com/username.keys`, replacing "username".
 
 #### Earlier Versions
 
