@@ -36,7 +36,7 @@ use stdClass;
  *      "rels": {}
  *     }
  *
- * @param string|DOMDocument $input The HTML string or DOMDocument object to parse
+ * @param string|DOMDocument|\Dom\HTMLDocument $input The HTML string or document object to parse
  * @param string $url The URL the input document was found at, for relative URL resolution
  * @param bool $convertClassic whether or not to convert classic microformats
  * @return array Canonical MF2 array structure
@@ -59,10 +59,11 @@ function parse($input, $url = null, $convertClassic = true) {
  *
  * @param string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
- * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @param array &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
-function fetch($url, $convertClassic = true, &$curlInfo=null) {
+function fetch($url, $convertClassic = true, &$curlInfo=array()) {
+	$curlInfo = array();
 	$version = '0';
 	if (is_array($curl = curl_version())) {
 		$version = $curl['version'];
@@ -70,9 +71,9 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HEADER, false);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 
 	if (version_compare($version, '7.21.6', '>=')) {
@@ -92,7 +93,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$info = $curlInfo = curl_getinfo($ch);
+	$info = $curlInfo = (curl_getinfo($ch) ?: array());
 	if (PHP_VERSION_ID < 80000) {
 		curl_close($ch);
 	}
@@ -148,7 +149,7 @@ function unicodeTrim($str) {
  *
  * @param string $class A space delimited list of classnames
  * @param string $prefix The prefix to look for
- * @return string|array The prefixed name of the first microfomats class found or false
+ * @return array The prefixed names of the microformats classes found
  */
 function mfNamesFromClass($class, $prefix='h-') {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
@@ -206,20 +207,22 @@ function nestedMfPropertyNamesFromClass($class) {
 /**
  * Wraps mfNamesFromClass to handle an element as input (common)
  *
- * @param DOMElement $e The element to get the classname for
+ * @param DOMElement|\Dom\Element $e The element to get the classname for
  * @param string $prefix The prefix to look for
  * @return mixed See return value of mf2\Parser::mfNameFromClass()
  */
-function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
-	$class = $e->getAttribute('class');
+function mfNamesFromElement($e, $prefix = 'h-') {
+	$class = (string) $e->getAttribute('class');
 	return mfNamesFromClass($class, $prefix);
 }
 
 /**
  * Wraps nestedMfPropertyNamesFromClass to handle an element as input
+ *
+ * @param DOMElement|\Dom\Element $e The element to get the classname for
  */
-function nestedMfPropertyNamesFromElement(\DOMElement $e) {
-	$class = $e->getAttribute('class');
+function nestedMfPropertyNamesFromElement($e) {
+	$class = (string) $e->getAttribute('class');
 	return nestedMfPropertyNamesFromClass($class);
 }
 
@@ -289,7 +292,7 @@ function normalizeOrdinalDate($dtValue) {
 /**
  * If a date value has a timezone offset, normalize it.
  * @param string $dtValue
- * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
+ * @return string|null isolated, normalized TZ offset for implied TZ for other dt- properties
  */
 function normalizeTimezoneOffset(&$dtValue) {
 	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);
@@ -307,9 +310,9 @@ function normalizeTimezoneOffset(&$dtValue) {
 		if ( strlen($timezoneOffset) <= 2 ) {
 			$timezoneOffset .= '00';
 		}
-		$timezoneOffset = str_pad($timezoneOffset, 4, 0, STR_PAD_LEFT);
+		$timezoneOffset = str_pad($timezoneOffset, 4, '0', STR_PAD_LEFT);
 		$timezoneOffset = $plus_minus . $timezoneOffset;
-		$dtValue = preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue);
+		$dtValue = (string) preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue);
 	}
 
 	return $timezoneOffset;
@@ -343,10 +346,10 @@ class Parser {
 	/** @var string The baseurl (if any) to use for this parse */
 	public $baseurl;
 
-	/** @var DOMXPath object which can be used to query over any fragment*/
+	/** @var DOMXPath|\Dom\XPath object which can be used to query over any fragment*/
 	public $xpath;
 
-	/** @var DOMDocument */
+	/** @var DOMDocument|\Dom\HTMLDocument */
 	public $doc;
 
 	/** @var SplObjectStorage */
@@ -378,7 +381,7 @@ class Parser {
 	/**
 	 * Constructor
 	 *
-	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
+	 * @param DOMDocument|\Dom\HTMLDocument|string $input The data to parse. A string of HTML or a document
 	 * @param string $url The URL of the parsed document, for relative URL resolution
 	 * @param boolean $jsonMode Whether or not to use a stdClass instance for an empty `rels` dictionary. This breaks PHP looping over rels, but allows the output to be correctly serialized as JSON.
 	 */
@@ -390,14 +393,16 @@ class Parser {
 					$input = $emptyDocDefault;
 			}
 				
-			if (class_exists('Masterminds\\HTML5')) {
+			if (class_exists('Dom\\HTMLDocument')) {
+				$doc = \Dom\HTMLDocument::createFromString($input, \LIBXML_NOERROR);
+			} elseif (class_exists('Masterminds\\HTML5')) {
 					$doc = new \Masterminds\HTML5(array('disable_html_ns' => true));
 					$doc = $doc->loadHTML($input);
 			} else {
 				$doc = new DOMDocument();
 				@$doc->loadHTML(unicodeToHtmlEntities($input), \LIBXML_NOWARNING);
 			}
-		} elseif (is_a($input, 'DOMDocument')) {
+		} elseif (is_a($input, 'DOMDocument') || is_a($input, 'Dom\\HTMLDocument')) {
 			$doc = clone $input;
 		} else {
 			$doc = new DOMDocument();
@@ -405,12 +410,14 @@ class Parser {
 		}
 
 		// Create an XPath object and allow some PHP functions to be used within XPath queries.
-		$this->xpath = new DOMXPath($doc);
+		// The modern parser puts elements in the HTML namespace, so queries match on local-name().
+		$this->xpath = $doc instanceof DOMDocument ? new DOMXPath($doc) : new \Dom\XPath($doc);
 		$this->xpath->registerNamespace('php', 'http://php.net/xpath');
 		$this->xpath->registerPhpFunctions('\\Mf2\\classHasMf2RootClassname');
 
 		$baseurl = $url;
-		foreach ($this->xpath->query('//base[@href]') as $base) {
+		/** @var DOMElement|\Dom\Element $base */
+		foreach ($this->xpath->query('//*[local-name()="base"][@href]') as $base) {
 			$baseElementUrl = $base->getAttribute('href');
 
 			if (parse_url($baseElementUrl, PHP_URL_SCHEME) === null) {
@@ -428,7 +435,8 @@ class Parser {
 		}
 
 		// Ignore <template> elements as per the HTML5 spec
-		foreach ($this->xpath->query('//template') as $templateEl) {
+		/** @var DOMElement|\Dom\Element $templateEl */
+		foreach ($this->xpath->query('//*[local-name()="template"]') as $templateEl) {
 			$templateEl->parentNode->removeChild($templateEl);
 		}
 
@@ -439,7 +447,10 @@ class Parser {
 		$this->jsonMode = $jsonMode;
 	}
 
-	private function elementPrefixParsed(\DOMElement $e, $prefix) {
+	/**
+	 * @param DOMElement|\Dom\Element $e
+	 */
+	private function elementPrefixParsed($e, $prefix) {
 		if (!$this->parsed->offsetExists($e))
 			$this->parsed->offsetSet($e, array());
 
@@ -450,11 +461,11 @@ class Parser {
 
 	/**
 	 * Determine if the element has already been parsed
-	 * @param DOMElement $e
+	 * @param DOMElement|\Dom\Element $e
 	 * @param string $prefix
 	 * @return bool
 	 */
-	private function isElementParsed(\DOMElement $e, $prefix) {
+	private function isElementParsed($e, $prefix) {
 		if (!$this->parsed->offsetExists($e)) {
 			return false;
 		}
@@ -470,11 +481,11 @@ class Parser {
 
 	/**
 	 * Determine if the element's specified property has already been upgraded during backcompat
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @param string $property
 	 * @return bool
 	 */
-	private function isElementUpgraded(\DOMElement $el, $property) {
+	private function isElementUpgraded($el, $property) {
 		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
@@ -484,7 +495,11 @@ class Parser {
 		return false;
 	}
 
-	private function resolveChildUrls(DOMElement $el) {
+	/**
+	 * @param DOMElement|\Dom\Element $el
+	 */
+	private function resolveChildUrls($el) {
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $hyperlinkChildren */
 		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
 
 		foreach ($hyperlinkChildren as $child) {
@@ -493,7 +508,7 @@ class Parser {
 			if ($child->hasAttribute('src'))
 				$child->setAttribute('src', $this->resolveUrl($child->getAttribute('src')));
 			if ($child->hasAttribute('srcset'))
-				$child->setAttribute('srcset', applySrcsetUrlTransformation($child->getAttribute('href'), array($this, 'resolveUrl')));
+				$child->setAttribute('srcset', applySrcsetUrlTransformation((string) $child->getAttribute('href'), array($this, 'resolveUrl')));
 			if ($child->hasAttribute('data'))
 				$child->setAttribute('data', $this->resolveUrl($child->getAttribute('data')));
 		}
@@ -501,11 +516,11 @@ class Parser {
 
 	/**
 	 * The following two methods implements plain text parsing.
-	 * @param DOMElement $element
+	 * @param DOMElement|\Dom\Element $element
 	 * @param bool $implied
 	 * @see https://wiki.zegnat.net/media/textparsing.html
 	 **/
-	public function textContent(DOMElement $element, $implied=false)
+	public function textContent($element, $implied=false)
 	{
 				return preg_replace(
 						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
@@ -513,14 +528,17 @@ class Parser {
 						$this->elementToString($element, $implied)
 				);
 	}
-	private function elementToString(DOMElement $input, $implied=false)
+	/**
+	 * @param DOMElement|\Dom\Element $input
+	 */
+	private function elementToString($input, $implied=false)
 	{
 			$output = '';
 			foreach ($input->childNodes as $child) {
 					if ($child->nodeType === XML_TEXT_NODE) {
 							$output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
-					} else if ($child->nodeType === XML_ELEMENT_NODE) {
-							$tagName = strtoupper($child->tagName);
+					} else if ($child instanceof DOMElement || $child instanceof \Dom\Element) {
+							$tagName = strtoupper((string) $child->localName);
 							if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
 									continue;
 							} else if ($tagName === 'IMG') {
@@ -543,42 +561,43 @@ class Parser {
 
 	/**
 	 * Given an img property, parse its value and/or alt text
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @access public
 	 * @return string|array
 	 */
-	public function parseImg(DOMElement $el)
+	public function parseImg($el)
 	{
 		if ($el->hasAttribute('alt')) {
 			return [
-				'value' => $this->resolveUrl( $el->getAttribute('src') ),
+				'value' => $this->resolveUrl( (string) $el->getAttribute('src') ),
 				'alt' => $el->getAttribute('alt')
 			];
 		}
-		return $el->getAttribute('src');
+		return (string) $el->getAttribute('src');
 	}
 	/**
 	 * This method parses the language of an element
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @access public
 	 * @return string
 	 */
-	public function language(DOMElement $el)
+	public function language($el)
 	{
 		// element has a lang attribute; use it
 		if ($el->hasAttribute('lang')) {
 			return unicodeTrim($el->getAttribute('lang'));
 		}
 
-		if ($el->tagName == 'html') {
+		if ($el->localName == 'html') {
 			// we're at the <html> element and no lang; check <meta> http-equiv Content-Language
-			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
+			/** @var DOMElement|\Dom\Element $node */
+			foreach ( $this->xpath->query('.//*[local-name()="meta"][@http-equiv]') as $node )
 			{
 				if ($node->hasAttribute('http-equiv') && $node->hasAttribute('content') && strtolower($node->getAttribute('http-equiv')) == 'content-language') {
 					return unicodeTrim($node->getAttribute('content'));
 				}
 			}
-		} elseif ($el->parentNode instanceof DOMElement) {
+		} elseif ($el->parentNode instanceof DOMElement || $el->parentNode instanceof \Dom\Element) {
 			// check the parent node
 			return $this->language($el->parentNode);
 		}
@@ -616,11 +635,12 @@ class Parser {
 	 * Parse value-class/value-title on an element, joining with $separator if
 	 * there are multiple.
 	 *
-	 * @param \DOMElement $e
+	 * @param \DOMElement|\Dom\Element $e
 	 * @param string $separator = '' if multiple value-title elements, join with this string
 	 * @return string|null the parsed value or null if value-class or -title aren’t in use
 	 */
-	public function parseValueClassTitle(\DOMElement $e, $separator = '') {
+	public function parseValueClassTitle($e, $separator = '') {
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $valueClassElements */
 		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ")]', $e);
 
 		if ($valueClassElements->length !== 0) {
@@ -633,6 +653,7 @@ class Parser {
 			return unicodeTrim($val);
 		}
 
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $valueTitleElements */
 		$valueTitleElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $e);
 
 		if ($valueTitleElements->length !== 0) {
@@ -652,11 +673,11 @@ class Parser {
 	/**
 	 * Given an element with class="p-*", get its value
 	 *
-	 * @param DOMElement $p The element to parse
+	 * @param DOMElement|\Dom\Element $p The element to parse
 	 * @return string The plaintext value of $p, dependant on type
 	 * @todo Make this adhere to value-class
 	 */
-	public function parseP(\DOMElement $p) {
+	public function parseP($p) {
 		$classTitle = $this->parseValueClassTitle($p, ' ');
 
 		if ($classTitle !== null) {
@@ -665,13 +686,13 @@ class Parser {
 
 		$this->resolveChildUrls($p);
 
-		if ($p->tagName == 'img' and $p->hasAttribute('alt')) {
+		if ($p->localName == 'img' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
-		} elseif ($p->tagName == 'area' and $p->hasAttribute('alt')) {
+		} elseif ($p->localName == 'area' and $p->hasAttribute('alt')) {
 			$pValue = $p->getAttribute('alt');
-		} elseif (($p->tagName == 'abbr' or $p->tagName == 'link') and $p->hasAttribute('title')) {
+		} elseif (($p->localName == 'abbr' or $p->localName == 'link') and $p->hasAttribute('title')) {
 			$pValue = $p->getAttribute('title');
-		} elseif (in_array($p->tagName, array('data', 'input')) and $p->hasAttribute('value')) {
+		} elseif (in_array($p->localName, array('data', 'input')) and $p->hasAttribute('value')) {
 			$pValue = $p->getAttribute('value');
 		} else {
 			$pValue = $this->textContent($p);
@@ -683,26 +704,26 @@ class Parser {
 	/**
 	 * Given an element with class="u-*", get the value of the URL
 	 *
-	 * @param DOMElement $u The element to parse
+	 * @param DOMElement|\Dom\Element $u The element to parse
 	 * @return string The plaintext value of $u, dependant on type
 	 * @todo make this adhere to value-class
 	 */
-	public function parseU(\DOMElement $u) {
-		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
+	public function parseU($u) {
+		if (($u->localName == 'a' or $u->localName == 'area' or $u->localName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
-		} elseif ( $u->tagName == 'img' and $u->hasAttribute('src') ) {
+		} elseif ( $u->localName == 'img' and $u->hasAttribute('src') ) {
 			$uValue = $this->parseImg($u);
-		} elseif (in_array($u->tagName, array('audio', 'video', 'source', 'iframe')) and $u->hasAttribute('src')) {
+		} elseif (in_array($u->localName, array('audio', 'video', 'source', 'iframe')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
-		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
+		} elseif ($u->localName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
 			$uValue = $u->getAttribute('poster');
-		} elseif ($u->tagName == 'object' and $u->hasAttribute('data')) {
+		} elseif ($u->localName == 'object' and $u->hasAttribute('data')) {
 			$uValue = $u->getAttribute('data');
 		} elseif (($classTitle = $this->parseValueClassTitle($u)) !== null) {
 				$uValue = $classTitle;
-		} elseif (($u->tagName == 'abbr' or $u->tagName == 'link') and $u->hasAttribute('title')) {
+		} elseif (($u->localName == 'abbr' or $u->localName == 'link') and $u->hasAttribute('title')) {
 			$uValue = $u->getAttribute('title');
-		} elseif (in_array($u->tagName, array('data', 'input')) and $u->hasAttribute('value')) {
+		} elseif (in_array($u->localName, array('data', 'input')) and $u->hasAttribute('value')) {
 			$uValue = $u->getAttribute('value');
 		} else {
 			$uValue = $this->textContent($u);
@@ -714,13 +735,14 @@ class Parser {
 	/**
 	 * Given an element with class="dt-*", get the value of the datetime as a php date object
 	 *
-	 * @param DOMElement $dt The element to parse
+	 * @param DOMElement|\Dom\Element $dt The element to parse
 	 * @param array $dates Array of dates processed so far
 	 * @param string $impliedTimezone
 	 * @return string The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt, &$dates = array(), &$impliedTimezone = null) {
+	public function parseDT($dt, &$dates = array(), &$impliedTimezone = null) {
 		// Check for value-class pattern
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $valueClassChildren */
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ") or contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $dt);
 		$dtValue = false;
 
@@ -735,37 +757,37 @@ class Parser {
 						$dateParts[] = $title;
 					}
 				}
-				elseif ($e->tagName == 'img' or $e->tagName == 'area') {
+				elseif ($e->localName == 'img' or $e->localName == 'area') {
 					// Use @alt
 					$alt = $e->getAttribute('alt');
 					if (!empty($alt)) {
 						$dateParts[] = $alt;
 					}
 				}
-				elseif ($e->tagName == 'data') {
+				elseif ($e->localName == 'data') {
 					// Use @value, otherwise innertext
-					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->nodeValue);
+					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim((string) $e->textContent);
 					if (!empty($value)) {
 						$dateParts[] = $value;
 					}
 				}
-				elseif ($e->tagName == 'abbr') {
+				elseif ($e->localName == 'abbr') {
 					// Use @title, otherwise innertext
-					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->nodeValue);
+					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim((string) $e->textContent);
 					if (!empty($title)) {
 						$dateParts[] = $title;
 					}
 				}
-				elseif ($e->tagName == 'del' or $e->tagName == 'ins' or $e->tagName == 'time') {
+				elseif ($e->localName == 'del' or $e->localName == 'ins' or $e->localName == 'time') {
 					// Use @datetime if available, otherwise innertext
-					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->nodeValue);
+					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim((string) $e->textContent);
 					if (!empty($dtAttr)) {
 						$dateParts[] = $dtAttr;
 					}
 				}
 				else {
-					if (!empty($e->nodeValue)) {
-						$dateParts[] = unicodeTrim($e->nodeValue);
+					if (!empty($e->textContent)) {
+						$dateParts[] = unicodeTrim($e->textContent);
 					}
 				}
 			}
@@ -833,14 +855,14 @@ class Parser {
 			}
 		} else {
 			// Not using value-class (phew).
-			if ($dt->tagName == 'img' or $dt->tagName == 'area') {
+			if ($dt->localName == 'img' or $dt->localName == 'area') {
 				// Use @alt
 				// Is it an entire dt?
 				$alt = $dt->getAttribute('alt');
 				if (!empty($alt)) {
 					$dtValue = $alt;
 				}
-			} elseif (in_array($dt->tagName, array('data'))) {
+			} elseif (in_array($dt->localName, array('data'))) {
 				// Use @value, otherwise innertext
 				// Is it an entire dt?
 				$value = $dt->getAttribute('value');
@@ -850,7 +872,7 @@ class Parser {
 				else {
 					$dtValue = $this->textContent($dt);
 				}
-			} elseif ($dt->tagName == 'abbr') {
+			} elseif ($dt->localName == 'abbr') {
 				// Use @title, otherwise innertext
 				// Is it an entire dt?
 				$title = $dt->getAttribute('title');
@@ -860,7 +882,7 @@ class Parser {
 				else {
 					$dtValue = $this->textContent($dt);
 				}
-			} elseif ($dt->tagName == 'del' or $dt->tagName == 'ins' or $dt->tagName == 'time') {
+			} elseif ($dt->localName == 'del' or $dt->localName == 'ins' or $dt->localName == 'time') {
 				// Use @datetime if available, otherwise innertext
 				// Is it an entire dt?
 				$dtAttr = $dt->getAttribute('datetime');
@@ -912,12 +934,12 @@ class Parser {
 	/**
 	 * 	Given the root element of some embedded markup, return a string representing that markup
 	 *
-	 * 	@param DOMElement $e The element to parse
-	 * 	@return string $e’s innerHTML
+	 * 	@param DOMElement|\Dom\Element $e The element to parse
+	 * 	@return array|string $e’s innerHTML and text value, or the value-title value
 	 *
 	 * @todo need to mark this element as e- parsed so it doesn’t get parsed as it’s parent’s e-* too
 	 */
-	public function parseE(\DOMElement $e) {
+	public function parseE($e) {
 		$classTitle = $this->parseValueClassTitle($e);
 
 		if ($classTitle !== null)
@@ -931,6 +953,7 @@ class Parser {
 		// This way we can DOMDocument::saveHTML on the entire collection at once.
 		// Running DOMDocument::saveHTML per node may add whitespace that isn't in source.
 		// See https://stackoverflow.com/q/38317903
+		$html = '';
 		if ($innerNodes = $e->ownerDocument->createDocumentFragment()) {
 			while ($e->hasChildNodes()) {
 				$innerNodes->appendChild($e->firstChild);
@@ -957,21 +980,15 @@ class Parser {
 		return $return;
 	}
 
-	private function removeTags(\DOMElement &$e, $tagName) {
-		while(($r = $e->getElementsByTagName($tagName)) && $r->length) {
-			$r->item(0)->parentNode->removeChild($r->item(0));
-		}
-	}
-
 	/**
 	 * Recursively parse microformats
 	 *
-	 * @param DOMElement $e The element to parse
+	 * @param DOMElement|\Dom\Element $e The element to parse
 	 * @param bool $is_backcompat Whether using backcompat parsing or not
 	 * @param bool $has_nested_mf Whether this microformat has a nested microformat
-	 * @return array A representation of the values contained within microformat $e
+	 * @return array|null A representation of the values contained within microformat $e
 	 */
-	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false) {
+	public function parseH($e, $is_backcompat = false, $has_nested_mf = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
 		if ($this->parsed->offsetExists($e)) {
 			return null;
@@ -986,17 +1003,17 @@ class Parser {
 
 		// Initalise var to store the representation in
 		$return = array();
-		$children = array();
 		$dates = array();
 		$prefixes = array();
 		$impliedTimezone = null;
 
-		if($e->tagName == 'area') {
+		if($e->localName == 'area') {
 			$coords = $e->getAttribute('coords');
 			$shape = $e->getAttribute('shape');
 		}
 
 		// Handle p-*
+		/** @var DOMElement|\Dom\Element $p */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)) ," p-")]', $e) as $p) {
 			// element is already parsed
 			if ($this->isElementParsed($p, 'p')) {
@@ -1022,6 +1039,7 @@ class Parser {
 		}
 
 		// Handle u-*
+		/** @var DOMElement|\Dom\Element $u */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," u-")]', $e) as $u) {
 			// element is already parsed
 			if ($this->isElementParsed($u, 'u')) {
@@ -1047,6 +1065,7 @@ class Parser {
 		$temp_dates = array();
 
 		// Handle dt-*
+		/** @var DOMElement|\Dom\Element $dt */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)), " dt-")]', $e) as $dt) {
 			// element is already parsed
 			if ($this->isElementParsed($dt, 'dt')) {
@@ -1082,6 +1101,7 @@ class Parser {
 		}
 
 		// Handle e-*
+		/** @var DOMElement|\Dom\Element $em */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," e-")]', $e) as $em) {
 			// element is already parsed
 			if ($this->isElementParsed($em, 'e')) {
@@ -1112,31 +1132,32 @@ class Parser {
 			&& !$is_backcompat && empty($this->upgraded[$e])) {
 			$name = false;
 			// img.h-x[alt] or area.h-x[alt]
-			if (($e->tagName === 'img' || $e->tagName === 'area') && $e->hasAttribute('alt')) {
+			if (($e->localName === 'img' || $e->localName === 'area') && $e->hasAttribute('alt')) {
 				$name = $e->getAttribute('alt');
 			// abbr.h-x[title]
-			} elseif ($e->tagName === 'abbr' && $e->hasAttribute('title')) {
+			} elseif ($e->localName === 'abbr' && $e->hasAttribute('title')) {
 				$name = $e->getAttribute('title');
 			} else {
 				$xpaths = array(
 					// .h-x>img:only-child[alt]:not([alt=""]):not[.h-*]
-					'./img[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
+					'./*[local-name()="img"][not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
 					// .h-x>area:only-child[alt]:not([alt=""]):not[.h-*]
-					'./area[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
+					'./*[local-name()="area"][not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @alt and string-length(@alt) != 0]',
 					// .h-x>abbr:only-child[title]:not([title=""]):not[.h-*]
-					'./abbr[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @title and string-length(@title) != 0]',
+					'./*[local-name()="abbr"][not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and @title and string-length(@title) != 0]',
 					// .h-x>:only-child:not[.h-*]>img:only-child[alt]:not([alt=""]):not[.h-*]
-					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/img[not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/*[local-name()="img"][not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
 					// .h-x>:only-child:not[.h-*]>area:only-child[alt]:not([alt=""]):not[.h-*]
-					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/area[not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/*[local-name()="area"][not(contains(concat(" ", @class), " h-")) and @alt and string-length(@alt) != 0]',
 					// .h-x>:only-child:not[.h-*]>abbr:only-child[title]:not([title=""]):not[.h-*]
-					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/abbr[not(contains(concat(" ", @class), " h-")) and @title and string-length(@title) != 0]'
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/*[local-name()="abbr"][not(contains(concat(" ", @class), " h-")) and @title and string-length(@title) != 0]'
 				);
 				foreach ($xpaths as $xpath) {
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $nameElement */
 					$nameElement = $this->xpath->query($xpath, $e);
 					if ($nameElement !== false && $nameElement->length === 1) {
 						$nameElement = $nameElement->item(0);
-						if ($nameElement->tagName === 'img' || $nameElement->tagName === 'area') {
+						if ($nameElement->localName === 'img' || $nameElement->localName === 'area') {
 							$name = $nameElement->getAttribute('alt');
 						} else {
 							$name = $nameElement->getAttribute('title');
@@ -1163,20 +1184,21 @@ class Parser {
 		// if no explicit "url" property, and no other explicit u-* properties, and no nested microformats
 		if (!array_key_exists('url', $return) && !in_array('u-', $prefixes) && !$has_nested_mf && !$is_backcompat) {
 			// a.h-x[href] or area.h-x[href]
-			if (($e->tagName === 'a' || $e->tagName === 'area') && $e->hasAttribute('href')) {
+			if (($e->localName === 'a' || $e->localName === 'area') && $e->hasAttribute('href')) {
 				$return['url'][] = $this->resolveUrl($e->getAttribute('href'));
 			} else {
 				$xpaths = array(
 					// .h-x>a[href]:only-of-type:not[.h-*]
-					'./a[not(contains(concat(" ", @class), " h-")) and count(../a) = 1 and @href]',
+					'./*[local-name()="a"][not(contains(concat(" ", @class), " h-")) and count(../*[local-name()="a"]) = 1 and @href]',
 					// .h-x>area[href]:only-of-type:not[.h-*]
-					'./area[not(contains(concat(" ", @class), " h-")) and count(../area) = 1 and @href]',
+					'./*[local-name()="area"][not(contains(concat(" ", @class), " h-")) and count(../*[local-name()="area"]) = 1 and @href]',
 					// .h-x>:only-child:not[.h-*]>a[href]:only-of-type:not[.h-*]
-					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(a) = 1]/a[not(contains(concat(" ", @class), " h-")) and @href]',
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*[local-name()="a"]) = 1]/*[local-name()="a"][not(contains(concat(" ", @class), " h-")) and @href]',
 					// .h-x>:only-child:not[.h-*]>area[href]:only-of-type:not[.h-*]
-					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(area) = 1]/area[not(contains(concat(" ", @class), " h-")) and @href]'
+					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*[local-name()="area"]) = 1]/*[local-name()="area"][not(contains(concat(" ", @class), " h-")) and @href]'
 				);
 				foreach ($xpaths as $xpath) {
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $url */
 					$url = $this->xpath->query($xpath, $e);
 					if ($url !== false && $url->length === 1) {
 						$return['url'][] = $this->resolveUrl($url->item(0)->getAttribute('href'));
@@ -1201,8 +1223,8 @@ class Parser {
 			'properties' => $return
 		);
 
-		if(trim($e->getAttribute('id')) !== '') {
-			$parsed['id'] = trim($e->getAttribute("id"));
+		if(trim((string) $e->getAttribute('id')) !== '') {
+			$parsed['id'] = trim((string) $e->getAttribute("id"));
 		}
 
 		if($this->lang) {
@@ -1220,47 +1242,46 @@ class Parser {
 			$parsed['coords'] = $coords;
 		}
 
-		if (!empty($children)) {
-			$parsed['children'] = array_values(array_filter($children));
-		}
 		return $parsed;
 	}
 
 	/**
 	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @param DOMElement|\Dom\Element $e
 	 */
-	public function parseImpliedPhoto(\DOMElement $e) {
+	public function parseImpliedPhoto($e) {
 
 		// img.h-x[src]
-		if ($e->tagName == 'img') {
+		if ($e->localName == 'img') {
 			return $this->resolveUrl($this->parseImg($e));
 		}
 
 		// object.h-x[data]
-		if ($e->tagName == 'object' && $e->hasAttribute('data')) {
+		if ($e->localName == 'object' && $e->hasAttribute('data')) {
 			return $this->resolveUrl($e->getAttribute('data'));
 		}
 
 		$xpaths = array(
 			// .h-x>img[src]:only-of-type:not[.h-*]
-			'./img[not(contains(concat(" ", @class), " h-")) and count(../img) = 1 and @src]',
+			'./*[local-name()="img"][not(contains(concat(" ", @class), " h-")) and count(../*[local-name()="img"]) = 1 and @src]',
 			// .h-x>object[data]:only-of-type:not[.h-*]
-			'./object[not(contains(concat(" ", @class), " h-")) and count(../object) = 1 and @data]',
+			'./*[local-name()="object"][not(contains(concat(" ", @class), " h-")) and count(../*[local-name()="object"]) = 1 and @data]',
 			// .h-x>:only-child:not[.h-*]>img[src]:only-of-type:not[.h-*]
-			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(img) = 1]/img[not(contains(concat(" ", @class), " h-")) and @src]',
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*[local-name()="img"]) = 1]/*[local-name()="img"][not(contains(concat(" ", @class), " h-")) and @src]',
 			// .h-x>:only-child:not[.h-*]>object[data]:only-of-type:not[.h-*]
-			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(object) = 1]/object[not(contains(concat(" ", @class), " h-")) and @data]',
+			'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*[local-name()="object"]) = 1]/*[local-name()="object"][not(contains(concat(" ", @class), " h-")) and @data]',
 		);
 
 		foreach ($xpaths as $path) {
+			/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $els */
 			$els = $this->xpath->query($path, $e);
 
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
-				if ($el->tagName == 'img') {
+				if ($el->localName == 'img') {
 					$return = $this->parseImg($el);
 					return $this->resolveUrl($return);
-				} else if ($el->tagName == 'object') {
+				} else if ($el->localName == 'object') {
 					return $this->resolveUrl($el->getAttribute('data'));
 				}
 			}
@@ -1286,7 +1307,8 @@ class Parser {
 		$alternates = array();
 
 		// Iterate through all a, area and link elements with rel attributes
-		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') as $hyperlink) {
+		/** @var DOMElement|\Dom\Element $hyperlink */
+		foreach ($this->xpath->query('//*[local-name()="a"][@rel and @href] | //*[local-name()="link"][@rel and @href] | //*[local-name()="area"][@rel and @href]') as $hyperlink) {
 			// Parse the set of rels for the current link
 			$linkRels = array_unique(array_filter(preg_split('/[\t\n\f\r ]/', $hyperlink->getAttribute('rel'))));
 			if (count($linkRels) === 0) {
@@ -1378,10 +1400,11 @@ class Parser {
 	 * For each element, get the last non-empty URL segment. Append a <data>
 	 * element with that value as the category. Uses the mf1 class 'category'
 	 * which will then be upgraded to p-category during backcompat.
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 */
-	public function upgradeRelTagToCategory(DOMElement $el) {
-		$rel_tag = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," tag ") and not(contains(concat(" ", normalize-space(@class), " "), " category ")) and @href]', $el);
+	public function upgradeRelTagToCategory($el) {
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $rel_tag */
+		$rel_tag = $this->xpath->query('.//*[local-name()="a"][contains(concat(" ",normalize-space(@rel)," ")," tag ") and not(contains(concat(" ", normalize-space(@class), " "), " category ")) and @href]', $el);
 
 		if ( $rel_tag->length ) {
 			foreach ( $rel_tag as $tempEl ) {
@@ -1403,10 +1426,10 @@ class Parser {
 	/**
 	 * Kicks off the parsing routine
 	 * @param bool $convertClassic whether to do backcompat parsing on microformats1. Defaults to true.
-	 * @param DOMElement $context optionally specify an element from which to parse microformats
+	 * @param DOMElement|\Dom\Element $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, DOMElement $context = null) {
+	public function parse($convertClassic = true, $context = null) {
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parse_recursive($context);
 
@@ -1430,11 +1453,11 @@ class Parser {
 	/**
 	 * Parse microformats recursively
 	 * Keeps track of whether inside a backcompat root or not
-	 * @param DOMElement $context: node to start with
+	 * @param DOMElement|\Dom\Element $context: node to start with
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+	public function parse_recursive($context = null, $depth = 0) {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1522,10 +1545,11 @@ class Parser {
 	 * will be returned.
 	 *
 	 * @param string $id
-	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
+	 * @param bool $convertClassic whether or not to convert classic microformats
 	 * @return array
 	 */
 	public function parseFromId($id, $convertClassic=true) {
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $matches */
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 
 		if (empty($matches))
@@ -1536,10 +1560,10 @@ class Parser {
 
 	/**
 	 * Get the root microformat elements
-	 * @param DOMElement $context
-	 * @return DOMNodeList
+	 * @param DOMElement|\Dom\Element $context
+	 * @return DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false
 	 */
-	public function getRootMF(DOMElement $context = null) {
+	public function getRootMF($context = null) {
 		// start with mf2 root class name xpath
 		$xpaths = array(
 			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
@@ -1553,6 +1577,7 @@ class Parser {
 		// final xpath with OR
 		$xpath = '//*[' . implode(' or ', $xpaths) . ']';
 
+		/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $mfElements */
 		$mfElements = (null === $context)
 			? $this->xpath->query($xpath)
 			: $this->xpath->query('.' . $xpath, $context);
@@ -1563,17 +1588,17 @@ class Parser {
 	/**
 	 * Apply the backcompat algorithm to upgrade mf1 classes to mf2.
 	 * This method is called recursively.
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @param string $context
 	 * @param bool $isParentMf2
 	 * @see http://microformats.org/wiki/microformats2-parsing#algorithm
 	 */
-	public function backcompat(DOMElement $el, $context = '', $isParentMf2 = false) {
+	public function backcompat($el, $context = '', $isParentMf2 = false) {
 
 		if ( $context ) {
 			$mf1Classes = array($context);
 		} else {
-			$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+			$class = str_replace(array("\t", "\n"), ' ', (string) $el->getAttribute('class'));
 			$classes = array_filter(explode(' ', $class));
 			$mf1Classes = array_intersect($classes, array_keys($this->classicRootMap));
 		}
@@ -1587,7 +1612,8 @@ class Parser {
 				case 'hentry':
 					$this->upgradeRelTagToCategory($el);
 
-					$rel_bookmark = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $el);
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $rel_bookmark */
+					$rel_bookmark = $this->xpath->query('.//*[local-name()="a"][contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $el);
 
 					if ( $rel_bookmark->length ) {
 						foreach ( $rel_bookmark as $tempEl ) {
@@ -1602,6 +1628,7 @@ class Parser {
 				break;
 
 				case 'hproduct':
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $review_and_hreview_aggregate */
 					$review_and_hreview_aggregate = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview-aggregate ")]', $el);
 
 					if ( $review_and_hreview_aggregate->length ) {
@@ -1614,6 +1641,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $review_and_hreview */
 					$review_and_hreview = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview ")]', $el);
 
 					if ( $review_and_hreview->length ) {
@@ -1630,6 +1658,7 @@ class Parser {
 
 				case 'hreview-aggregate':
 				case 'hreview':
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $item_and_vcard */
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
 					if ( $item_and_vcard->length ) {
@@ -1642,6 +1671,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $item_and_vevent */
 					$item_and_vevent = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vevent ")]', $el);
 
 					if ( $item_and_vevent->length ) {
@@ -1654,6 +1684,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $item_and_hproduct */
 					$item_and_hproduct = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " hproduct ")]', $el);
 
 					if ( $item_and_hproduct->length ) {
@@ -1666,6 +1697,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $rel_self_bookmark */
 					$rel_self_bookmark = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@rel), " "), " self ") and contains(concat(" ", normalize-space(@rel), " "), " bookmark ")]', $el);
 
 					if ( $rel_self_bookmark->length ) {
@@ -1675,6 +1707,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $reviewer_nodes */
 					$reviewer_nodes = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " reviewer ")]', $el);
 
 					if ( $reviewer_nodes->length ) {
@@ -1689,6 +1722,7 @@ class Parser {
 				break;
 
 				case 'vevent':
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $location_and_vcard */
 					$location_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " location ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
 					if ( $location_and_vcard->length ) {
@@ -1707,6 +1741,7 @@ class Parser {
 			if ( isset($this->classicPropertyMap[$classname]) ) {
 				// loop through each property of the mf1 root
 				foreach ( $this->classicPropertyMap[$classname] as $property => $data ) {
+					/** @var DOMNodeList<DOMElement>|\Dom\NodeList<\Dom\Element>|false $propertyElements */
 					$propertyElements = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " ' . $property . ' ")]', $el);
 
 					// loop through each element with the property
@@ -1736,10 +1771,10 @@ class Parser {
 
 	/**
 	 * Add element + property as upgraded during backcompat
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @param string|array $property
 	 */
-	public function addUpgraded(DOMElement $el, $property) {
+	public function addUpgraded($el, $property) {
 		if ( !is_array($property) ) {
 			$property = array($property);
 		}
@@ -1755,11 +1790,11 @@ class Parser {
 	/**
 	 * Add the provided classes to an element.
 	 * Does not add duplicate if class name already exists.
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 * @param string $classes
 	 */
-	public function addMfClasses(DOMElement $el, $classes) {
-		$existingClasses = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+	public function addMfClasses($el, $classes) {
+		$existingClasses = str_replace(array("\t", "\n"), ' ', (string) $el->getAttribute('class'));
 		$existingClasses = array_filter(explode(' ', $existingClasses));
 
 		$addClasses = array_diff(explode(' ', $classes), $existingClasses);
@@ -1771,10 +1806,10 @@ class Parser {
 
 	/**
 	 * Check an element for mf2 h-* class, typically to determine if backcompat should be used
-	 * @param DOMElement $el
+	 * @param DOMElement|\Dom\Element $el
 	 */
-	public function hasRootMf2(\DOMElement $el) {
-		$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
+	public function hasRootMf2($el) {
+		$class = str_replace(array("\t", "\n"), ' ', (string) $el->getAttribute('class'));
 
 		// Check for valid mf2 root classnames, not just any classname with a h- prefix.
 		return count(mfNamesFromClass($class, 'h-')) > 0;
@@ -1790,10 +1825,11 @@ class Parser {
 	 */
 	public function convertLegacy() {
 		$doc = $this->doc;
-		$xp = new DOMXPath($doc);
+		$xp = $doc instanceof DOMDocument ? new DOMXPath($doc) : new \Dom\XPath($doc);
 
 		// replace all roots
 		foreach ($this->classicRootMap as $old => $new) {
+			/** @var DOMElement|\Dom\Element $el */
 			foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $new . ' "))]') as $el) {
 				$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
 			}
@@ -1802,6 +1838,7 @@ class Parser {
 		foreach ($this->classicPropertyMap as $oldRoot => $properties) {
 			$newRoot = $this->classicRootMap[$oldRoot];
 			foreach ($properties as $old => $data) {
+				/** @var DOMElement|\Dom\Element $el */
 				foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $data['replace'] . ' "))]') as $el) {
 					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $data['replace']);
 				}
@@ -1824,6 +1861,7 @@ class Parser {
 	public function query($expression, $context = null) {
 		return $this->xpath->query($expression, $context);
 	}
+
 
 	/**
 	 * Classic Root Classname map

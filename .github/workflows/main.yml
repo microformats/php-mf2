@@ -39,6 +39,25 @@ jobs:
       if: ${{ always() && steps.phpcs.outcome == 'failure' }}
       run: cs2pr ./phpcs-report.xml
 
+  phpstan:
+    name: 'PHPStan'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # PHPStan is not a Composer dependency because it cannot install on PHP 5.6.
+    - name: Set up PHP environment
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 'latest'
+        coverage: none
+        tools: phpstan:2.3.2
+
+    - name: Run PHPStan
+      run: phpstan analyse --no-progress --error-format=github
+
   build:
 
     strategy:
@@ -70,6 +89,3 @@ jobs:
 
     - name: Run Test Suite
       run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
-
-    #- name: Run Static Analysis
-    #  run: ./vendor/bin/psalm

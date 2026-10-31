@@ -820,8 +820,8 @@ END;
 	 * @see https://html.spec.whatwg.org/#optional-tags:the-p-element
 	 **/
 	public function testHtml5OptionalPEndTag() {
-		if (!class_exists('Masterminds\\HTML5')) {
-			$this->markTestSkipped('masterminds/html5 is required for this test.');
+		if (!class_exists('Masterminds\\HTML5') && !class_exists('Dom\\HTMLDocument')) {
+			$this->markTestSkipped('masterminds/html5 or PHP 8.4 is required for this test.');
 		}
 		$input = '<div class="h-entry"><p class="p-name">Name<article>Not Name</article></div>';
 		$output = Mf2\parse($input);
@@ -850,6 +850,21 @@ END;
 		// Parse one DOMDocument instance, and test if it is still the same as the other.
 		Mf2\parse($inputDoc, 'http://snarfed.org/2013-10-23_oauth-dropins');
 		$this->assertEquals($refDoc, $inputDoc, 'Parsing mutated the DOMDocument.');
+	}
+
+	/**
+	 * Make sure the parser accepts a Dom\HTMLDocument and does not mutate it.
+	 */
+	public function testNotMutatingPassedInModernDOM() {
+		if (!class_exists('Dom\\HTMLDocument')) {
+			$this->markTestSkipped('Dom\\HTMLDocument requires PHP 8.4.');
+		}
+		$inputDoc = \Dom\HTMLDocument::createFromString(file_get_contents(__DIR__ . '/snarfed.org.html'), \LIBXML_NOERROR);
+		$before = $inputDoc->saveHtml();
+
+		$output = Mf2\parse($inputDoc, 'http://snarfed.org/2013-10-23_oauth-dropins');
+		$this->assertNotEmpty($output['items']);
+		$this->assertEquals($before, $inputDoc->saveHtml(), 'Parsing mutated the Dom\HTMLDocument.');
 	}
 
 	public function testNoImpliedURLForEmptyProperties() {
