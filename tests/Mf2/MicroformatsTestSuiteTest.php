@@ -3,6 +3,7 @@
 namespace Mf2\Parser\Test;
 
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use DOMElement;
 
 final class TestSuiteParser extends \Mf2\Parser
 {
@@ -18,6 +19,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
         $clonedEl = $el->cloneNode(true);
 
+        /** @var DOMElement $imgEl */
         foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
             if ($imgEl->hasAttribute('alt')) {
                 $replacement = $imgEl->getAttribute('alt');
@@ -31,6 +33,7 @@ final class TestSuiteParser extends \Mf2\Parser
         }
 
         foreach ($excludeTags as $tagName) {
+            /** @var DOMElement $elToRemove */
             foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
                 $elToRemove->parentNode->removeChild($elToRemove);
             }
