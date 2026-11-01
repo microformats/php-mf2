@@ -271,12 +271,12 @@ EOT;
 	 * @group internet
 	 */
 	public function testFetchMicroformats() {
-		$mf = Mf2\fetch('http://waterpigs.co.uk/');
+		$mf = Mf2\fetch('https://microformats.org/');
 		$this->assertArrayHasKey('items', $mf);
 
-		$mf = Mf2\fetch('http://waterpigs.co.uk/photo.jpg', null, $curlInfo);
+		$mf = Mf2\fetch('https://microformats.org/microformats-logo.png', null, $curlInfo);
 		$this->assertNull($mf);
-		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
+		$this->assertStringContainsString('image/png', $curlInfo['content_type']);
 	}
 
 	/**

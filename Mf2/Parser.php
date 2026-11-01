@@ -59,22 +59,43 @@ function parse($input, $url = null, $convertClassic = true) {
  *
  * @param string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
- * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @param array &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
-function fetch($url, $convertClassic = true, &$curlInfo = null) {
+function fetch($url, $convertClassic = true, &$curlInfo = []) {
+	$version = '0';
+	if (is_array($curl = curl_version())) {
+		$version = $curl['version'];
+	}
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
+	if (version_compare($version, '7.21.6', '>=')) {
+		// see https://curl.se/libcurl/c/CURLOPT_ACCEPT_ENCODING.html
+		curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, '');
+	} elseif (version_compare($version, '7.10.5', '>=')) {
+		// see https://curl.se/ch/7.10.5.html
+		curl_setopt($ch, CURLOPT_ENCODING, '');
+	}
+
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Accept: text/html'
 	));
 	$html = curl_exec($ch);
-	$info = $curlInfo = curl_getinfo($ch);
-	curl_close($ch);
+
+	if ($html === false) {
+		return null;
+	}
+
+	$info = $curlInfo = curl_getinfo($ch) ?: [];
+	if (PHP_VERSION_ID < 80000) {
+		curl_close($ch);
+	}
 
 	if (strpos(strtolower($info['content_type']), 'html') === false) {
 		// The content was not delivered as HTML, do not attempt to parse it.
@@ -93,28 +114,16 @@ function fetch($url, $convertClassic = true, &$curlInfo = null) {
  * @return string
  */
 function unicodeToHtmlEntities($input) {
-	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
-}
+	// Convert all non-ASCII characters to HTML numeric entities.
+	$convmap = [
+		0x80, 0x1FFFFF, 0, 0x10FFFF,
+	];
 
-/**
- * Collapse Whitespace
- *
- * Collapses any sequences of whitespace within a string into a single space
- * character.
- *
- * @deprecated since v0.2.3
- * @param string $str
- * @return string
- */
-function collapseWhitespace($str) {
-	return preg_replace('/[\s|\n]+/', ' ', $str);
+	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
 }
 
 function unicodeTrim($str) {
-	// this is cheating. TODO: find a better way if this causes any problems
-	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), ' ', $str);
-	$str = preg_replace('/^\s+/', '', $str);
-	return preg_replace('/\s+$/', '', $str);
+	return preg_replace('/^\s+|\s+$/u', '', $str);
 }
 
 /**
@@ -417,8 +426,8 @@ class Parser {
 	}
 
 	private function elementPrefixParsed(\DOMElement $e, $prefix) {
-		if (!$this->parsed->contains($e))
-			$this->parsed->attach($e, array());
+		if (!$this->parsed->offsetExists($e))
+			$this->parsed->offsetSet($e, array());
 
 		$prefixes = $this->parsed[$e];
 		$prefixes[] = $prefix;
@@ -432,7 +441,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementParsed(\DOMElement $e, $prefix) {
-		if (!$this->parsed->contains($e)) {
+		if (!$this->parsed->offsetExists($e)) {
 			return false;
 		}
 
@@ -452,7 +461,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementUpgraded(\DOMElement $el, $property) {
-		if ( $this->upgraded->contains($el) ) {
+		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
 			}
@@ -950,7 +959,7 @@ class Parser {
 	 */
 	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
-		if ($this->parsed->contains($e)) {
+		if ($this->parsed->offsetExists($e)) {
 			return null;
 		}
 
@@ -963,7 +972,6 @@ class Parser {
 
 		// Initalise var to store the representation in
 		$return = array();
-		$children = array();
 		$dates = array();
 		$prefixes = array();
 		$impliedTimezone = null;
@@ -1197,9 +1205,6 @@ class Parser {
 			$parsed['coords'] = $coords;
 		}
 
-		if (!empty($children)) {
-			$parsed['children'] = array_values(array_filter($children));
-		}
 		return $parsed;
 	}
 
@@ -1383,7 +1388,7 @@ class Parser {
 	 * @param DOMElement $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, DOMElement $context = null) {
+	public function parse($convertClassic = true, ?DOMElement $context = null) {
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parseRecursive($context);
 
@@ -1411,7 +1416,7 @@ class Parser {
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parseRecursive(DOMElement $context = null, $depth = 0) {
+	public function parseRecursive(?DOMElement $context = null, $depth = 0) {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1494,7 +1499,7 @@ class Parser {
 	 * @deprecated Use parseRecursive() instead
 	 */
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-	public function parse_recursive(DOMElement $context = null, $depth = 0) {
+	public function parse_recursive(?DOMElement $context = null, $depth = 0) {
 		return $this->parseRecursive($context, $depth);
 	}
 
@@ -1511,7 +1516,7 @@ class Parser {
 	 * will be returned.
 	 *
 	 * @param string $id
-	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
+	 * @param bool $convertClassic whether or not to convert classic microformats
 	 * @return array
 	 */
 	public function parseFromId($id, $convertClassic = true) {
@@ -1528,7 +1533,7 @@ class Parser {
 	 * @param DOMElement $context
 	 * @return DOMNodeList
 	 */
-	public function getRootMF(DOMElement $context = null) {
+	public function getRootMF(?DOMElement $context = null) {
 		// start with mf2 root class name xpath
 		$xpaths = array(
 			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
@@ -1734,8 +1739,8 @@ class Parser {
 		}
 
 		// add element to list of upgraded elements
-		if ( !$this->upgraded->contains($el) ) {
-			$this->upgraded->attach($el, $property);
+		if ( !$this->upgraded->offsetExists($el) ) {
+			$this->upgraded->offsetSet($el, $property);
 		} else {
 			$this->upgraded[$el] = array_merge($this->upgraded[$el], $property);
 		}
