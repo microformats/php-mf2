@@ -41,7 +41,7 @@ use stdClass;
  * @param bool $convertClassic whether or not to convert classic microformats
  * @return array Canonical MF2 array structure
  */
-function parse($input, $url = null, $convertClassic = true) {
+function parse($input, ?string $url = null, bool $convertClassic = true):  array {
 	$parser = new Parser($input, $url);
 	return $parser->parse($convertClassic);
 }
@@ -62,7 +62,7 @@ function parse($input, $url = null, $convertClassic = true) {
  * @param array &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
-function fetch($url, $convertClassic = true, &$curlInfo = []) {
+function fetch(string $url, bool $convertClassic = true, array &$curlInfo = []): ?array {
 	$version = '0';
 	if (is_array($curl = curl_version())) {
 		$version = $curl['version'];
@@ -111,9 +111,8 @@ function fetch($url, $convertClassic = true, &$curlInfo = []) {
 /**
  * Unicode to HTML Entities
  * @param string $input String containing characters to convert into HTML entities
- * @return string
  */
-function unicodeToHtmlEntities($input): string {
+function unicodeToHtmlEntities(string $input): string {
 	// Convert all non-ASCII characters to HTML numeric entities.
 	$convmap = [
 		0x80, 0x1FFFFF, 0, 0x10FFFF,
@@ -122,7 +121,7 @@ function unicodeToHtmlEntities($input): string {
 	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
 }
 
-function unicodeTrim($str) {
+function unicodeTrim(string $str): string {
 	return preg_replace('/^\s+|\s+$/u', '', $str);
 }
 
@@ -134,9 +133,9 @@ function unicodeTrim($str) {
  *
  * @param string $class A space delimited list of classnames
  * @param string $prefix The prefix to look for
- * @return string|array The prefixed name of the first microfomats class found or false
+ * @return string[] The prefixed name of the first microfomats class found or false
  */
-function mfNamesFromClass($class, $prefix = 'h-'): array {
+function mfNamesFromClass(string $class, string $prefix = 'h-'): array {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
 	$classes = preg_grep('#^(h|p|u|dt|e)-([a-z0-9]+-)?[a-z]+(-[a-z]+)*$#', $classes);
@@ -155,10 +154,8 @@ function mfNamesFromClass($class, $prefix = 'h-'): array {
 
 /**
  * Registered with the XPath object and used within XPaths for finding root elements.
- * @param string $class
- * @return bool
  */
-function classHasMf2RootClassname($class): bool {
+function classHasMf2RootClassname(string $class): bool {
 	return count(mfNamesFromClass($class, 'h-')) > 0;
 }
 
@@ -168,10 +165,9 @@ function classHasMf2RootClassname($class): bool {
  * Returns all the p-, u-, dt- or e- prefixed classnames it finds in a
  * space-separated string.
  *
- * @param string $class
- * @return array
+ * @return array<string, list<'p-'|'u-'|'dt-'|'e-'>>
  */
-function nestedMfPropertyNamesFromClass($class): array {
+function nestedMfPropertyNamesFromClass(string $class): array {
 	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
 
@@ -194,17 +190,19 @@ function nestedMfPropertyNamesFromClass($class): array {
  *
  * @param DOMElement $e The element to get the classname for
  * @param string $prefix The prefix to look for
- * @return mixed See return value of mf2\Parser::mfNameFromClass()
+ * @return string[] See return value of mf2\Parser::mfNamesFromClass()
  */
-function mfNamesFromElement(\DOMElement $e, $prefix = 'h-') {
+function mfNamesFromElement(\DOMElement $e, string $prefix = 'h-'): array {
 	$class = $e->getAttribute('class');
 	return mfNamesFromClass($class, $prefix);
 }
 
 /**
- * Wraps nestedMfPropertyNamesFromClass to handle an element as input
+ * Wraps nestedMfPropertyNamesFromClass to handle an element as input*
+ *
+ * @return array<string, list<'p-'|'u-'|'dt-'|'e-'>>
  */
-function nestedMfPropertyNamesFromElement(\DOMElement $e) {
+function nestedMfPropertyNamesFromElement(\DOMElement $e): array {
 	$class = $e->getAttribute('class');
 	return nestedMfPropertyNamesFromClass($class);
 }
@@ -212,9 +210,8 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
 /**
  * Converts various time formats to HH:MM
  * @param string $time The time to convert
- * @return string
  */
-function convertTimeFormat($time) {
+function convertTimeFormat(string $time): string {
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// If no am/pm is specified:
@@ -255,10 +252,8 @@ function convertTimeFormat($time) {
  * Normalize an ordinal date to YYYY-MM-DD
  * This function should only be called after validating the $dtValue
  * matches regex \d{4}-\d{2}
- * @param string $dtValue
- * @return string
  */
-function normalizeOrdinalDate($dtValue): string {
+function normalizeOrdinalDate(string $dtValue): string {
 	list($year, $day) = explode('-', $dtValue, 2);
 	$day = intval($day);
 	if ($day < 367 && $day > 0) {
@@ -273,10 +268,9 @@ function normalizeOrdinalDate($dtValue): string {
 
 /**
  * If a date value has a timezone offset, normalize it.
- * @param string $dtValue
- * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
+ * @return ?string isolated, normalized TZ offset for implied TZ for other dt- properties
  */
-function normalizeTimezoneOffset(&$dtValue): ?string {
+function normalizeTimezoneOffset(string &$dtValue): ?string {
 	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);
 
 	if (empty($matches)) {
@@ -300,7 +294,10 @@ function normalizeTimezoneOffset(&$dtValue): ?string {
 	return $timezoneOffset;
 }
 
-function applySrcsetUrlTransformation($srcset, $transformation): string {
+/**
+ * @param callable(string): string $transformation
+ */
+function applySrcsetUrlTransformation(string $srcset, callable $transformation): string {
 	return implode(', ', array_filter(array_map(function ($srcsetPart) use ($transformation) {
 		$parts = explode(" \t\n\r\0\x0B", trim($srcsetPart), 2);
 		$parts[0] = rtrim($parts[0]);
@@ -326,48 +323,42 @@ function applySrcsetUrlTransformation($srcset, $transformation): string {
  */
 class Parser {
 	/** @var string The baseurl (if any) to use for this parse */
-	public $baseurl;
+	public string $baseurl;
 
 	/** @var DOMXPath object which can be used to query over any fragment*/
-	public $xpath;
+	public DOMXPath $xpath;
 
 	/** @var DOMDocument */
-	public $doc;
+	public DOMDocument $doc;
 
-	/** @var SplObjectStorage */
-	protected $parsed;
+	protected SplObjectStorage $parsed;
 
-	/**
-	 * @var bool
-	 */
-	public $jsonMode;
+	public bool $jsonMode;
 
-	/** @var boolean Whether to include experimental language parsing in the result */
-	public $lang = false;
+	/** @var bool Whether to include experimental language parsing in the result */
+	public bool $lang = false;
 
 	/** @var bool Whether to include alternates object (dropped from spec in favor of rel-urls) */
-	public $enableAlternates = false;
+	public bool $enableAlternates = false;
 
 	/**
-	 * Elements upgraded to mf2 during backcompat
-	 * @var SplObjectStorage
+	 * @var SplObjectStorage Elements upgraded to mf2 during backcompat
 	 */
-	protected $upgraded;
+	protected SplObjectStorage $upgraded;
 
 	/**
-	 * Whether to convert classic microformats
-	 * @var bool
+	 * @var bool Whether to convert classic microformats
 	 */
-	public $convertClassic;
+	public bool $convertClassic;
 
 	/**
 	 * Constructor
 	 *
-	 * @param DOMDocument|string $input The data to parse. A string of HTML or a DOMDocument
-	 * @param string $url The URL of the parsed document, for relative URL resolution
-	 * @param boolean $jsonMode Whether or not to use a stdClass instance for an empty `rels` dictionary. This breaks PHP looping over rels, but allows the output to be correctly serialized as JSON.
+	 * @param DOMDocument|string|null $input The data to parse. A string of HTML or a DOMDocument
+	 * @param ?string $url The URL of the parsed document, for relative URL resolution
+	 * @param bool $jsonMode Whether or not to use a stdClass instance for an empty `rels` dictionary. This breaks PHP looping over rels, but allows the output to be correctly serialized as JSON.
 	 */
-	public function __construct($input, $url = null, $jsonMode = false) {
+	public function __construct($input, ?string $url = null, bool $jsonMode = false) {
 		$emptyDocDefault = '<html><body></body></html>';
 		libxml_use_internal_errors(true);
 		if (is_string($input)) {
@@ -394,6 +385,7 @@ class Parser {
 		$this->xpath->registerNamespace('php', 'http://php.net/xpath');
 		$this->xpath->registerPhpFunctions('\\Mf2\\classHasMf2RootClassname');
 
+		$url = $url ?? '';
 		$baseurl = $url;
 		foreach ($this->xpath->query('//base[@href]') as $base) {
 			$baseElementUrl = $base->getAttribute('href');
@@ -455,11 +447,8 @@ class Parser {
 
 	/**
 	 * Determine if the element's specified property has already been upgraded during backcompat
-	 * @param DOMElement $el
-	 * @param string $property
-	 * @return bool
 	 */
-	private function isElementUpgraded(\DOMElement $el, $property): bool {
+	private function isElementUpgraded(\DOMElement $el, string $property): bool {
 		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
@@ -486,11 +475,9 @@ class Parser {
 
 	/**
 	 * The following two methods implements plain text parsing.
-	 * @param DOMElement $element
-	 * @param bool $implied
 	 * @see https://wiki.zegnat.net/media/textparsing.html
 	 **/
-	public function textContent(DOMElement $element, $implied = false)
+	public function textContent(DOMElement $element, bool $implied = false): string
 	{
 				return preg_replace(
 						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
@@ -498,7 +485,7 @@ class Parser {
 						$this->elementToString($element, $implied)
 				);
 	}
-	private function elementToString(DOMElement $input, $implied = false)
+	private function elementToString(DOMElement $input, bool $implied = false): string
 	{
 			$output = '';
 			foreach ($input->childNodes as $child) {
@@ -528,8 +515,7 @@ class Parser {
 
 	/**
 	 * Given an img property, parse its value and/or alt text
-	 * @param DOMElement $el
-	 * @return string|array
+	 * @return array{value: string, alt: string}|string
 	 */
 	public function parseImg(DOMElement $el)
 	{
@@ -557,10 +543,8 @@ class Parser {
 
 	/**
 	 * This method parses the language of an element
-	 * @param DOMElement $el
-	 * @return string
 	 */
-	public function language(DOMElement $el)
+	public function language(DOMElement $el): string
 	{
 		// element has a lang attribute; use it
 		if ($el->hasAttribute('lang')) {
@@ -584,11 +568,7 @@ class Parser {
 	} # end method language()
 
 	// TODO: figure out if this has problems with sms: and geo: URLs
-	public function resolveUrl($url) {
-		// If not a string then return.
-		if (!is_string($url)){
-			return $url;
-		}
+	public function resolveUrl(string $url): string {
 		// If the URL is seriously malformed it’s probably beyond the scope of this
 		// parser to try to do anything with it.
 		if (parse_url($url) === false) {
@@ -617,7 +597,7 @@ class Parser {
 	 * @param string $separator = '' if multiple value-title elements, join with this string
 	 * @return string|null the parsed value or null if value-class or -title aren’t in use
 	 */
-	public function parseValueClassTitle(\DOMElement $e, $separator = '') {
+	public function parseValueClassTitle(\DOMElement $e, string $separator = ''): ?string {
 		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ")]', $e);
 
 		if ($valueClassElements->length !== 0) {
@@ -653,7 +633,7 @@ class Parser {
 	 * @return string The plaintext value of $p, dependant on type
 	 * @todo Make this adhere to value-class
 	 */
-	public function parseP(\DOMElement $p) {
+	public function parseP(\DOMElement $p):  string {
 		$classTitle = $this->parseValueClassTitle($p, ' ');
 
 		if ($classTitle !== null) {
@@ -681,7 +661,7 @@ class Parser {
 	 * Given an element with class="u-*", get the value of the URL
 	 *
 	 * @param DOMElement $u The element to parse
-	 * @return string The plaintext value of $u, dependant on type
+	 * @return string|array{value: string, alt: string} The plaintext or array value of $u, dependant on type
 	 * @todo make this adhere to value-class
 	 */
 	public function parseU(\DOMElement $u) {
@@ -713,10 +693,9 @@ class Parser {
 	 *
 	 * @param DOMElement $dt The element to parse
 	 * @param array $dates Array of dates processed so far
-	 * @param string $impliedTimezone
 	 * @return string The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt, &$dates = array(), &$impliedTimezone = null) {
+	public function parseDT(\DOMElement $dt, array &$dates = array(), ?string &$impliedTimezone = null): string {
 		// Check for value-class pattern
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ") or contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $dt);
 		$dtValue = false;
@@ -910,7 +889,7 @@ class Parser {
 	 * 	Given the root element of some embedded markup, return a string representing that markup
 	 *
 	 * 	@param DOMElement $e The element to parse
-	 * 	@return string $e’s innerHTML
+	 * 	@return string|array{html: string, value: string, lang?: string}
 	 *
 	 * @todo need to mark this element as e- parsed so it doesn’t get parsed as it’s parent’s e-* too
 	 */
@@ -962,7 +941,7 @@ class Parser {
 	 * @param bool $has_nested_mf Whether this microformat has a nested microformat
 	 * @return array A representation of the values contained within microformat $e
 	 */
-	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false): ?array {
+	public function parseH(\DOMElement $e, bool $is_backcompat = false, bool $has_nested_mf = false): ?array {
 		// If it’s already been parsed (e.g. is a child mf), skip
 		if ($this->parsed->offsetExists($e)) {
 			return null;
@@ -1215,6 +1194,7 @@ class Parser {
 
 	/**
 	 * @see http://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
+	 * @return array{value: string, alt: string}|string|false
 	 */
 	public function parseImpliedPhoto(\DOMElement $e) {
 
@@ -1265,7 +1245,7 @@ class Parser {
 	 * optimizing for JSON serialization. Otherwise they will be returned as an empty array.
 	 * Note that $alternates is deprecated in the microformats spec in favor of $rel_urls. $alternates only appears
 	 * in parsed results if $this->enableAlternates = true.
-	 * @return array|stdClass
+	 * @return array{0: array, 1: array, 2: array}
 	 */
 	public function parseRelsAndAlternates(): array {
 		$rels = array();
@@ -1393,7 +1373,7 @@ class Parser {
 	 * @param DOMElement $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, ?DOMElement $context = null): array {
+	public function parse(bool $convertClassic = true, ?DOMElement $context = null): array {
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parseRecursive($context);
 
@@ -1419,9 +1399,8 @@ class Parser {
 	 * Keeps track of whether inside a backcompat root or not
 	 * @param DOMElement $context: node to start with
 	 * @param int $depth: recursion depth
-	 * @return array
 	 */
-	public function parseRecursive(?DOMElement $context = null, $depth = 0): array {
+	public function parseRecursive(?DOMElement $context = null, int $depth = 0): array {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1522,9 +1501,8 @@ class Parser {
 	 *
 	 * @param string $id
 	 * @param bool $convertClassic whether or not to convert classic microformats
-	 * @return array
 	 */
-	public function parseFromId($id, $convertClassic = true) {
+	public function parseFromId(string $id, bool $convertClassic = true): array {
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 
 		if (empty($matches))
@@ -1535,10 +1513,8 @@ class Parser {
 
 	/**
 	 * Get the root microformat elements
-	 * @param DOMElement $context
-	 * @return DOMNodeList
 	 */
-	public function getRootMF(?DOMElement $context = null) {
+	public function getRootMF(?DOMElement $context = null): DOMNodeList {
 		// start with mf2 root class name xpath
 		$xpaths = array(
 			'(php:function("\\Mf2\\classHasMf2RootClassname", normalize-space(@class)))'
@@ -1562,12 +1538,9 @@ class Parser {
 	/**
 	 * Apply the backcompat algorithm to upgrade mf1 classes to mf2.
 	 * This method is called recursively.
-	 * @param DOMElement $el
-	 * @param string $context
-	 * @param bool $isParentMf2
 	 * @see http://microformats.org/wiki/microformats2-parsing#algorithm
 	 */
-	public function backcompat(DOMElement $el, $context = '', $isParentMf2 = false): void {
+	public function backcompat(DOMElement $el, ?string $context = '', bool $isParentMf2 = false): void {
 
 		if ( $context ) {
 			$mf1Classes = array($context);
@@ -1735,7 +1708,6 @@ class Parser {
 
 	/**
 	 * Add element + property as upgraded during backcompat
-	 * @param DOMElement $el
 	 * @param string|array $property
 	 */
 	public function addUpgraded(DOMElement $el, $property): void {
@@ -1754,10 +1726,8 @@ class Parser {
 	/**
 	 * Add the provided classes to an element.
 	 * Does not add duplicate if class name already exists.
-	 * @param DOMElement $el
-	 * @param string $classes
 	 */
-	public function addMfClasses(DOMElement $el, $classes): void {
+	public function addMfClasses(DOMElement $el, string $classes): void {
 		$existingClasses = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
 		$existingClasses = array_filter(explode(' ', $existingClasses));
 
@@ -1770,7 +1740,6 @@ class Parser {
 
 	/**
 	 * Check an element for mf2 h-* class, typically to determine if backcompat should be used
-	 * @param DOMElement $el
 	 */
 	public function hasRootMf2(\DOMElement $el): bool {
 		$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
@@ -1784,8 +1753,6 @@ class Parser {
 	 *
 	 * Adds microformats2 classnames into a document containing only legacy
 	 * semantic classnames.
-	 *
-	 * @return Parser $this
 	 */
 	public function convertLegacy(): self {
 		$doc = $this->doc;
@@ -1815,20 +1782,15 @@ class Parser {
 	 *
 	 * Runs an XPath query over the current document. Works in exactly the same
 	 * way as DOMXPath::query.
-	 *
-	 * @param string $expression
-	 * @param DOMNode $context
-	 * @return DOMNodeList
 	 */
-	public function query($expression, $context = null) {
+	public function query(string $expression, ?DOMNode $context = null): DOMNodeList {
 		return $this->xpath->query($expression, $context);
 	}
 
 	/**
-	 * Classic Root Classname map
-	 * @var array
+	 * @var array Classic Root Classname map
 	 */
-	public $classicRootMap = array(
+	public array $classicRootMap = array(
 		'vcard' => 'h-card',
 		'hfeed' => 'h-feed',
 		'hentry' => 'h-entry',
@@ -1843,10 +1805,9 @@ class Parser {
 	);
 
 	/**
-	 * Mapping of mf1 properties to mf2 and the context they're parsed with
-	 * @var array
+	 * @var array Mapping of mf1 properties to mf2 and the context they're parsed with
 	 */
-	public $classicPropertyMap = array(
+	public array $classicPropertyMap = array(
 		'vcard' => array(
 			'fn' => array(
 				'replace' => 'p-name'
@@ -2221,7 +2182,7 @@ class Parser {
 	);
 }
 
-function parseUriToComponents($uri): array {
+function parseUriToComponents(string $uri): array {
 	$result = array(
 		'scheme' => null,
 		'authority' => null,
@@ -2259,7 +2220,7 @@ function parseUriToComponents($uri): array {
 	return $result;
 }
 
-function resolveUrl($baseURI, $referenceURI): string {
+function resolveUrl(string $baseURI, string $referenceURI): string {
 	$target = array(
 		'scheme' => null,
 		'authority' => null,
@@ -2343,7 +2304,7 @@ function resolveUrl($baseURI, $referenceURI): string {
 }
 
 # 5.2.3 Merge Paths
-function mergePaths(array $base, array $reference) {
+function mergePaths(array $base, array $reference): string {
 	# If the base URI has a defined authority component and an empty
 	# path,
 	if($base['authority'] && $base['path'] == null) {
@@ -2367,7 +2328,7 @@ function mergePaths(array $base, array $reference) {
 }
 
 # 5.2.4.A Remove leading ../ or ./
-function removeLeadingDotSlash(&$input): void {
+function removeLeadingDotSlash(string &$input): void {
 	if(substr($input, 0, 3) == '../') {
 		$input = substr($input, 3);
 	} elseif(substr($input, 0, 2) == './') {
@@ -2376,7 +2337,7 @@ function removeLeadingDotSlash(&$input): void {
 }
 
 # 5.2.4.B Replace leading /. with /
-function removeLeadingSlashDot(&$input): void {
+function removeLeadingSlashDot(string &$input): void {
 	if(substr($input, 0, 3) == '/./') {
 		$input = '/' . substr($input, 3);
 	} else {
@@ -2385,7 +2346,7 @@ function removeLeadingSlashDot(&$input): void {
 }
 
 # 5.2.4.C Given leading /../ remove component from output buffer
-function removeOneDirLevel(&$input, &$output): void {
+function removeOneDirLevel(string &$input, string &$output): void {
 	if(substr($input, 0, 4) == '/../') {
 		$input = '/' . substr($input, 4);
 	} else {
@@ -2395,7 +2356,7 @@ function removeOneDirLevel(&$input, &$output): void {
 }
 
 # 5.2.4.D Remove . and .. if it's the only thing in the input
-function removeLoneDotDot(&$input): void {
+function removeLoneDotDot(string &$input): void {
 	if($input == '.') {
 		$input = substr($input, 1);
 	} else {
@@ -2404,7 +2365,7 @@ function removeLoneDotDot(&$input): void {
 }
 
 # 5.2.4.E Move one segment from input to output
-function moveOneSegmentFromInput(&$input, &$output): void {
+function moveOneSegmentFromInput(string &$input, string &$output): void {
 	if(substr($input, 0, 1) != '/') {
 		$pos = strpos($input, '/');
 	} else {
@@ -2421,11 +2382,11 @@ function moveOneSegmentFromInput(&$input, &$output): void {
 }
 
 # 5.2.4 Remove Dot Segments
-function removeDotSegments($path) {
+function removeDotSegments(?string $path): string {
 	# 1.  The input buffer is initialized with the now-appended path
 	#     components and the output buffer is initialized to the empty
 	#     string.
-	$input = $path;
+	$input = $path ?? '';
 	$output = '';
 
 	$step = 0;
