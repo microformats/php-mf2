@@ -11,6 +11,7 @@ use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class ParseLanguageTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -57,45 +58,45 @@ class ParseLanguageTest extends TestCase {
 		$this->assertEquals('es', $result['items'][0]['lang']);
 	} # end method testHtmlAndHEntryLang()
 
-    /**
-     * Test HTML fragment with only h-entry lang
-     */
-    public function testFragmentHEntryLangOnly()
-    {
-        $input = '<div class="h-entry" lang="en">This test is in English.</div>';
-        $parser = new Parser($input);
-        $parser->lang = true;
-        $result = $parser->parse();
+	/**
+	 * Test HTML fragment with only h-entry lang
+	 */
+	public function testFragmentHEntryLangOnly()
+	{
+		$input = '<div class="h-entry" lang="en">This test is in English.</div>';
+		$parser = new Parser($input);
+		$parser->lang = true;
+		$result = $parser->parse();
 
-        $this->assertArrayHasKey('lang', $result['items'][0]);
-        $this->assertEquals('en', $result['items'][0]['lang']);
-    } # end method testFragmentHEntryLangOnly()
+		$this->assertArrayHasKey('lang', $result['items'][0]);
+		$this->assertEquals('en', $result['items'][0]['lang']);
+	} # end method testFragmentHEntryLangOnly()
 
-    /**
-     * Test HTML fragment with no lang
-     */
-    public function testFragmentHEntryNoLang()
-    {
-        $input = '<div class="h-entry">This test is in English.</div>';
-        $parser = new Parser($input);
-        $parser->lang = true;
-        $result = $parser->parse();
+	/**
+	 * Test HTML fragment with no lang
+	 */
+	public function testFragmentHEntryNoLang()
+	{
+		$input = '<div class="h-entry">This test is in English.</div>';
+		$parser = new Parser($input);
+		$parser->lang = true;
+		$result = $parser->parse();
 
-        $this->assertArrayNotHasKey('lang', $result['items'][0]);
-    } # end method testFragmentHEntryNoLang()
+		$this->assertArrayNotHasKey('lang', $result['items'][0]);
+	} # end method testFragmentHEntryNoLang()
 
-    /**
-     * Test HTML fragment with no lang, loaded with loadXML()
-     */
-    public function testFragmentHEntryNoLangXML()
-    {
-        $input = new \DOMDocument();
-        $input->loadXML('<div class="h-entry">This test is in English.</div>');
-        $parser = new Parser($input);
-        $result = $parser->parse();
+	/**
+	 * Test HTML fragment with no lang, loaded with loadXML()
+	 */
+	public function testFragmentHEntryNoLangXML()
+	{
+		$input = new \DOMDocument();
+		$input->loadXML('<div class="h-entry">This test is in English.</div>');
+		$parser = new Parser($input);
+		$result = $parser->parse();
 
-        $this->assertArrayNotHasKey('lang', $result['items'][0]);
-    } # end method testFragmentHEntryNoLangXML()
+		$this->assertArrayNotHasKey('lang', $result['items'][0]);
+	} # end method testFragmentHEntryNoLangXML()
 
 	/**
 	 * Test with different <html lang>, h-entry lang, and h-entry without lang,

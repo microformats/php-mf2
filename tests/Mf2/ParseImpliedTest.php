@@ -13,6 +13,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  * @todo some of these can be made into single tests with dataProviders
  */
 class ParseImpliedTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -147,22 +148,22 @@ class ParseImpliedTest extends TestCase {
 	}
 
   public function testParsesImpliedUUrlWithExplicitName() {
-    $input = '<span class="h-card"><a href="https://example.com/" class="p-name">Some Name</a></span>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<span class="h-card"><a href="https://example.com/" class="p-name">Some Name</a></span>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
+	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+	$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
   }
 
   public function testParsesImpliedNameWithExplicitURL() {
-    $input = '<span class="h-card"><a href="https://example.com/" class="u-url">Some Name</a></span>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<span class="h-card"><a href="https://example.com/" class="u-url">Some Name</a></span>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('url', $output['items'][0]['properties']);
-    $this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
-    $this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
+	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
+	$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
+	$this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
   }
 
 	public function testMultipleImpliedHCards() {
