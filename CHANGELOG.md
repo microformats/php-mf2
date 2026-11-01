@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-01
+### Added
+- Dockerfile for PHP5.6 dev environment [#233](https://github.com/microformats/php-mf2/pull/233)
+
+### Changed
+- Improved PHP 8 compatibility [#286](https://github.com/microformats/php-mf2/pull/286), [#263](https://github.com/microformats/php-mf2/pull/263)
+- Move changelog to CHANGELOG.md [#278](https://github.com/microformats/php-mf2/pull/278)
+- Support compression in fetch() [#208](https://github.com/microformats/php-mf2/issues/208)
+- GitHub Actions and unit testing
+- Updated signed code verification, now supports SSH key signing
+- Note this version is last to support PHP 5.6. Next release will require minimum PHP 7.4.
+
+### Fixed
+- Deprecations in PHP8.2 [#272](https://github.com/microformats/php-mf2/pull/272), [#271](https://github.com/microformats/php-mf2/pull/271)
+- Invalid property class name parsing [#249](https://github.com/microformats/php-mf2/issues/249), [#246](https://github.com/microformats/php-mf2/issues/246)
+- Parsing elements with mixed valid and invalid mf2 classnames [#230](https://github.com/microformats/php-mf2/issues/230)
+- hReview backcompat [#155](https://github.com/microformats/php-mf2/issues/155)
+
 ## [0.5.0] – 2022-02-10
 
 ### Added
@@ -277,6 +295,7 @@ Many thanks to @aaronpk, @gRegorLove and @kylewm for contributions, @aaronpk and
 - Added rel+rel-alternate parsing
 
 [Unreleased]: https://github.com/microformats/php-mf2/compare/v0.5.0...HEAD
+[0.5.1]: https://github.com/microformats/php-mf2/compare/0.5.0...v0.5.1
 [0.5.0]: https://github.com/microformats/php-mf2/compare/0.4.6...v0.5.0
 [0.4.6]: https://github.com/microformats/php-mf2/compare/v0.4.5...0.4.6
 [0.4.5]: https://github.com/microformats/php-mf2/compare/v0.4.4...v0.4.5
