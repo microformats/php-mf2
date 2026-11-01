@@ -108,6 +108,8 @@ class URLTest extends TestCase {
 				'/a/b/c/d/../../../g', '/a/g'),
 			array('Should not add leading slash',
 				'a/b/c', 'a/b/c'),
+			array('Should remove extra ..',
+				'/a/b/../../../..', '/'),
 
 		);
 	}
@@ -252,14 +254,8 @@ class URLTest extends TestCase {
 
 		);
 
-		// PHP 5.4 and before returns a different result, but either are acceptable
-		if(PHP_MAJOR_VERSION <= 5 && PHP_MINOR_VERSION <= 4) {
-			$cases[] = array('relative add scheme host user from base',
-				'http://user:@www.example.com', 'server.php', 'http://user@www.example.com/server.php');
-		} else {
-			$cases[] = array('relative add scheme host user from base',
-				'http://user:@www.example.com', 'server.php', 'http://user:@www.example.com/server.php');
-		}
+		$cases[] = array('relative add scheme host user from base',
+			'http://user:@www.example.com', 'server.php', 'http://user:@www.example.com/server.php');
 
 		// Test cases from RFC
 		// http://tools.ietf.org/html/rfc3986#section-5.4

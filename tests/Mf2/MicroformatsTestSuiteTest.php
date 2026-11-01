@@ -3,11 +3,12 @@
 namespace Mf2\Parser\Test;
 
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use DOMElement;
 
 final class TestSuiteParser extends \Mf2\Parser
 {
     /** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
-    public function textContent(\DOMElement $el, $dummy=false) {
+    public function textContent(\DOMElement $el, bool $dummy=false): string {
         $excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
         if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
@@ -18,6 +19,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
         $clonedEl = $el->cloneNode(true);
 
+        /** @var DOMElement $imgEl */
         foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
             if ($imgEl->hasAttribute('alt')) {
                 $replacement = $imgEl->getAttribute('alt');
@@ -31,6 +33,7 @@ final class TestSuiteParser extends \Mf2\Parser
         }
 
         foreach ($excludeTags as $tagName) {
+            /** @var DOMElement $elToRemove */
             foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
                 $elToRemove->parentNode->removeChild($elToRemove);
             }
