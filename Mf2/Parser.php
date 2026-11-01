@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2;
 
 use DOMDocument;
@@ -229,7 +231,7 @@ function convertTimeFormat(string $time): string {
 			$hh += 12;
 		}
 
-		$hh = str_pad($hh, 2, '0', STR_PAD_LEFT);
+		$hh = str_pad((string) $hh, 2, '0', STR_PAD_LEFT);
 
 		// Minutes.
 		$mm = (empty($matches[2]) ) ? '00' : $matches[2];
@@ -286,7 +288,7 @@ function normalizeTimezoneOffset(string &$dtValue): ?string {
 		if ( strlen($timezoneOffset) <= 2 ) {
 			$timezoneOffset .= '00';
 		}
-		$timezoneOffset = str_pad($timezoneOffset, 4, 0, STR_PAD_LEFT);
+		$timezoneOffset = str_pad($timezoneOffset, 4, '0', STR_PAD_LEFT);
 		$timezoneOffset = $plus_minus . $timezoneOffset;
 		$dtValue = preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue);
 	}
