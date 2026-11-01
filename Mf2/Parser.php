@@ -6,6 +6,7 @@ namespace Mf2;
 
 use DOMDocument;
 use DOMElement;
+use DOMText;
 use DOMXPath;
 use DOMNode;
 use DOMNodeList;
@@ -389,6 +390,7 @@ class Parser {
 
 		$url = $url ?? '';
 		$baseurl = $url;
+		/** @var DOMElement $base */
 		foreach ($this->xpath->query('//base[@href]') as $base) {
 			$baseElementUrl = $base->getAttribute('href');
 
@@ -407,6 +409,7 @@ class Parser {
 		}
 
 		// Ignore <template> elements as per the HTML5 spec
+		/** @var DOMElement $templateEl */
 		foreach ($this->xpath->query('//template') as $templateEl) {
 			$templateEl->parentNode->removeChild($templateEl);
 		}
@@ -463,6 +466,7 @@ class Parser {
 	private function resolveChildUrls(DOMElement $el): void {
 		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
 
+		/** @var DOMElement $child */
 		foreach ($hyperlinkChildren as $child) {
 			if ($child->hasAttribute('href'))
 				$child->setAttribute('href', $this->resolveUrl($child->getAttribute('href')));
@@ -491,9 +495,9 @@ class Parser {
 	{
 			$output = '';
 			foreach ($input->childNodes as $child) {
-					if ($child->nodeType === XML_TEXT_NODE) {
+					if ($child instanceof DOMText) {
 							$output .= str_replace(array("\t", "\n", "\r") , ' ', $child->textContent);
-					} else if ($child->nodeType === XML_ELEMENT_NODE) {
+					} else if ($child instanceof DOMElement) {
 							$tagName = strtoupper($child->tagName);
 							if (in_array($tagName, array('SCRIPT', 'STYLE'))) {
 									continue;
@@ -555,6 +559,7 @@ class Parser {
 
 		if ($el->tagName == 'html') {
 			// we're at the <html> element and no lang; check <meta> http-equiv Content-Language
+			/** @var DOMElement $node */
 			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
 			{
 				if ($node->hasAttribute('http-equiv') && $node->hasAttribute('content') && strtolower($node->getAttribute('http-equiv')) == 'content-language') {
@@ -600,6 +605,7 @@ class Parser {
 	 * @return string|null the parsed value or null if value-class or -title aren’t in use
 	 */
 	public function parseValueClassTitle(\DOMElement $e, string $separator = ''): ?string {
+		/** @var DOMNodeList<DOMElement> $valueClassElements */
 		$valueClassElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ")]', $e);
 
 		if ($valueClassElements->length !== 0) {
@@ -612,6 +618,7 @@ class Parser {
 			return unicodeTrim($val);
 		}
 
+		/** @var DOMNodeList<DOMElement> $valueTitleElements */
 		$valueTitleElements = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $e);
 
 		if ($valueTitleElements->length !== 0) {
@@ -699,6 +706,7 @@ class Parser {
 	 */
 	public function parseDT(\DOMElement $dt, array &$dates = array(), ?string &$impliedTimezone = null): string {
 		// Check for value-class pattern
+		/** @var DOMNodeList<DOMElement> $valueClassChildren */
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ") or contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $dt);
 		$dtValue = false;
 
@@ -968,6 +976,7 @@ class Parser {
 		}
 
 		// Handle p-*
+		/** @var DOMElement $p */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)) ," p-")]', $e) as $p) {
 			// element is already parsed
 			if ($this->isElementParsed($p, 'p')) {
@@ -993,6 +1002,7 @@ class Parser {
 		}
 
 		// Handle u-*
+		/** @var DOMElement $u */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," u-")]', $e) as $u) {
 			// element is already parsed
 			if ($this->isElementParsed($u, 'u')) {
@@ -1018,6 +1028,7 @@ class Parser {
 		$temp_dates = array();
 
 		// Handle dt-*
+		/** @var DOMElement $dt */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)), " dt-")]', $e) as $dt) {
 			// element is already parsed
 			if ($this->isElementParsed($dt, 'dt')) {
@@ -1053,6 +1064,7 @@ class Parser {
 		}
 
 		// Handle e-*
+		/** @var DOMElement $em */
 		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," e-")]', $e) as $em) {
 			// element is already parsed
 			if ($this->isElementParsed($em, 'e')) {
@@ -1104,6 +1116,7 @@ class Parser {
 					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(*) = 1]/abbr[not(contains(concat(" ", @class), " h-")) and @title and string-length(@title) != 0]'
 				);
 				foreach ($xpaths as $xpath) {
+					/** @var DOMNodeList<DOMElement>|false $nameElement */
 					$nameElement = $this->xpath->query($xpath, $e);
 					if ($nameElement !== false && $nameElement->length === 1) {
 						$nameElement = $nameElement->item(0);
@@ -1148,6 +1161,7 @@ class Parser {
 					'./*[not(contains(concat(" ", @class), " h-")) and count(../*) = 1 and count(area) = 1]/area[not(contains(concat(" ", @class), " h-")) and @href]'
 				);
 				foreach ($xpaths as $xpath) {
+					/** @var DOMNodeList<DOMElement>|false $url */
 					$url = $this->xpath->query($xpath, $e);
 					if ($url !== false && $url->length === 1) {
 						$return['url'][] = $this->resolveUrl($url->item(0)->getAttribute('href'));
@@ -1222,6 +1236,7 @@ class Parser {
 		);
 
 		foreach ($xpaths as $path) {
+			/** @var DOMNodeList<DOMElement>|false $els */
 			$els = $this->xpath->query($path, $e);
 
 			if ($els !== false && $els->length === 1) {
@@ -1255,6 +1270,7 @@ class Parser {
 		$alternates = array();
 
 		// Iterate through all a, area and link elements with rel attributes
+		/** @var DOMElement $hyperlink */
 		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') as $hyperlink) {
 			// Parse the set of rels for the current link
 			$linkRels = array_unique(array_filter(preg_split('/[\t\n\f\r ]/', $hyperlink->getAttribute('rel'))));
@@ -1350,6 +1366,7 @@ class Parser {
 	 * @param DOMElement $el
 	 */
 	public function upgradeRelTagToCategory(DOMElement $el): void {
+		/** @var DOMNodeList<DOMElement> $rel_tag */
 		$rel_tag = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," tag ") and not(contains(concat(" ", normalize-space(@class), " "), " category ")) and @href]', $el);
 
 		if ( $rel_tag->length ) {
@@ -1505,6 +1522,7 @@ class Parser {
 	 * @param bool $convertClassic whether or not to convert classic microformats
 	 */
 	public function parseFromId(string $id, bool $convertClassic = true): array {
+		/** @var DOMNodeList<DOMElement>|false $matches */
 		$matches = $this->xpath->query("//*[@id='{$id}']");
 
 		if (empty($matches))
@@ -1515,6 +1533,8 @@ class Parser {
 
 	/**
 	 * Get the root microformat elements
+	 *
+	 * @return DOMNodeList<DOMElement>
 	 */
 	public function getRootMF(?DOMElement $context = null): DOMNodeList {
 		// start with mf2 root class name xpath
@@ -1530,6 +1550,7 @@ class Parser {
 		// final xpath with OR
 		$xpath = '//*[' . implode(' or ', $xpaths) . ']';
 
+		/** @var DOMNodeList<DOMElement> $mfElements */
 		$mfElements = (null === $context)
 			? $this->xpath->query($xpath)
 			: $this->xpath->query('.' . $xpath, $context);
@@ -1561,6 +1582,7 @@ class Parser {
 				case 'hentry':
 					$this->upgradeRelTagToCategory($el);
 
+					/** @var DOMNodeList<DOMElement> $rel_bookmark */
 					$rel_bookmark = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," bookmark ") and @href]', $el);
 
 					if ( $rel_bookmark->length ) {
@@ -1576,6 +1598,7 @@ class Parser {
 				break;
 
 				case 'hproduct':
+					/** @var DOMNodeList<DOMElement> $review_and_hreview_aggregate */
 					$review_and_hreview_aggregate = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview-aggregate ")]', $el);
 
 					if ( $review_and_hreview_aggregate->length ) {
@@ -1588,6 +1611,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement> $review_and_hreview */
 					$review_and_hreview = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " review ") and contains(concat(" ", normalize-space(@class), " "), " hreview ")]', $el);
 
 					if ( $review_and_hreview->length ) {
@@ -1604,6 +1628,7 @@ class Parser {
 
 				case 'hreview-aggregate':
 				case 'hreview':
+					/** @var DOMNodeList<DOMElement> $item_and_vcard */
 					$item_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
 					if ( $item_and_vcard->length ) {
@@ -1616,6 +1641,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement> $item_and_vevent */
 					$item_and_vevent = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " vevent ")]', $el);
 
 					if ( $item_and_vevent->length ) {
@@ -1628,6 +1654,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement> $item_and_hproduct */
 					$item_and_hproduct = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " item ") and contains(concat(" ", normalize-space(@class), " "), " hproduct ")]', $el);
 
 					if ( $item_and_hproduct->length ) {
@@ -1640,6 +1667,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement> $rel_self_bookmark */
 					$rel_self_bookmark = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@rel), " "), " self ") and contains(concat(" ", normalize-space(@rel), " "), " bookmark ")]', $el);
 
 					if ( $rel_self_bookmark->length ) {
@@ -1649,6 +1677,7 @@ class Parser {
 						}
 					}
 
+					/** @var DOMNodeList<DOMElement> $reviewer_nodes */
 					$reviewer_nodes = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " reviewer ")]', $el);
 
 					if ( $reviewer_nodes->length ) {
@@ -1663,6 +1692,7 @@ class Parser {
 				break;
 
 				case 'vevent':
+					/** @var DOMNodeList<DOMElement> $location_and_vcard */
 					$location_and_vcard = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " location ") and contains(concat(" ", normalize-space(@class), " "), " vcard ")]', $el);
 
 					if ( $location_and_vcard->length ) {
@@ -1681,6 +1711,7 @@ class Parser {
 			if ( isset($this->classicPropertyMap[$classname]) ) {
 				// loop through each property of the mf1 root
 				foreach ( $this->classicPropertyMap[$classname] as $property => $data ) {
+					/** @var DOMNodeList<DOMElement> $propertyElements */
 					$propertyElements = $this->xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " ' . $property . ' ")]', $el);
 
 					// loop through each element with the property
@@ -1762,6 +1793,7 @@ class Parser {
 
 		// replace all roots
 		foreach ($this->classicRootMap as $old => $new) {
+			/** @var DOMElement $el */
 			foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $new . ' "))]') as $el) {
 				$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
 			}
@@ -1770,6 +1802,7 @@ class Parser {
 		foreach ($this->classicPropertyMap as $oldRoot => $properties) {
 			$newRoot = $this->classicRootMap[$oldRoot];
 			foreach ($properties as $old => $data) {
+				/** @var DOMElement $el */
 				foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $data['replace'] . ' "))]') as $el) {
 					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $data['replace']);
 				}
