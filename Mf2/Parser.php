@@ -122,20 +122,6 @@ function unicodeToHtmlEntities($input) {
 	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
 }
 
-/**
- * Collapse Whitespace
- *
- * Collapses any sequences of whitespace within a string into a single space
- * character.
- *
- * @deprecated since v0.2.3
- * @param string $str
- * @return string
- */
-function collapseWhitespace($str) {
-	return preg_replace('/[\s|\n]+/', ' ', $str);
-}
-
 function unicodeTrim($str) {
 	return preg_replace('/^\s+|\s+$/u', '', $str);
 }
