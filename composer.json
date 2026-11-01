@@ -34,12 +34,16 @@
         "microformats-tests-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
         "microformats-tests-mf2": "./vendor/bin/phpunit --group microformats/tests/mf2",
         "microformats-tests-mixed": "./vendor/bin/phpunit --group microformats/tests/mixed",
-        "test-mf1": "@microformats-tests-mf1",
+        "test-mf1": [
+            "echo test-mf1 script is deprecated, use composer microformats-tests-mf1 @no_additional_args",
+            "@microformats-tests-mf1"
+        ],
         "check-and-test": [
             "@cs-check",
             "@tests"
         ],
         "check-and-test-all": [
+            "echo check-and-test-all script is deprecated, use composer check-and-test @no_additional_args",
             "@check-and-test",
             "@microformats-tests-mf1"
         ]
