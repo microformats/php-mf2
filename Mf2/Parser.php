@@ -59,10 +59,10 @@ function parse($input, $url = null, $convertClassic = true) {
  *
  * @param string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
- * @param &array $curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @param array &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
-function fetch($url, $convertClassic = true, &$curlInfo=null) {
+function fetch($url, $convertClassic = true, &$curlInfo=[]) {
 	$version = '0';
 	if (is_array($curl = curl_version())) {
 		$version = $curl['version'];
@@ -92,7 +92,7 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
 		return null;
 	}
 
-	$info = $curlInfo = curl_getinfo($ch);
+	$info = $curlInfo = curl_getinfo($ch) ?: [];
 	if (PHP_VERSION_ID < 80000) {
 		curl_close($ch);
 	}
@@ -1504,7 +1504,7 @@ class Parser {
 	 * will be returned.
 	 *
 	 * @param string $id
-	 * @param bool $htmlSafe = false whether or not to HTML-encode angle brackets in non e-* properties
+	 * @param bool $convertClassic whether or not to convert classic microformats
 	 * @return array
 	 */
 	public function parseFromId($id, $convertClassic=true) {
