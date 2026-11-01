@@ -542,6 +542,20 @@ class Parser {
 		}
 		return $el->getAttribute('src');
 	}
+
+	/**
+	 * @param array{value: string, alt: string}|string $img
+	 * @return array{value: string, alt: string}|string
+	 */
+	private function resolveImg($img) {
+		if (is_array($img)) {
+			return ['value' => $this->resolveUrl($img['value'])] + $img;
+		}
+
+		return $this->resolveUrl($img);
+	}
+
+
 	/**
 	 * This method parses the language of an element
 	 * @param DOMElement $el
@@ -676,7 +690,7 @@ class Parser {
 		if (($u->tagName == 'a' or $u->tagName == 'area' or $u->tagName == 'link') and $u->hasAttribute('href')) {
 			$uValue = $u->getAttribute('href');
 		} elseif ( $u->tagName == 'img' and $u->hasAttribute('src') ) {
-			$uValue = $this->parseImg($u);
+			return $this->resolveImg($this->parseImg($u));
 		} elseif (in_array($u->tagName, array('audio', 'video', 'source', 'iframe')) and $u->hasAttribute('src')) {
 			$uValue = $u->getAttribute('src');
 		} elseif ($u->tagName == 'video' and !$u->hasAttribute('src') and $u->hasAttribute('poster')) {
@@ -1214,7 +1228,7 @@ class Parser {
 
 		// img.h-x[src]
 		if ($e->tagName == 'img') {
-			return $this->resolveUrl($this->parseImg($e));
+			return $this->resolveImg($this->parseImg($e));
 		}
 
 		// object.h-x[data]
@@ -1240,7 +1254,7 @@ class Parser {
 				$el = $els->item(0);
 				if ($el->tagName == 'img') {
 					$return = $this->parseImg($el);
-					return $this->resolveUrl($return);
+					return $this->resolveImg($return);
 				} else if ($el->tagName == 'object') {
 					return $this->resolveUrl($el->getAttribute('data'));
 				}
