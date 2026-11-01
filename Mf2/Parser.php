@@ -215,7 +215,6 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
  * @return string
  */
 function convertTimeFormat($time) {
-	$hh = $mm = $ss = '';
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// If no am/pm is specified:
