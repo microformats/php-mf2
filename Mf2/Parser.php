@@ -529,7 +529,6 @@ class Parser {
 	/**
 	 * Given an img property, parse its value and/or alt text
 	 * @param DOMElement $el
-	 * @access public
 	 * @return string|array
 	 */
 	public function parseImg(DOMElement $el)
@@ -559,7 +558,6 @@ class Parser {
 	/**
 	 * This method parses the language of an element
 	 * @param DOMElement $el
-	 * @access public
 	 * @return string
 	 */
 	public function language(DOMElement $el)
