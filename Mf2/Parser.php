@@ -63,18 +63,39 @@ function parse($input, $url = null, $convertClassic = true) {
  * @return array|null canonical microformats2 array structure on success, null on failure
  */
 function fetch($url, $convertClassic = true, &$curlInfo=null) {
+	$version = '0';
+	if (is_array($curl = curl_version())) {
+		$version = $curl['version'];
+	}
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
+	if (version_compare($version, '7.21.6', '>=')) {
+		// see https://curl.se/libcurl/c/CURLOPT_ACCEPT_ENCODING.html
+		curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, '');
+	} elseif (version_compare($version, '7.10.5', '>=')) {
+		// see https://curl.se/ch/7.10.5.html
+		curl_setopt($ch, CURLOPT_ENCODING, '');
+	}
+
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Accept: text/html'
 	));
 	$html = curl_exec($ch);
+
+	if ($html === false) {
+		return null;
+	}
+
 	$info = $curlInfo = curl_getinfo($ch);
-	curl_close($ch);
+	if (PHP_VERSION_ID < 80000) {
+		curl_close($ch);
+	}
 
 	if (strpos(strtolower($info['content_type']), 'html') === false) {
 		// The content was not delivered as HTML, do not attempt to parse it.
@@ -93,7 +114,12 @@ function fetch($url, $convertClassic = true, &$curlInfo=null) {
  * @return string
  */
 function unicodeToHtmlEntities($input) {
-	return mb_convert_encoding($input, 'HTML-ENTITIES', mb_detect_encoding($input));
+	// Convert all non-ASCII characters to HTML numeric entities.
+	$convmap = [
+		0x80, 0x1FFFFF, 0, 0x10FFFF,
+	];
+
+	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
 }
 
 /**
@@ -111,10 +137,7 @@ function collapseWhitespace($str) {
 }
 
 function unicodeTrim($str) {
-	// this is cheating. TODO: find a better way if this causes any problems
-	$str = str_replace(mb_convert_encoding('&nbsp;', 'UTF-8', 'HTML-ENTITIES'), ' ', $str);
-	$str = preg_replace('/^\s+/', '', $str);
-	return preg_replace('/\s+$/', '', $str);
+	return preg_replace('/^\s+|\s+$/u', '', $str);
 }
 
 /**
@@ -417,8 +440,8 @@ class Parser {
 	}
 
 	private function elementPrefixParsed(\DOMElement $e, $prefix) {
-		if (!$this->parsed->contains($e))
-			$this->parsed->attach($e, array());
+		if (!$this->parsed->offsetExists($e))
+			$this->parsed->offsetSet($e, array());
 
 		$prefixes = $this->parsed[$e];
 		$prefixes[] = $prefix;
@@ -432,7 +455,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementParsed(\DOMElement $e, $prefix) {
-		if (!$this->parsed->contains($e)) {
+		if (!$this->parsed->offsetExists($e)) {
 			return false;
 		}
 
@@ -452,7 +475,7 @@ class Parser {
 	 * @return bool
 	 */
 	private function isElementUpgraded(\DOMElement $el, $property) {
-		if ( $this->upgraded->contains($el) ) {
+		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
 			}
@@ -950,7 +973,7 @@ class Parser {
 	 */
 	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false) {
 		// If it’s already been parsed (e.g. is a child mf), skip
-		if ($this->parsed->contains($e)) {
+		if ($this->parsed->offsetExists($e)) {
 			return null;
 		}
 
@@ -1722,8 +1745,8 @@ class Parser {
 		}
 
 		// add element to list of upgraded elements
-		if ( !$this->upgraded->contains($el) ) {
-			$this->upgraded->attach($el, $property);
+		if ( !$this->upgraded->offsetExists($el) ) {
+			$this->upgraded->offsetSet($el, $property);
 		} else {
 			$this->upgraded[$el] = array_merge($this->upgraded[$el], $property);
 		}
