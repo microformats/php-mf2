@@ -287,7 +287,8 @@ EOT;
 		$mf = Mf2\fetch($indexUrl);
 		$this->assertArrayHasKey('items', $mf);
 
-		$mf = Mf2\fetch($photoUrl, null, $curlInfo);
+		$curlInfo = [];
+		$mf = Mf2\fetch($photoUrl, false, $curlInfo);
 		$this->assertNull($mf);
 		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
 
