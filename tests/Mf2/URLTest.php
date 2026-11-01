@@ -108,6 +108,8 @@ class URLTest extends TestCase {
 				'/a/b/c/d/../../../g', '/a/g'),
 			array('Should not add leading slash',
 				'a/b/c', 'a/b/c'),
+			array('Should remove extra ..',
+				'/a/b/../../../..', '/'),
 
 		);
 	}

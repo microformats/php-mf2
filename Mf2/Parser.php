@@ -2346,7 +2346,12 @@ function removeOneDirLevel(string &$input, string &$output): void {
 	} else {
 		$input = '/' . substr($input, 3);
 	}
-	$output = substr($output, 0, strrpos($output, '/'));
+	$end = strrpos($output, '/');
+	if ($end === false) {
+		$output = '';
+	} else {
+		$output = substr($output, 0, $end);
+	}
 }
 
 # 5.2.4.D Remove . and .. if it's the only thing in the input
