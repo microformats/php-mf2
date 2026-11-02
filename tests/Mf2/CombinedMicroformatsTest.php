@@ -26,7 +26,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHEventLocationHCard() {
+	public function testHEventLocationHCard(): void {
 		// Note: The venue for IWC 2012 no longer exists so we switched
 		// this to Powell's since it's a long-term Portland institution
 		$input = '<div class="h-event">
@@ -75,7 +75,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardOrgPOrg() {
+	public function testHCardOrgPOrg(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -104,7 +104,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardOrgHCard() {
+	public function testHCardOrgHCard(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -142,7 +142,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardPOrgHCardHOrg() {
+	public function testHCardPOrgHCardHOrg(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -180,7 +180,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardChildHCard() {
+	public function testHCardChildHCard(): void {
 		$input = '<div class="h-card">
 	<a class="p-name u-url"
 	href="http://blog.lizardwrangler.com/">
@@ -219,7 +219,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 * This was occurring because mfPropertyNamesFromClass was only ever returning the first property name
 	 * rather than all of them.
 	 */
-	public function testNestedMicroformatUnderMultipleProperties() {
+	public function testNestedMicroformatUnderMultipleProperties(): void {
 		$input = '<article class="h-entry"><div class="p-like-of p-in-reply-to h-cite"></div></article>';
 		$mf = Mf2\parse($input);
 
@@ -232,7 +232,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 *
 	 * @see https://github.com/indieweb/php-mf2/issues/64
 	 */
-	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey() {
+	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey(): void {
 		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
 		$mf = Mf2\parse($input);
 
@@ -245,13 +245,13 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * Test microformats nested under u-* property classnames derive value: key from parsing as u-*
 	 */
-	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly() {
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly(): void {
 		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
 		$mf = Mf2\parse($input);
 		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0]));
 	}
 
-	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL() {
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL(): void {
 		$input = '<div class="h-entry">
 		  <h1 class="p-name">Name</h1>
 		  <p class="e-content">Hello World</p>
@@ -302,7 +302,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'https://jane.example.com/');
 	}
 
-	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {
+	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName(): void {
 		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
 		$mf = Mf2\parse($input);
 
@@ -314,7 +314,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 * @see https://github.com/indieweb/php-mf2/issues/98
 	 * @see https://github.com/microformats/tests/issues/58
 	 */
-	public function testNoValueForNestedMicroformatWithoutProperty() {
+	public function testNoValueForNestedMicroformatWithoutProperty(): void {
 		$input = '<div class="h-card" ><a class="h-card" href="jane.html">Jane Doe</a><p></p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -330,7 +330,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 * I fixed that but then wanted to ensure it worked beyond 1-level deep. This example
 	 * is contrived, but lets me test to confirm 'children' is set correctly. - Gregor Morrill
 	 */
-	public function testNestedMf1() {
+	public function testNestedMf1(): void {
 		$input = '<div class="hentry"> <div class="vcard"><span class="fn">Jane Doe</span> and <div class="vcard"><span class="fn">John Doe</span></div> </div> </div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -345,7 +345,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$this->assertEquals('John Doe', $child_mf['children'][0]['properties']['name'][0]);
 	}
 
-  public function testNoUrlFromRelOnMf2() {
+  public function testNoUrlFromRelOnMf2(): void {
 	$input = <<< END
 <div class="h-entry">
 <p> <a href="/article" rel="bookmark" class="p-name">Title of Post</a> </p>
@@ -365,7 +365,7 @@ END;
 	 * Whitespace cleaned up for easier test assertion
 	 * @see https://github.com/indieweb/php-mf2/issues/151
 	 */
-	public function testNestedValuePProperty() {
+	public function testNestedValuePProperty(): void {
 		$input = <<< END
 <div class="h-entry">
 <span class="p-location h-adr">
@@ -385,7 +385,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/151
 	 */
-	public function testNestedValueDTProperty() {
+	public function testNestedValueDTProperty(): void {
 		$input = <<< END
 <div class="h-entry">
 	<div class="dt-acme h-acme-object">1997-12-12</div>
@@ -402,7 +402,7 @@ END;
 	 * rel=tag should not be upgraded within microformats2
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 */
-	public function testMf2DoesNotParseRelTag() {
+	public function testMf2DoesNotParseRelTag(): void {
 		$input = '<div class="h-entry">
 <a rel="tag" href="/tags/tests">Tests</a>
 </div>
@@ -422,7 +422,7 @@ END;
 	 * JSON-mode should return an empty stdClass when a microformat has no properties.
 	 * @see https://github.com/indieweb/php-mf2/issues/171
 	 */
-	public function testEmptyPropertiesObjectInJSONMode() {
+	public function testEmptyPropertiesObjectInJSONMode(): void {
 		$input = '<div class="h-feed"><div class="h-entry"></div></div>';
 		// Try in JSON-mode: expect the raw PHP to be an stdClass instance that serializes to an empty object.
 		$parser = new Parser($input, null, true);

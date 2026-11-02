@@ -15,7 +15,7 @@ class URLTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testRemoveLeadingDotSlash() {
+	public function testRemoveLeadingDotSlash(): void {
 		$input = '../one/two';
 		mf2\removeLeadingDotSlash($input);
 		$this->assertEquals('one/two', $input);
@@ -25,7 +25,7 @@ class URLTest extends TestCase {
 		$this->assertEquals('one/two', $input);
 	}
 
-	public function testRemoveLeadingSlashDot() {
+	public function testRemoveLeadingSlashDot(): void {
 		$input = '/./one/two';
 		mf2\removeLeadingSlashDot($input);
 		$this->assertEquals('/one/two', $input);
@@ -43,7 +43,7 @@ class URLTest extends TestCase {
 		$this->assertEquals('/../../g', $input);
 	}
 
-	public function testRemoveOneDirLevel() {
+	public function testRemoveOneDirLevel(): void {
 		$input = '/../../g';
 		$output = '/a/b/c';
 		mf2\removeOneDirLevel($input, $output);
@@ -57,7 +57,7 @@ class URLTest extends TestCase {
 		$this->assertEquals('/a/b', $output);
 	}
 
-	public function testRemoveLoneDotDot() {
+	public function testRemoveLoneDotDot(): void {
 		$input = '.';
 		mf2\removeLoneDotDot($input);
 		$this->assertEquals('', $input);
@@ -67,7 +67,7 @@ class URLTest extends TestCase {
 		$this->assertEquals('', $input);
 	}
 
-	public function testMoveOneSegmentFromInput() {
+	public function testMoveOneSegmentFromInput(): void {
 		$input = '/a/b/c/./../../g';
 		$output = '';
 		mf2\moveOneSegmentFromInput($input, $output);
@@ -96,12 +96,12 @@ class URLTest extends TestCase {
 	/**
 	 * @dataProvider removeDotSegmentsData
 	 */
-	public function testRemoveDotSegments($assert, $path, $expected) {
+	public function testRemoveDotSegments(string $assert, string $path, string $expected): void {
 		$actual = mf2\removeDotSegments($path);
 		$this->assertEquals($expected, $actual, $assert);
 	}
 
-	public function removeDotSegmentsData() {
+	public function removeDotSegmentsData(): array {
 		return array(
 			array('Should remove .. and .',
 				'/a/b/c/./../../g', '/a/g'),
@@ -115,7 +115,7 @@ class URLTest extends TestCase {
 		);
 	}
 
-	public function testNoPathOnBase() {
+	public function testNoPathOnBase(): void {
 		$actual = mf2\resolveUrl('https://example.com', '');
 		$this->assertEquals('https://example.com/', $actual);
 
@@ -126,7 +126,7 @@ class URLTest extends TestCase {
 		$this->assertEquals('https://example.com/#thing', $actual);
 	}
 
-	public function testMisc() {
+	public function testMisc(): void {
 		$expected = 'http://a/b/c/g';
 		$actual = mf2\resolveUrl('http://a/b/c/d;p?q', './g');
 		$this->assertEquals($expected, $actual);
@@ -141,7 +141,7 @@ class URLTest extends TestCase {
 	}
 
 	/** as per https://github.com/indieweb/php-mf2/issues/35 */
-	public function testResolvesProtocolRelativeUrlsCorrectly() {
+	public function testResolvesProtocolRelativeUrlsCorrectly(): void {
 		$expected = 'https://cdn.example.com/thing/asset.css';
 		$actual = Mf2\resolveUrl('https://example.com', '//cdn.example.com/thing/asset.css');
 		$this->assertEquals($expected, $actual);
@@ -154,13 +154,16 @@ class URLTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider
 	 */
-  public function testReturnsUrlIfAbsolute($assert, $base, $url, $expected) {
+  public function testReturnsUrlIfAbsolute($assert, $base, $url, $expected): void {
 	$actual = mf2\resolveUrl($base, $url);
 
 	$this->assertEquals($expected, $actual, $assert);
   }
 
-	public function dataProvider() {
+	/**
+	 * @return mixed[]
+	 */
+	public function dataProvider(): array {
 		// seriously, please update to PHP 5.4 so I can use nice array syntax ;)
 		// fail message, base, url, expected
 		$cases = array(
