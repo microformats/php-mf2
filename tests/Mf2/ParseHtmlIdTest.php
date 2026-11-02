@@ -19,7 +19,7 @@ class ParseHtmlIdTest extends TestCase {
 	}
 
 	/** as per https://github.com/microformats/microformats2-parsing/issues/44 */
-	public function testParserIdAttribute() {
+	public function testParserIdAttribute(): void {
 		$test = '<div class="h-feed" id="recentArticles"><h2 class="p-name">Recent Articles</h2><div class="hentry" id="article">Lorem Ipsum</div>
 		<div class="p-author h-card" id="theAuthor">Max Mustermann</div>
 		<div class="h-entry" id="">empty id should not be parsed</div>

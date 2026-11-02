@@ -23,21 +23,21 @@ class ClassicMicroformatsTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testParsesClassicHcard() {
+	public function testParsesClassicHcard(): void {
 		$input = '<div class="vcard"><span class="fn n">Barnaby Walters</span> is a person.</div>';
 		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
 
-	public function testParsesClassicHEntry() {
+	public function testParsesClassicHEntry(): void {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
 		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
 		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
 	}
 
-	public function testIgnoresClassicClassnamesUnderMf2Root() {
+	public function testIgnoresClassicClassnamesUnderMf2Root(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<p class="author">Not Me</p>
@@ -50,7 +50,7 @@ EOT;
 
 	}
 
-	public function testIgnoresClassicPropertyClassnamesOutsideClassicRoots() {
+	public function testIgnoresClassicPropertyClassnamesOutsideClassicRoots(): void {
 		$input = <<<EOT
 <p class="author">Mr. Invisible</p>
 EOT;
@@ -59,7 +59,7 @@ EOT;
 		$this->assertCount(0, $result['items']);
 	}
 
-	public function testParsesFBerrimanClassicHEntry() {
+	public function testParsesFBerrimanClassicHEntry(): void {
 		$input = <<<EOT
 <article id="post-976" class="post-976 post type-post status-publish format-standard hentry category-speaking category-web-dev tag-conferences tag-front-trends tag-fronttrends tag-speaking tag-txjs">
 	<header class="entry-header">
@@ -125,7 +125,7 @@ EOT;
 		$result = Mf2\parse($input, 'http://snarfed.org/2013-10-23_oauth-dropins');
 	}*/
 
-	public function testParsesHProduct() {
+	public function testParsesHProduct(): void {
 		$input = <<<'EOT'
 <xml id="skufilterbrowse" class="slide">
 <productcatalog><labels><label key="skuset.deliverypolicyurl">Delivery policy content URL</label><label key="price.save">Save</label><label key="skuset.seemoredetails">See more details</label><label key="price.additionaloffers">Additional Offers</label><label key="price.freeitem">Includes Free Item*</label><label key="price.instsaving">Instant Savings</label><label key="skuset.eddieseedetails">See details </label><label key="price.rebateurl">RebateURL</label><label key="skuset.freedelivery">FREE SHIPPING, plus 5% back for Rewards Members</label><label key="price.printableCoupons">Click here for Printable Coupon</label><label key="price.value">Value</label><label key="skuset.eddieshipdetails">Estimated to arrive no later than </label><label key="price.qty">Qty.</label><label key="price.chooseyouritems">Choose your Items</label><label key="price.true">true</label><label key="skuset.clearancemessage">&lt;strong&gt;CLEARANCE ITEM:&lt;/strong&gt; </label><label key="price.ERF">Eco Fee</label><label key="skuset.viewlargerimage">View larger</label><label key="common.next">Next</label><label key="price.addtocart">Add to Cart</label><label key="common.reviews">reviews</label><label key="common.previous">Previous</label><label key="skuset.instockonline">In Stock Online</label><label key="price.priceafterrebate">Price &lt;strong&gt;after&lt;/strong&gt; rebate</label><label key="btn.bopis">PICK UP TODAY</label><label key="common.share">SHARE</label><label key="skuset.freedeliverytostore">FREE Shipping to store</label><label key="erf.popup.label">Environmental fee notice:</label><label key="price.details">Details</label><label key="common.stars">stars</label><label key="skuset.learnmore1">Learn more.</label><label key="common.share.twitter">Share on Twitter</label><label key="price.instorespecial">Available In Store Only</label><label key="price.priceincart">See Price in Cart</label><label key="skuset.giftcards">Orders containing this item are not eligible for Gift cards or certain other methods of payment.</label><label key="skuset.mysoftwaredownloads">"My Software Downloads"</label><label key="price.bmsmerf">Buy More Save More prices do not include eco fee.</label><label key="price.now">Now</label><label key="price.collapse">Collapse</label><label key="classpage.getstarted">Get Started</label><label key="skuset.printpage">Print this page</label><label key="price.learnmore">Learn More</label><label key="common.item">Item</label><label key="common.icon.path">/sbdpas/img/ico/</label><label key="skuset.selectcomponent">Select another component below</label><label key="skuset.freeshippingentireorder">Item qualifies entire order for free delivery</label><label key="skuset.eddieincart">in cart. </label><label key="common.selected">selected</label><label key="price.priceaftersavings">Price &lt;strong&gt;after&lt;/strong&gt; savings</label><label key="skuset.inktoner">Ink and toner</label><label key="classpage.comingsoon">Coming Soon</label><label key="price.before">Before</label><label key="price.was">Was</label><label key="skuset.viewfulldetails">View Full Details</label><label key="skuset.expdelivery">Expected Delivery:</label><label key="common.share.pinterest">Share on Pinterest</label><label key="skuset.deliveryonly">Online Only</label><label key="common.share.email">Email it</label><label key="price.seedetails">See Details</label><label key="skuset.expdelpopup">/sbd/content/help-center/shipping-and-delivery.html</label><label key="skuset.softwaredownload">Software Download</label><label key="erf.popup.url">/sbd/content/help/environmental_fee_popup.html</label><label key="price.finalprice">Final Price</label><label key="common.share.facebook">Share on Facebook</label><label key="skuset.eddiesaveproduct">on this product! </label><label key="skuset.suppliedandshippedby">Supplied and Shipped by</label><label key="common.addtofavorites">Add to Favorites</label><label key="skuset.esdnotepart1">Note: Shortly after purchase you will be able to access your Software Downloads in the </label><label key="skuset.esdnotepart2">section of your staples.com&#174; account. It's easy and secure!</label><label key="skuset.software1">/sbd/cre/marketing/technology-research-centers/software/software-downloads.html#z_faq</label><label key="price.instantcoupon">Instant Coupon</label><label key="skuset.eddieshipdetails1">to </label><label key="price.pricebefore">Price &lt;strong&gt;before&lt;/strong&gt;</label><label key="skuset.eddieoffer">Offer valid for 20 minutes. </label><label key="price.price">Price</label><label key="common.model">Model</label><label key="skuset.supplierhover">We have partnered with this trusted supplier to offer you a wider assortment of products and brands for all of your business needs, with the same great level of service you can expect from Staples.com.</label><label key="skuset.forceshiptostore">Item can be shipped only to a retail store location. </label><label key="price.rebate">Rebate</label><label key="price.bmsm">Buy More Save More</label><label key="common.print">print</label><label key="skuset.viewvideo">View video</label><label key="skuset.instoreavailability">Check in Store Availability</label><label key="price.aslowas">As low as</label><label key="price.reg">Reg</label><label key="price.free">FREE</label><label key="erf.message">Provincial recycling or deposit fees may be applicable upon checkout.</label><label key="skuset.eddiesave">Save an extra </label><label key="skuset.deferredfinancemessage">Special Financing Available </label><label key="price.promotions">Promotions</label><label key="price.availableinstore">Available In-Store Only</label><label key="skuset.outofstock">Currently Out of Stock.</label><label key="price.totalsavings">Total Savings</label><label key="price.beforePresentation">Before continuing, please select an item</label></labels>
@@ -148,7 +148,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/81
 	 */
-	public function testVevent() {
+	public function testVevent(): void {
 		$input = <<< EOT
 <div class="vevent">
 <h3 class="summary">XYZ Project Review</h3>
@@ -192,7 +192,7 @@ EOT;
 	 * @see https://github.com/indieweb/php-mf2/issues/57
 	 * @see https://github.com/kartikprabhu/mf2py/pull/50/
 	 */
-	public function testRelBookmarkUrl() {
+	public function testRelBookmarkUrl(): void {
 		$input = <<< END
 <!DOCTYPE html>
 <html>
@@ -258,7 +258,7 @@ END;
 	/**
 	 * @see https://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
 	 */
-	public function testMf2RootStopsBackcompatRoot() {
+	public function testMf2RootStopsBackcompatRoot(): void {
 		$input = '<div class="adr h-adr">
   <div class="locality">MF1 adr locality</div>
   <div class="p-locality">MF2 adr locality</div>
@@ -276,7 +276,7 @@ END;
 	/**
 	 * @see https://microformats.org/wiki/microformats2-parsing-issues#any_h-_root_class_name_overrides_and_stops_backcompat_root
 	 */
-	public function testMf2CustomRootStopsBackcompatRoot() {
+	public function testMf2CustomRootStopsBackcompatRoot(): void {
 		$input = '<div class="adr h-acme-address">
   <div class="locality">MF1 acme locality</div>
   <div class="p-locality">MF2 acme locality</div>
@@ -294,7 +294,7 @@ END;
 	/**
 	 * @see https://microformats.org/wiki/microformats2-parsing-issues#uf2_children_on_backcompat_properties
 	 */
-	public function testMf2ChildrenOnBackcompatProperties() {
+	public function testMf2ChildrenOnBackcompatProperties(): void {
 		$input = '<div class="vcard">
   <div class="adr h-acme-some-acme-object">
     <div class="locality">MF1 some acme locality</div>
@@ -317,7 +317,7 @@ END;
 	 * 		after improvements were made to the backcompat parsing.
 	 * @see https://github.com/indieweb/php-mf2/issues/45#issue-33893491
 	 */
-	public function testMixedMf2andMf1Case1() {
+	public function testMixedMf2andMf1Case1(): void {
 		$input = <<< END
 <body class="h-entry hentry h-as-article" itemscope="" itemtype="http://schema.org/BlogPosting">
 <div id="page">
@@ -593,7 +593,7 @@ END;
 	 * 		after improvements were made to the backcompat parsing.
 	 * @see https://github.com/indieweb/php-mf2/issues/45#issuecomment-267621041
 	 */
-	public function testMixedMf2andMf1Case2() {
+	public function testMixedMf2andMf1Case2(): void {
 		$input = <<< END
 <li class="h-review post-review  hreview  post" id="post-id-28640">
       <div style="" class="content-area   has-responses ">
@@ -696,7 +696,7 @@ END;
 	 * Test mixed microformats2 with mf1 roots + properties
 	 * @see https://github.com/microformats/microformats2-parsing/issues/11#issue-246579526
 	 */
-	public function testMixedMf2andMf1Case3() {
+	public function testMixedMf2andMf1Case3(): void {
 		$input = <<< END
 <span class="h-card vcard">
 <a href="http://cherryreds.com">
@@ -727,7 +727,7 @@ END;
 	 * Test mixed microformats2 with mf1 roots + properties
 	 * @see https://github.com/microformats/microformats2-parsing/issues/11#issuecomment-352281134
 	 */
-	public function testMixedMf2andMf1Case4() {
+	public function testMixedMf2andMf1Case4(): void {
 		$input = <<< END
 <body class="h-entry">
   <div id="page" class="hfeed site wrap">
@@ -756,7 +756,7 @@ END;
 	/**
 	 * @see https://microformats.org/wiki/hReview#Examples
 	 */
-	public function testParsesClassicHreview() {
+	public function testParsesClassicHreview(): void {
 		$input = <<< END
 <div class="hreview">
 	<span><span class="rating">5</span> out of 5 stars</span>
@@ -796,7 +796,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/137
 	 */
-	public function testIgnoreMf2PropertiesUnderClassicRoot()
+	public function testIgnoreMf2PropertiesUnderClassicRoot(): void
 	{
 		$input = <<< END
 <div id="page" class="hfeed site wrap">
@@ -818,7 +818,7 @@ END;
 	/**
 	 *
 	 */
-	public function testParsesHfeed() {
+	public function testParsesHfeed(): void {
 		$input = <<< END
 <div class="hfeed">
 	<article class="hentry">
@@ -858,7 +858,7 @@ END;
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 * @see source: http://www.manton.org/2018/03/indieweb-generation-4-and-hosted-domains.html
 	 */
-	public function testHEntryRelTag() {
+	public function testHEntryRelTag(): void {
 		$input = '<article id="post-6586" class="post-6586 post type-post status-publish format-standard hentry category-technology tag-domains tag-indiewebcamp tag-microblog tag-wordpress">
 				<header class="entry-header">
 
@@ -896,7 +896,7 @@ END;
 		$this->assertContains('wordpress', $output['items'][0]['properties']['category']);
 	}
 
-  public function testHEntryRelTagInContent() {
+  public function testHEntryRelTagInContent(): void {
 	$input = <<< END
 <article class="hentry">
   <div class="entry-content">
@@ -918,7 +918,7 @@ END;
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 * @see source: http://jg.typepad.com/ciel/2006/02/daniel_bouluds_.html
 	 */
-	public function testHReviewRelTag() {
+	public function testHReviewRelTag(): void {
 		$input = '<div class="hreview">
 <span class="version" style="display:none">0.2</span>
   <h2 class="summary">
@@ -954,7 +954,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertContains('Garçon', $output['items'][0]['properties']['category']);
 	}
 
-	public function testHReviewItemVevent()
+	public function testHReviewItemVevent(): void
 	{
 		$input = '<div class="hreview">
 		<span><span class="rating">5</span> out of 5 stars</span>
@@ -978,7 +978,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertArrayHasKey('url', $properties);
 	}
 
-	public function testHReviewItemHproduct()
+	public function testHReviewItemHproduct(): void
 	{
 		$input = '<div class="hreview">
 	<span><span class="rating">4</span> out of 5 stars</span>
@@ -1006,7 +1006,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	 * Should return the last non-empty URL segment
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 */
-	public function testRelTagTrailingSlash() {
+	public function testRelTagTrailingSlash(): void {
 		$input = '<div class="hentry">
 <a rel="tag" href="/tags/testing/">Testing</a>,
 <a rel="tag" href="/tags/microformats">Microformats</a>
@@ -1032,7 +1032,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	 * Upgrade multiple mf1 roots on the same element
 	 * @see https://github.com/indieweb/php-mf2/issues/156
 	 */
-	public function testBackcompatMultipleRoots() {
+	public function testBackcompatMultipleRoots(): void {
 		$input = '<article class="vevent hentry">
     <span class="entry-title">h-entry name</span>
     <span class="summary">h-event name</span>
@@ -1051,7 +1051,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/195
 	 */
-	public function testVcardGeoNoImpliedName() {
+	public function testVcardGeoNoImpliedName(): void {
 		$input = '<div class="vcard">
 	<div class="fn">John Doe</div>
 	<div>Location: <abbr class="geo" title="30.267991;-97.739568">Brighton</abbr></div>
@@ -1065,7 +1065,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/184
 	 */
-	public function testVeventLocationVcardProperty() {
+	public function testVeventLocationVcardProperty(): void {
 		// Note: The venue for IWC 2012 no longer exists so we switched
 		// this to Powell's since it's a long-term Portland institution
 		$input = '<div class="vevent">
@@ -1094,7 +1094,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/184
 	 */
-	public function testVeventLocationAdrProperty() {
+	public function testVeventLocationAdrProperty(): void {
 		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
 		// "second annual Online Press Freedom Summit in San Francisco on October 10"
 		$input = '<div class="vevent">
@@ -1113,7 +1113,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/184
 	 */
-	public function testVeventLocationProperty() {
+	public function testVeventLocationProperty(): void {
 		// date fix, see: https://cpj.org/2012/10/cpj-impact-43/
 		// "second annual Online Press Freedom Summit in San Francisco on October 10"
 		$input = '<div class="vevent">

@@ -18,7 +18,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesA() {
+	public function testParseUHandlesA(): void {
 		$input = '<div class="h-card"><a class="u-url" href="https://example.com">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -30,7 +30,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesEmptyHrefAttribute() {
+	public function testParseUHandlesEmptyHrefAttribute(): void {
 		$input = '<div class="h-card"><a class="u-url" href="">Awesome example website</a></div>';
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
@@ -42,7 +42,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesMissingHrefAttribute() {
+	public function testParseUHandlesMissingHrefAttribute(): void {
 		$input = '<div class="h-card"><a class="u-url">Awesome example website</a></div>';
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
@@ -54,7 +54,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesImg() {
+	public function testParseUHandlesImg(): void {
 		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -66,7 +66,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesImgwithAlt() {
+	public function testParseUHandlesImgwithAlt(): void {
 		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png" alt="Test Alt"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -82,7 +82,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesImgwithoutAlt() {
+	public function testParseUHandlesImgwithoutAlt(): void {
 		$input = '<div class="h-card"><img class="u-photo" src="https://example.com/someimage.png"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -94,7 +94,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesArea() {
+	public function testParseUHandlesArea(): void {
 		$input = '<div class="h-card"><area class="u-photo" href="https://example.com/someimage.png"></area></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -106,7 +106,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesObject() {
+	public function testParseUHandlesObject(): void {
 		$input = '<div class="h-card"><object class="u-photo" data="https://example.com/someimage.png"></object></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -118,7 +118,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesAbbr() {
+	public function testParseUHandlesAbbr(): void {
 		$input = '<div class="h-card"><abbr class="u-photo" title="https://example.com/someimage.png"></abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -130,7 +130,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesAbbrNoTitle() {
+	public function testParseUHandlesAbbrNoTitle(): void {
 		$input = '<div class="h-card"><abbr class="u-photo">no title attribute</abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -142,7 +142,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesData() {
+	public function testParseUHandlesData(): void {
 		$input = '<div class="h-card"><data class="u-photo" value="https://example.com/someimage.png"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -154,7 +154,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group baseUrl
 	 */
-	public function testResolvesRelativeUrlsFromDocumentUrl() {
+	public function testResolvesRelativeUrlsFromDocumentUrl(): void {
 		$input = '<div class="h-card"><img class="u-photo" src="../image.png" /></div>';
 		$parser = new Parser($input, 'https://example.com/things/more/more.html');
 		$output = $parser->parse();
@@ -165,7 +165,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group baseUrl
 	 */
-	public function testResolvesRelativeUrlsFromBaseUrl() {
+	public function testResolvesRelativeUrlsFromBaseUrl(): void {
 		$input = '<head><base href="https://example.com/things/more/andmore/" /></head><body><div class="h-card"><img class="u-photo" src="../image.png" /></div></body>';
 		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
@@ -176,7 +176,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group baseUrl
 	 */
-	public function testResolvesRelativeUrlsInImpliedMicroformats() {
+	public function testResolvesRelativeUrlsInImpliedMicroformats(): void {
 		$input = '<a class="h-card"><img src="image.png" /></a>';
 		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
@@ -187,7 +187,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group baseUrl
 	 */
-	public function testResolvesRelativeBaseRelativeUrlsInImpliedMicroformats() {
+	public function testResolvesRelativeBaseRelativeUrlsInImpliedMicroformats(): void {
 		$input = '<base href="things/"/><a class="h-card"><img src="image.png" /></a>';
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
@@ -196,7 +196,7 @@ class ParseUTest extends TestCase {
 	}
 
 	/** @see https://github.com/indieweb/php-mf2/issues/33 */
-	public function testParsesHrefBeforeValueClass() {
+	public function testParsesHrefBeforeValueClass(): void {
 		$input = '<span class="h-card"><a class="u-url" href="https://example.com/right"><span class="value">WRONG</span></a></span>';
 		$result = Mf2\parse($input);
 		$this->assertEquals('https://example.com/right', $result['items'][0]['properties']['url'][0]);
@@ -205,7 +205,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesAudio() {
+	public function testParseUHandlesAudio(): void {
 		$input = '<div class="h-entry"><audio class="u-audio" src="https://example.com/audio.mp3"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -217,7 +217,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesVideo() {
+	public function testParseUHandlesVideo(): void {
 		$input = '<div class="h-entry"><video class="u-video" src="https://example.com/video.mp4"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -229,7 +229,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesVideoNoSrc() {
+	public function testParseUHandlesVideoNoSrc(): void {
 		$input = '<div class="h-entry"><video class="u-video">no video support</video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -241,7 +241,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesSource() {
+	public function testParseUHandlesSource(): void {
 		$input = '<div class="h-entry"><video><source class="u-video" src="https://example.com/video.mp4" type="video/mp4"><source class="u-video" src="https://example.com/video.ogg" type="video/ogg"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -254,7 +254,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUHandlesVideoPoster() {
+	public function testParseUHandlesVideoPoster(): void {
 		$input = '<div class="h-entry"><video class="u-photo" poster="https://example.com/posterimage.jpg"><source class="u-video" src="https://example.com/video.mp4" type="video/mp4"></video></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -267,7 +267,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @group parseU
 	 */
-	public function testParseUWithSpaces() {
+	public function testParseUWithSpaces(): void {
 		$input = '<div class="h-card"><a class="u-url" href=" https://example.com ">Awesome example website</a></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -279,7 +279,7 @@ class ParseUTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/130
 	 */
-	public function testImpliedUWithEmptyHref() {
+	public function testImpliedUWithEmptyHref(): void {
 		$input = '<a class="h-card" href="">Jane Doe</a>
 <area class="h-card" href="" alt="Jane Doe"/ >
 <div class="h-card" ><a href="">Jane Doe</a><p></p></div>
@@ -304,7 +304,7 @@ class ParseUTest extends TestCase {
 		$this->assertEquals('https://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
 	}
 
-	public function testValueFromLinkTag() {
+	public function testValueFromLinkTag(): void {
 		$input = <<< END
 <!doctype html>
 <html class="h-entry">
@@ -325,7 +325,7 @@ END;
 		$this->assertEquals('Example.com homepage', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testResolveFromDataElement() {
+	public function testResolveFromDataElement(): void {
 		$parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
 		$output = $parser->parse();
 
@@ -336,7 +336,7 @@ END;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/182
 	 */
-	public function testResolveFromIframeElement() {
+	public function testResolveFromIframeElement(): void {
 		$input = '<div class="h-entry">
 <h1 class="p-name">Title</h1>
 <iframe src="https://example.com/index.html" class="u-url">

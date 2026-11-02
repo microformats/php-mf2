@@ -7,7 +7,7 @@ class PlainTextTest extends TestCase {
 	/**
 	 * @dataProvider aaronpkExpectations
 	 */
-	public function testAaronpkExpectations($input, $pName, $eValue, $eHtml) {
+	public function testAaronpkExpectations(string $input, string $pName, string $eValue, string $eHtml): void {
 		$parser = new \Mf2\Parser($input);
 		$output = $parser->parse();
 		$entryProperties = $output['items'][0]['properties'];
@@ -16,7 +16,7 @@ class PlainTextTest extends TestCase {
 		$this->assertEquals($eHtml, $entryProperties['content'][0]['html']);
 	}
 
-	public function aaronpkExpectations() {
+	public function aaronpkExpectations(): array {
 		return array(
 			1 => array(
 				"<div class=\"h-entry\">\n  <div class=\"e-content p-name\"><p>Hello World</p></div>\n</div>",
