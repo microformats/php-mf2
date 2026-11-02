@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 

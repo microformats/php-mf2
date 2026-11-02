@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 /**
  * Tests of the URL resolver within mf2\Parser
  */
