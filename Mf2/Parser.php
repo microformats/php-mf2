@@ -942,12 +942,6 @@ class Parser {
 		return $return;
 	}
 
-	private function removeTags(\DOMElement &$e, $tagName) {
-		while(($r = $e->getElementsByTagName($tagName)) && $r->length) {
-			$r->item(0)->parentNode->removeChild($r->item(0));
-		}
-	}
-
 	/**
 	 * Recursively parse microformats
 	 *
