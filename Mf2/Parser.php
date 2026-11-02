@@ -113,7 +113,7 @@ function fetch($url, $convertClassic = true, &$curlInfo = []) {
  * @param string $input String containing characters to convert into HTML entities
  * @return string
  */
-function unicodeToHtmlEntities($input) {
+function unicodeToHtmlEntities($input): string {
 	// Convert all non-ASCII characters to HTML numeric entities.
 	$convmap = [
 		0x80, 0x1FFFFF, 0, 0x10FFFF,
@@ -136,7 +136,7 @@ function unicodeTrim($str) {
  * @param string $prefix The prefix to look for
  * @return string|array The prefixed name of the first microfomats class found or false
  */
-function mfNamesFromClass($class, $prefix = 'h-') {
+function mfNamesFromClass($class, $prefix = 'h-'): array {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
 	$classes = preg_grep('#^(h|p|u|dt|e)-([a-z0-9]+-)?[a-z]+(-[a-z]+)*$#', $classes);
@@ -158,7 +158,7 @@ function mfNamesFromClass($class, $prefix = 'h-') {
  * @param string $class
  * @return bool
  */
-function classHasMf2RootClassname($class) {
+function classHasMf2RootClassname($class): bool {
 	return count(mfNamesFromClass($class, 'h-')) > 0;
 }
 
@@ -171,7 +171,7 @@ function classHasMf2RootClassname($class) {
  * @param string $class
  * @return array
  */
-function nestedMfPropertyNamesFromClass($class) {
+function nestedMfPropertyNamesFromClass($class): array {
 	$prefixes = array('p-', 'u-', 'dt-', 'e-');
 	$propertyNames = array();
 
@@ -258,7 +258,7 @@ function convertTimeFormat($time) {
  * @param string $dtValue
  * @return string
  */
-function normalizeOrdinalDate($dtValue) {
+function normalizeOrdinalDate($dtValue): string {
 	list($year, $day) = explode('-', $dtValue, 2);
 	$day = intval($day);
 	if ($day < 367 && $day > 0) {
@@ -276,7 +276,7 @@ function normalizeOrdinalDate($dtValue) {
  * @param string $dtValue
  * @return string isolated, normalized TZ offset for implied TZ for other dt- properties
  */
-function normalizeTimezoneOffset(&$dtValue) {
+function normalizeTimezoneOffset(&$dtValue): ?string {
 	preg_match('/Z|[+-]\d{1,2}:?(\d{2})?$/i', $dtValue, $matches);
 
 	if (empty($matches)) {
@@ -300,7 +300,7 @@ function normalizeTimezoneOffset(&$dtValue) {
 	return $timezoneOffset;
 }
 
-function applySrcsetUrlTransformation($srcset, $transformation) {
+function applySrcsetUrlTransformation($srcset, $transformation): string {
 	return implode(', ', array_filter(array_map(function ($srcsetPart) use ($transformation) {
 		$parts = explode(" \t\n\r\0\x0B", trim($srcsetPart), 2);
 		$parts[0] = rtrim($parts[0]);
@@ -424,7 +424,7 @@ class Parser {
 		$this->jsonMode = $jsonMode;
 	}
 
-	private function elementPrefixParsed(\DOMElement $e, $prefix) {
+	private function elementPrefixParsed(\DOMElement $e, string $prefix): void {
 		if (!$this->parsed->offsetExists($e))
 			$this->parsed->offsetSet($e, array());
 
@@ -439,7 +439,7 @@ class Parser {
 	 * @param string $prefix
 	 * @return bool
 	 */
-	private function isElementParsed(\DOMElement $e, $prefix) {
+	private function isElementParsed(\DOMElement $e, string $prefix): bool {
 		if (!$this->parsed->offsetExists($e)) {
 			return false;
 		}
@@ -459,7 +459,7 @@ class Parser {
 	 * @param string $property
 	 * @return bool
 	 */
-	private function isElementUpgraded(\DOMElement $el, $property) {
+	private function isElementUpgraded(\DOMElement $el, $property): bool {
 		if ( $this->upgraded->offsetExists($el) ) {
 			if ( in_array($property, $this->upgraded[$el]) ) {
 				return true;
@@ -469,7 +469,7 @@ class Parser {
 		return false;
 	}
 
-	private function resolveChildUrls(DOMElement $el) {
+	private function resolveChildUrls(DOMElement $el): void {
 		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
 
 		foreach ($hyperlinkChildren as $child) {
@@ -962,7 +962,7 @@ class Parser {
 	 * @param bool $has_nested_mf Whether this microformat has a nested microformat
 	 * @return array A representation of the values contained within microformat $e
 	 */
-	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false) {
+	public function parseH(\DOMElement $e, $is_backcompat = false, $has_nested_mf = false): ?array {
 		// If it’s already been parsed (e.g. is a child mf), skip
 		if ($this->parsed->offsetExists($e)) {
 			return null;
@@ -1267,7 +1267,7 @@ class Parser {
 	 * in parsed results if $this->enableAlternates = true.
 	 * @return array|stdClass
 	 */
-	public function parseRelsAndAlternates() {
+	public function parseRelsAndAlternates(): array {
 		$rels = array();
 		$rel_urls = array();
 		$alternates = array();
@@ -1367,7 +1367,7 @@ class Parser {
 	 * which will then be upgraded to p-category during backcompat.
 	 * @param DOMElement $el
 	 */
-	public function upgradeRelTagToCategory(DOMElement $el) {
+	public function upgradeRelTagToCategory(DOMElement $el): void {
 		$rel_tag = $this->xpath->query('.//a[contains(concat(" ",normalize-space(@rel)," ")," tag ") and not(contains(concat(" ", normalize-space(@class), " "), " category ")) and @href]', $el);
 
 		if ( $rel_tag->length ) {
@@ -1393,7 +1393,7 @@ class Parser {
 	 * @param DOMElement $context optionally specify an element from which to parse microformats
 	 * @return array An array containing all the microformats found in the current document
 	 */
-	public function parse($convertClassic = true, ?DOMElement $context = null) {
+	public function parse($convertClassic = true, ?DOMElement $context = null): array {
 		$this->convertClassic = $convertClassic;
 		$mfs = $this->parseRecursive($context);
 
@@ -1421,7 +1421,7 @@ class Parser {
 	 * @param int $depth: recursion depth
 	 * @return array
 	 */
-	public function parseRecursive(?DOMElement $context = null, $depth = 0) {
+	public function parseRecursive(?DOMElement $context = null, $depth = 0): array {
 		$mfs = array();
 		$mfElements = $this->getRootMF($context);
 
@@ -1567,7 +1567,7 @@ class Parser {
 	 * @param bool $isParentMf2
 	 * @see http://microformats.org/wiki/microformats2-parsing#algorithm
 	 */
-	public function backcompat(DOMElement $el, $context = '', $isParentMf2 = false) {
+	public function backcompat(DOMElement $el, $context = '', $isParentMf2 = false): void {
 
 		if ( $context ) {
 			$mf1Classes = array($context);
@@ -1738,7 +1738,7 @@ class Parser {
 	 * @param DOMElement $el
 	 * @param string|array $property
 	 */
-	public function addUpgraded(DOMElement $el, $property) {
+	public function addUpgraded(DOMElement $el, $property): void {
 		if ( !is_array($property) ) {
 			$property = array($property);
 		}
@@ -1757,7 +1757,7 @@ class Parser {
 	 * @param DOMElement $el
 	 * @param string $classes
 	 */
-	public function addMfClasses(DOMElement $el, $classes) {
+	public function addMfClasses(DOMElement $el, $classes): void {
 		$existingClasses = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
 		$existingClasses = array_filter(explode(' ', $existingClasses));
 
@@ -1772,7 +1772,7 @@ class Parser {
 	 * Check an element for mf2 h-* class, typically to determine if backcompat should be used
 	 * @param DOMElement $el
 	 */
-	public function hasRootMf2(\DOMElement $el) {
+	public function hasRootMf2(\DOMElement $el): bool {
 		$class = str_replace(array("\t", "\n"), ' ', $el->getAttribute('class'));
 
 		// Check for valid mf2 root classnames, not just any classname with a h- prefix.
@@ -1787,7 +1787,7 @@ class Parser {
 	 *
 	 * @return Parser $this
 	 */
-	public function convertLegacy() {
+	public function convertLegacy(): self {
 		$doc = $this->doc;
 		$xp = new DOMXPath($doc);
 
@@ -2221,7 +2221,7 @@ class Parser {
 	);
 }
 
-function parseUriToComponents($uri) {
+function parseUriToComponents($uri): array {
 	$result = array(
 		'scheme' => null,
 		'authority' => null,
@@ -2259,7 +2259,7 @@ function parseUriToComponents($uri) {
 	return $result;
 }
 
-function resolveUrl($baseURI, $referenceURI) {
+function resolveUrl($baseURI, $referenceURI): string {
 	$target = array(
 		'scheme' => null,
 		'authority' => null,
@@ -2343,7 +2343,7 @@ function resolveUrl($baseURI, $referenceURI) {
 }
 
 # 5.2.3 Merge Paths
-function mergePaths($base, $reference) {
+function mergePaths(array $base, array $reference) {
 	# If the base URI has a defined authority component and an empty
 	# path,
 	if($base['authority'] && $base['path'] == null) {
@@ -2367,7 +2367,7 @@ function mergePaths($base, $reference) {
 }
 
 # 5.2.4.A Remove leading ../ or ./
-function removeLeadingDotSlash(&$input) {
+function removeLeadingDotSlash(&$input): void {
 	if(substr($input, 0, 3) == '../') {
 		$input = substr($input, 3);
 	} elseif(substr($input, 0, 2) == './') {
@@ -2376,7 +2376,7 @@ function removeLeadingDotSlash(&$input) {
 }
 
 # 5.2.4.B Replace leading /. with /
-function removeLeadingSlashDot(&$input) {
+function removeLeadingSlashDot(&$input): void {
 	if(substr($input, 0, 3) == '/./') {
 		$input = '/' . substr($input, 3);
 	} else {
@@ -2385,7 +2385,7 @@ function removeLeadingSlashDot(&$input) {
 }
 
 # 5.2.4.C Given leading /../ remove component from output buffer
-function removeOneDirLevel(&$input, &$output) {
+function removeOneDirLevel(&$input, &$output): void {
 	if(substr($input, 0, 4) == '/../') {
 		$input = '/' . substr($input, 4);
 	} else {
@@ -2395,7 +2395,7 @@ function removeOneDirLevel(&$input, &$output) {
 }
 
 # 5.2.4.D Remove . and .. if it's the only thing in the input
-function removeLoneDotDot(&$input) {
+function removeLoneDotDot(&$input): void {
 	if($input == '.') {
 		$input = substr($input, 1);
 	} else {
@@ -2404,7 +2404,7 @@ function removeLoneDotDot(&$input) {
 }
 
 # 5.2.4.E Move one segment from input to output
-function moveOneSegmentFromInput(&$input, &$output) {
+function moveOneSegmentFromInput(&$input, &$output): void {
 	if(substr($input, 0, 1) != '/') {
 		$pos = strpos($input, '/');
 	} else {
