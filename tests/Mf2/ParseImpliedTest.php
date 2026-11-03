@@ -1,4 +1,7 @@
 <?php
+
+declare (strict_types=1);
+
 /**
  * Tests of the parsing methods within mf2\Parser
  */
@@ -18,7 +21,7 @@ class ParseImpliedTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testParsesImpliedPNameFromNodeValue() {
+	public function testParsesImpliedPNameFromNodeValue(): void {
 		$input = '<span class="h-card">The Name</span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -27,7 +30,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesImpliedPNameFromImgAlt() {
+	public function testParsesImpliedPNameFromImgAlt(): void {
 		$input = '<img class="h-card" src="" alt="The Name" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -36,7 +39,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesImpliedPNameFromNestedImgAlt() {
+	public function testParsesImpliedPNameFromNestedImgAlt(): void {
 		$input = '<div class="h-card"><img src="" alt="The Name" /></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -45,7 +48,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesImpliedPNameFromDoublyNestedImgAlt() {
+	public function testParsesImpliedPNameFromDoublyNestedImgAlt(): void {
 		$input = '<div class="h-card"><span><img src="" alt="The Name" /></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -54,7 +57,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesImpliedUPhotoFromImgSrcWithoutAlt() {
+	public function testParsesImpliedUPhotoFromImgSrcWithoutAlt(): void {
 		$input = '<img class="h-card" src="https://example.com/img.png" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -63,7 +66,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testParsesImpliedUPhotoFromImgSrcWithEmptyAlt() {
+	public function testParsesImpliedUPhotoFromImgSrcWithEmptyAlt(): void {
 		$input = '<img class="h-card" src="https://example.com/img.png" alt="" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -73,7 +76,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('', $output['items'][0]['properties']['photo'][0]['alt']);
 	}
 
-	public function testParsesImpliedUPhotoFromImgSrcWithAlt() {
+	public function testParsesImpliedUPhotoFromImgSrcWithAlt(): void {
 		$input = '<img class="h-card" src="https://example.com/img.png" alt="Example" />';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -83,7 +86,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
 	}
 
-	public function testParsesImpliedUPhotoFromNestedImgSrc() {
+	public function testParsesImpliedUPhotoFromNestedImgSrc(): void {
 		$input = '<div class="h-card"><img src="https://example.com/img.png" alt="" /></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -96,7 +99,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals( $return, $output['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc() {
+	public function testParsesImpliedUPhotoFromDoublyNestedImgSrc(): void {
 		$input = '<div class="h-card"><span><img src="https://example.com/img.png" alt="" /></span></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -128,7 +131,7 @@ class ParseImpliedTest extends TestCase {
 	}
 	*/
 
-	public function testParsesImpliedUUrlFromAHref() {
+	public function testParsesImpliedUUrlFromAHref(): void {
 		$input = '<a class="h-card" href="https://example.com/">Some Name</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -138,7 +141,7 @@ class ParseImpliedTest extends TestCase {
 	}
 
 
-	public function testParsesImpliedUUrlFromNestedAHref() {
+	public function testParsesImpliedUUrlFromNestedAHref(): void {
 		$input = '<span class="h-card"><a href="https://example.com/">Some Name</a></span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -147,7 +150,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
 
-  public function testParsesImpliedUUrlWithExplicitName() {
+  public function testParsesImpliedUUrlWithExplicitName(): void {
 	$input = '<span class="h-card"><a href="https://example.com/" class="p-name">Some Name</a></span>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -156,7 +159,7 @@ class ParseImpliedTest extends TestCase {
 	$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
   }
 
-  public function testParsesImpliedNameWithExplicitURL() {
+  public function testParsesImpliedNameWithExplicitURL(): void {
 	$input = '<span class="h-card"><a href="https://example.com/" class="u-url">Some Name</a></span>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -166,7 +169,7 @@ class ParseImpliedTest extends TestCase {
 	$this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
   }
 
-	public function testMultipleImpliedHCards() {
+	public function testMultipleImpliedHCards(): void {
 		$input = '<span class="h-card">Frances Berriman</span>
 
 <a class="h-card" href="http://benward.me">Ben Ward</a>
@@ -223,7 +226,7 @@ class ParseImpliedTest extends TestCase {
 	}
 
 	/** as per https://github.com/indieweb/php-mf2/issues/37 */
-	public function testParsesImpliedNameConsistentWithPName() {
+	public function testParsesImpliedNameConsistentWithPName(): void {
 		$inner = "Name	\nand more";
 		$test = '<span class="h-card"> ' . $inner .' </span><span class="h-card"><span class="p-name"> ' . $inner . ' </span></span>';
 		$result = Mf2\parse($test);
@@ -233,13 +236,13 @@ class ParseImpliedTest extends TestCase {
 
 
 	/** @see https://github.com/indieweb/php-mf2/issues/6 */
-	public function testParsesImpliedNameFromAbbrTitle() {
+	public function testParsesImpliedNameFromAbbrTitle(): void {
 		$input = '<abbr class="h-card" title="Barnaby Walters">BJW</abbr>';
 		$result = Mf2\parse($input);
 		$this->assertEquals('Barnaby Walters', $result['items'][0]['properties']['name'][0]);
 	}
 
-	public function testImpliedPhotoFromObject() {
+	public function testImpliedPhotoFromObject(): void {
 		$input = '<object class="h-card" data="http://example/photo1.jpg">John Doe</object>';
 		$result = Mf2\parse($input);
 
@@ -252,7 +255,7 @@ class ParseImpliedTest extends TestCase {
 	 * This *should* return the photo since h-x>img[src]:only-of-type:not[.h-*]
 	 * @see https://indieweb.org/User:Tantek.com
 	 */
-	public function testImpliedPhotoFromNestedImg() {
+	public function testImpliedPhotoFromNestedImg(): void {
 		$input = '<span class="h-card"><a href="http://tantek.com/" class="external text" style="border: 0px none;"><img src="https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg" style="width:128px;float:right;margin-left:1em"><b><span style="font-size:2em">Tantek Çelik</span></b></a></span>';
 		$result = Mf2\parse($input);
 
@@ -260,7 +263,7 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg', $result['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testIgnoredPhotoIfMultipleImg() {
+	public function testIgnoredPhotoIfMultipleImg(): void {
 		$input = '<div class="h-card"><img src="http://example/photo2.jpg" /> <img src="http://example/photo3.jpg" /> </div>';
 		$result = Mf2\parse($input);
 
@@ -271,7 +274,7 @@ class ParseImpliedTest extends TestCase {
 	 * Correcting previous test testIgnoresDoublyNestedImgIfNotOnlyDoublyNestedChild()
 	 * This *should* return the photo since .h-x>object[data]:only-of-type:not[.h-*]
 	 */
-	public function testImpliedPhotoFromNestedObject() {
+	public function testImpliedPhotoFromNestedObject(): void {
 		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <p>Moar text</p></div>';
 		$result = Mf2\parse($input);
 
@@ -279,28 +282,28 @@ class ParseImpliedTest extends TestCase {
 		$this->assertEquals('http://example/photo3.jpg', $result['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testIgnoredPhotoIfMultipleObject() {
+	public function testIgnoredPhotoIfMultipleObject(): void {
 		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <object data="http://example/photo4.jpg"></object> </div>';
 		$result = Mf2\parse($input);
 
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
-	public function testIgnoredPhotoIfNestedImgH() {
+	public function testIgnoredPhotoIfNestedImgH(): void {
 		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" class="h-card" /> </div>';
 		$result = Mf2\parse($input);
 
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
-	public function testIgnoredPhotoIfNestedImgHasHClass() {
+	public function testIgnoredPhotoIfNestedImgHasHClass(): void {
 		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" alt="John Doe" class="h-card" /> </div>';
 		$result = Mf2\parse($input);
 
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
-	public function testIgnoredPhotoIfNestedObjectHasHClass() {
+	public function testIgnoredPhotoIfNestedObjectHasHClass(): void {
 		$input = '<div class="h-entry"> <object data="http://example/photo3.jpg" class="h-card">John Doe</object> </div>';
 		$result = Mf2\parse($input);
 
@@ -310,7 +313,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/176
 	 */
-	public function testIgnoredPhotoImgInNestedH() {
+	public function testIgnoredPhotoImgInNestedH(): void {
 		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <img src="/image.jpg"> </div> </div>';
 		$result = Mf2\parse($input);
 
@@ -320,7 +323,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/176
 	 */
-	public function testIgnoredPhotoObjectInNestedH() {
+	public function testIgnoredPhotoObjectInNestedH(): void {
 		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <object data="/image2.jpg">John Doe</object> </div> </div>';
 		$result = Mf2\parse($input);
 
@@ -330,7 +333,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/190
 	 */
-	public function testIgnoredMultiChildrenWithNestedPhotoImg() {
+	public function testIgnoredMultiChildrenWithNestedPhotoImg(): void {
 		$input = '<div class="h-card"> <a href="https://example.com"><img src="https://example.com/photo.jpg"></a> <span class="p-name"><a href="/User:Example.com">Max Mustermann</a></span> </div>';
 		$result = Mf2\parse($input);
 
@@ -340,7 +343,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/190
 	 */
-	public function testIgnoredMultiChildrenWithNestedPhotoObject() {
+	public function testIgnoredMultiChildrenWithNestedPhotoObject(): void {
 		$input = '<div class="h-card"> <a href="https://example.com"><object data="https://example.com/photo.jpg"></object></a> <span class="p-name"><a href="/User:Example.com">Max Mustermann</a></span> </div>';
 		$result = Mf2\parse($input);
 
@@ -351,7 +354,7 @@ class ParseImpliedTest extends TestCase {
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
-	public function testBackcompatNoImpliedName() {
+	public function testBackcompatNoImpliedName(): void {
 		$input = '<div class="hentry"> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
 		$result = Mf2\parse($input);
 
@@ -364,7 +367,7 @@ class ParseImpliedTest extends TestCase {
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
-	public function testBackcompatNoImpliedPhoto() {
+	public function testBackcompatNoImpliedPhoto(): void {
 		$input = '<div class="hentry"> <img src="https://example.com/photo.jpg" alt="photo" /> </div>';
 		$result = Mf2\parse($input);
 
@@ -376,7 +379,7 @@ class ParseImpliedTest extends TestCase {
 	 * Imply properties only on explicit h-x class name root microformat element (no backcompat roots)
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 */
-	public function testBackcompatNoImpliedUrl() {
+	public function testBackcompatNoImpliedUrl(): void {
 		$input = '<div class="hentry"> <a href="https://example.com/this-post" class="entry-title">Title</a> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
 		$result = Mf2\parse($input);
 
@@ -391,7 +394,7 @@ class ParseImpliedTest extends TestCase {
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_for_implied_properties
 	 * @see https://github.com/microformats/php-mf2/issues/183
 	 */
-	public function testNoImpliedUrl() {
+	public function testNoImpliedUrl(): void {
 		$input = '<div class="h-entry"> <h1 class="p-name"><a href="https://example.com/this-post">Title</a></h1> <div class="e-content"> <p> blah blah blah </p> </div> <a href="https://othersite.example.com/syndicate" class="u-syndication"></a> </div>';
 		$result = Mf2\parse($input);
 
@@ -402,7 +405,7 @@ class ParseImpliedTest extends TestCase {
 	 * Do not use img src in implied p-name
 	 * @see https://github.com/microformats/php-mf2/issues/180
 	 */
-	public function testNoImgSrcImpliedName() {
+	public function testNoImgSrcImpliedName(): void {
 		$input = '<p class="h-card">My Name <img src="http://xyz" /></p>';
 		$result = Mf2\parse($input);
 
@@ -413,7 +416,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/198
 	 */
-	public function testNoImpliedPhotoWhenExplicitUProperty() {
+	public function testNoImpliedPhotoWhenExplicitUProperty(): void {
 		$input = '<div class="h-card"> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div>';
 		$result = Mf2\parse($input);
 
@@ -423,7 +426,7 @@ class ParseImpliedTest extends TestCase {
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/198
 	 */
-	public function testNoImpliedPhotoWhenNestedMicroformat() {
+	public function testNoImpliedPhotoWhenNestedMicroformat(): void {
 		$input = '<div class="h-entry"> <img src="/photo.jpg" alt=""> <div class="p-author h-card"> <span class="p-name">Alice</span> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div> </div>';
 		$result = Mf2\parse($input);
 

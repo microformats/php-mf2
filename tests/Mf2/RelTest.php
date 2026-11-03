@@ -1,4 +1,7 @@
 <?php
+
+declare (strict_types=1);
+
 /**
  * Tests of the parsing methods within mf2\Parser
  */
@@ -10,7 +13,7 @@ use Mf2\Parser;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class RelTest extends TestCase {
-  public function testRelValueOnLinkTag() {
+  public function testRelValueOnLinkTag(): void {
 	$input = '<link rel="webmention" href="https://example.com/webmention">';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -19,7 +22,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
-  public function testRelValueOnATag() {
+  public function testRelValueOnATag(): void {
 	$input = '<a rel="webmention" href="https://example.com/webmention">webmention me</a>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -28,7 +31,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
-  public function testRelValueOnAreaTag() {
+  public function testRelValueOnAreaTag(): void {
 	$input = '<map><area rel="webmention" href="https://example.com/webmention"/></map>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -37,7 +40,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
-  public function testRelValueOrder() {
+  public function testRelValueOrder(): void {
 	$input = '<map><area rel="webmention" href="https://example.com/area"/></map>
       <a rel="webmention" href="https://example.com/a">webmention me</a>
       <link rel="webmention" href="https://example.com/link">';
@@ -50,7 +53,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][2]);
   }
 
-  public function testRelValueOrder2() {
+  public function testRelValueOrder2(): void {
 	$input = '<map><area rel="webmention" href="https://example.com/area"/></map>
       <link rel="webmention" href="https://example.com/link">
       <a rel="webmention" href="https://example.com/a">webmention me</a>';
@@ -63,7 +66,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][2]);
   }
 
-  public function testRelValueOrder3() {
+  public function testRelValueOrder3(): void {
 	$input = '<html>
       <head>
         <link rel="webmention" href="https://example.com/link">
@@ -82,7 +85,7 @@ class RelTest extends TestCase {
 	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][2]);
   }
 
-  public function testRelValueOnBTag() {
+  public function testRelValueOnBTag(): void {
 	$input = '<b rel="webmention" href="https://example.com/webmention">this makes no sense</b>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
@@ -90,7 +93,7 @@ class RelTest extends TestCase {
 	$this->assertArrayNotHasKey('webmention', $output['rels']);
   }
 
-  public function testEnableAlternatesFlagTrue() {
+  public function testEnableAlternatesFlagTrue(): void {
 	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
@@ -106,7 +109,7 @@ class RelTest extends TestCase {
 	$this->assertArrayHasKey('alternates', $output);
   }
 
-  public function testEnableAlternatesFlagFalse() {
+  public function testEnableAlternatesFlagFalse(): void {
 	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
@@ -126,7 +129,7 @@ class RelTest extends TestCase {
    * @see https://github.com/indieweb/php-mf2/issues/112
    * @see https://microformats.org/wiki/microformats2-parsing#rel_parse_examples
    */
-  public function testRelURLs() {
+  public function testRelURLs(): void {
 	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
@@ -176,7 +179,7 @@ class RelTest extends TestCase {
    * @see https://github.com/microformats/microformats2-parsing/issues/29
    * @see https://github.com/microformats/microformats2-parsing/issues/30
    */
-  public function testRelURLsRelsUniqueAndSorted() {
+  public function testRelURLsRelsUniqueAndSorted(): void {
 	$input = '<a href="#" rel="me bookmark"></a>
 <a href="#" rel="bookmark archived"></a>';
 	$parser = new Parser($input);
@@ -184,7 +187,7 @@ class RelTest extends TestCase {
 	$this->assertEquals($output['rel-urls']['#']['rels'], array('archived', 'bookmark', 'me'));
   }
 
-  public function testRelURLsInfoMergesCorrectly() {
+  public function testRelURLsInfoMergesCorrectly(): void {
 	$input = '<a href="#" rel="a">This nodeValue</a>
 <a href="#" rel="a" hreflang="en">Not this nodeValue</a>';
 	$parser = new Parser($input);
@@ -196,7 +199,7 @@ class RelTest extends TestCase {
 	$this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
   }
 
-  public function testRelURLsNoDuplicates() {
+  public function testRelURLsNoDuplicates(): void {
 	$input = '<a href="#a" rel="a"></a>
 <a href="#b" rel="a"></a>
 <a href="#a" rel="a"></a>';
@@ -205,7 +208,7 @@ class RelTest extends TestCase {
 	$this->assertEquals($output['rels']['a'], array('#a', '#b'));
   }
 
-  public function testRelURLsFalsyTextVSEmpty() {
+  public function testRelURLsFalsyTextVSEmpty(): void {
 	$input = '<a href="#a" rel="a">0</a>
 <a href="#b" rel="b"></a>';
 	$parser = new Parser($input);

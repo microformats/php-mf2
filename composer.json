@@ -18,19 +18,21 @@
         },
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+        },
+        "sort-packages": true
     },
     "require-dev": {
-        "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
-        "squizlabs/php_codesniffer": "^3.10.2",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "donatj/mock-webserver": "^2.10",
+        "mf2/tests": "dev-master#e9e2b905821ba0a5b59dab1a8eaf40634ce9cd49",
         "phpcompatibility/php-compatibility": "^9.3",
+        "phpstan/phpstan": "^2.3",
+        "squizlabs/php_codesniffer": "^3.10.2",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "scripts": {
         "cs-check": "phpcs",
         "tests": "XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text --whitelist Mf2",
-        "tests-no-internet": "@tests --exclude-group internet,microformats/tests/mf1",
         "microformats-tests-mf1": "./vendor/bin/phpunit --group microformats/tests/mf1",
         "microformats-tests-mf2": "./vendor/bin/phpunit --group microformats/tests/mf2",
         "microformats-tests-mixed": "./vendor/bin/phpunit --group microformats/tests/mixed",
@@ -42,7 +44,8 @@
         "check-and-test-all": [
             "@check-and-test",
             "@microformats-tests-mf1"
-        ]
+        ],
+        "phpstan": "phpstan analyze"
     },
     "autoload": {
         "files": ["Mf2/Parser.php"]

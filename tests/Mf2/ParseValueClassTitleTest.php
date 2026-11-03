@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 /**
  * Tests of the parsing methods within mf2\Parser
  */
@@ -16,7 +18,7 @@ class ParseValueClassTitleTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testValueClassTitleHandlesSingleValueClass() {
+	public function testValueClassTitleHandlesSingleValueClass(): void {
 		$input = '<div class="h-card"><p class="p-name"><span class="value">Name</span> (this should not be included)</p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -25,7 +27,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testValueClassTitleHandlesMultipleValueClass() {
+	public function testValueClassTitleHandlesMultipleValueClass(): void {
 		$input = '<div class="h-card"><p class="p-name"><span class="value">Name</span> (this should not be included) <span class="value">Endname</span></p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -34,7 +36,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$this->assertEquals('NameEndname', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testValueClassTitleHandlesSingleValueTitle() {
+	public function testValueClassTitleHandlesSingleValueTitle(): void {
 		$input = '<div class="h-card"><p class="p-name"><span class="value-title" title="Real Name">Wrong Name</span> (this should not be included)</p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -43,7 +45,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testValueClassTitleHandlesMultipleValueTitle() {
+	public function testValueClassTitleHandlesMultipleValueTitle(): void {
 		$input = '<div class="h-card"><p class="p-name"><span class="value-title" title="Real ">Wrong Name</span> <span class="value-title" title="Name">(this should not be included)</span></p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -55,7 +57,7 @@ class ParseValueClassTitleTest extends TestCase {
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/25
 	 */
-	public function testValueClassDatetimeWorksWithUrlProperties() {
+	public function testValueClassDatetimeWorksWithUrlProperties(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<a href="2013/178/t1/surreal-meeting-dpdpdp-trondisc"
@@ -77,7 +79,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/27
 	 */
-	public function testParsesValueTitleDatetimes() {
+	public function testParsesValueTitleDatetimes(): void {
 		$input = <<<EOT
 <div class="h-entry">
  <h1 class="p-name">test</h1>
@@ -92,7 +94,7 @@ EOT;
 	}
 
 	/** @see https://github.com/indieweb/php-mf2/issues/34 */
-	public function testIgnoresValueClassNestedFurtherThanChild() {
+	public function testIgnoresValueClassNestedFurtherThanChild(): void {
 		$test = '<div class="h-card"><span class="p-tel"><span class="value">1234</span><span class="h-card"><span class="p-tel"><span class="value">5678</span>';
 		$result = Mf2\parse($test);
 		$this->assertEquals('1234', $result['items'][0]['properties']['tel'][0]);
@@ -100,7 +102,7 @@ EOT;
 	}
 
 	/** @see https://github.com/indieweb/php-mf2/issues/38 */
-	public function testValueClassDtMatchesSingleDigitTimeComponent() {
+	public function testValueClassDtMatchesSingleDigitTimeComponent(): void {
 		$test = '<div class="h-entry"><span class="dt-published"><time class="value">6:01</time>, <time class="value">2013-02-01</time></span></div>';
 		$result = Mf2\parse($test);
 		$this->assertEquals('2013-02-01 6:01', $result['items'][0]['properties']['published'][0]);

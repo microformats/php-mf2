@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 /**
  * Tests of the parsing methods within mf2\Parser
  */
@@ -20,7 +22,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePHandlesInnerText() {
+	public function testParsePHandlesInnerText(): void {
 		$input = '<div class="h-card"><p class="p-name">Example User</p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -32,7 +34,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePHandlesImg() {
+	public function testParsePHandlesImg(): void {
 		$input = '<div class="h-card"><img class="p-name" alt="Example User"></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -44,7 +46,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePHandlesAbbr() {
+	public function testParsePHandlesAbbr(): void {
 		$input = '<div class="h-card h-person"><abbr class="p-name" title="Example User">@example</abbr></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -56,7 +58,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePHandlesData() {
+	public function testParsePHandlesData(): void {
 		$input = '<div class="h-card"><data class="p-name" value="Example User"></data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -68,7 +70,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePHandlesDataWithBlankValueAttribute() {
+	public function testParsePHandlesDataWithBlankValueAttribute(): void {
 		$input = '<div class="h-card"><data class="p-name" value="">Example User</data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -80,7 +82,7 @@ class ParsePTest extends TestCase {
 	/**
 	 * @group parseP
 	 */
-	public function testParsePReturnsEmptyStringForBrHr() {
+	public function testParsePReturnsEmptyStringForBrHr(): void {
 		$input = '<div class="h-card"><br class="p-name"/></div><div class="h-card"><hr class="p-name"/></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -90,7 +92,7 @@ class ParsePTest extends TestCase {
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 	}
 
-	public function testParsesInputValue() {
+	public function testParsesInputValue(): void {
 		$input = '<span class="h-card"><input class="u-url" value="https://example.com" /></span>';
 		$result = Mf2\parse($input);
 		$this->assertEquals('https://example.com', $result['items'][0]['properties']['url'][0]);
@@ -100,7 +102,7 @@ class ParsePTest extends TestCase {
 	 * @see https://github.com/indieweb/php-mf2/issues/53
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
 	 */
-	public function testConvertsNestedImgElementToAltOrSrc() {
+	public function testConvertsNestedImgElementToAltOrSrc(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<p class="p-name">The day I saw a <img alt="five legged elephant" src="/photos/five-legged-elephant.jpg" /></p>
@@ -115,7 +117,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/69
 	 */
-	public function testBrWhitespaceIssue69() {
+	public function testBrWhitespaceIssue69(): void {
 		$input = '<div class="h-card"><p class="p-adr"><span class="p-street-address">Street Name 9</span><br/><span class="p-locality">12345 NY, USA</span></p></div>';
 		$result = Mf2\parse($input);
 
@@ -130,7 +132,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/89
 	 */
-	public function testEmptyAlt() {
+	public function testEmptyAlt(): void {
 		$input = '<div class="p-author h-card"><a href="/" class="p-org p-name"><img class="u-logo" src="/static/logo.jpg" alt="" />mention.tech</a></div>';
 		$result = Mf2\parse($input);
 
