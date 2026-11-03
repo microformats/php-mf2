@@ -18,6 +18,7 @@ use Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
 class CombinedMicroformatsTest extends TestCase {
 	use AssertIsType;
 
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -294,7 +295,7 @@ class CombinedMicroformatsTest extends TestCase {
 	    "rels":[],
 	    "rel-urls": []
 	  }';
-	  	$mf = Mf2\parse($input);
+		$mf = Mf2\parse($input);
 
 		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'https://example.com/post1234');
@@ -345,18 +346,18 @@ class CombinedMicroformatsTest extends TestCase {
 	}
 
   public function testNoUrlFromRelOnMf2() {
-    $input = <<< END
+	$input = <<< END
 <div class="h-entry">
 <p> <a href="/article" rel="bookmark" class="p-name">Title of Post</a> </p>
 <div class="e-content"><p> This is the post </p> </div>
 </div>
 END;
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('name', $output['items'][0]['properties']);
-    $this->assertArrayHasKey('content', $output['items'][0]['properties']);
-    $this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
+	$this->assertArrayHasKey('name', $output['items'][0]['properties']);
+	$this->assertArrayHasKey('content', $output['items'][0]['properties']);
+	$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
   }
 
 	/**
@@ -378,7 +379,7 @@ END;
 		$output = $parser->parse();
 
 		$this->assertArrayHasKey('value', $output['items'][0]['properties']['location'][0]);
-		$this->assertEquals("Portland, Oregon • 44°F", $output['items'][0]['properties']['location'][0]['value']);
+		$this->assertEquals('Portland, Oregon • 44°F', $output['items'][0]['properties']['location'][0]['value']);
 	}
 
 	/**

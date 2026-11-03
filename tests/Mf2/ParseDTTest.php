@@ -10,6 +10,7 @@ use Mf2\Parser;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class ParseDTTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -47,7 +48,6 @@ class ParseDTTest extends TestCase {
 		$input = '<div class="h-event"><data class="dt-start">2012-08-05T14:50</data></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
@@ -93,36 +93,36 @@ class ParseDTTest extends TestCase {
    * @group parseDT
    */
   public function testParseDTHandlesTimeDatetimeAttrWithZ() {
-    $input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00Z"></div>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00Z"></div>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
-    $this->assertEquals('2012-08-05T14:50:00Z', $output['items'][0]['properties']['start'][0]);
+	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+	$this->assertEquals('2012-08-05T14:50:00Z', $output['items'][0]['properties']['start'][0]);
   }
 
   /**
    * @group parseDT
    */
   public function testParseDTHandlesTimeDatetimeAttrWithTZOffset() {
-    $input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00-0700"></div>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00-0700"></div>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
-    $this->assertEquals('2012-08-05T14:50:00-0700', $output['items'][0]['properties']['start'][0]);
+	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+	$this->assertEquals('2012-08-05T14:50:00-0700', $output['items'][0]['properties']['start'][0]);
   }
 
   /**
    * @group parseDT
    */
   public function testParseDTHandlesTimeDatetimeAttrWithTZOffset2() {
-    $input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00-07:00"></div>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<div class="h-event"><time class="dt-start" datetime="2012-08-05T14:50:00-07:00"></div>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('start', $output['items'][0]['properties']);
-    $this->assertEquals('2012-08-05T14:50:00-07:00', $output['items'][0]['properties']['start'][0]);
+	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
+	$this->assertEquals('2012-08-05T14:50:00-07:00', $output['items'][0]['properties']['start'][0]);
   }
 
 	/**
@@ -132,7 +132,6 @@ class ParseDTTest extends TestCase {
 		$input = '<div class="h-event"><time class="dt-start">2012-08-05T14:50</time></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
-
 
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);

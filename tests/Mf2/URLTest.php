@@ -10,6 +10,7 @@ use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class URLTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -152,9 +153,9 @@ class URLTest extends TestCase {
 	 * @dataProvider dataProvider
 	 */
   public function testReturnsUrlIfAbsolute($assert, $base, $url, $expected) {
-    $actual = mf2\resolveUrl($base, $url);
+	$actual = mf2\resolveUrl($base, $url);
 
-    $this->assertEquals($expected, $actual, $assert);
+	$this->assertEquals($expected, $actual, $assert);
   }
 
 	public function dataProvider() {
@@ -265,29 +266,29 @@ class URLTest extends TestCase {
 		// http://tools.ietf.org/html/rfc3986#section-5.4
 
 		$rfcTests = array(
-			array("g:h", "g:h"),
-			array("g", "http://a/b/c/g"),
-			array("./g", "http://a/b/c/g"),
-			array("g/", "http://a/b/c/g/"),
-			array("/g", "http://a/g"),
-			array("//g", "http://g"),
-			array("?y", "http://a/b/c/d;p?y"),
-			array("g?y", "http://a/b/c/g?y"),
-			array("#s", "http://a/b/c/d;p?q#s"),
-			array("g#s", "http://a/b/c/g#s"),
-			array("g?y#s", "http://a/b/c/g?y#s"),
-			array(";x", "http://a/b/c/;x"),
-			array("g;x", "http://a/b/c/g;x"),
-			array("g;x?y#s", "http://a/b/c/g;x?y#s"),
-			array("", "http://a/b/c/d;p?q"),
-			array(".", "http://a/b/c/"),
-			array("./", "http://a/b/c/"),
-			array("..", "http://a/b/"),
-			array("../", "http://a/b/"),
-			array("../g", "http://a/b/g"),
-			array("../..", "http://a/"),
-			array("../../", "http://a/"),
-			array("../../g", "http://a/g")
+			array('g:h', 'g:h'),
+			array('g', 'http://a/b/c/g'),
+			array('./g', 'http://a/b/c/g'),
+			array('g/', 'http://a/b/c/g/'),
+			array('/g', 'http://a/g'),
+			array('//g', 'http://g'),
+			array('?y', 'http://a/b/c/d;p?y'),
+			array('g?y', 'http://a/b/c/g?y'),
+			array('#s', 'http://a/b/c/d;p?q#s'),
+			array('g#s', 'http://a/b/c/g#s'),
+			array('g?y#s', 'http://a/b/c/g?y#s'),
+			array(';x', 'http://a/b/c/;x'),
+			array('g;x', 'http://a/b/c/g;x'),
+			array('g;x?y#s', 'http://a/b/c/g;x?y#s'),
+			array('', 'http://a/b/c/d;p?q'),
+			array('.', 'http://a/b/c/'),
+			array('./', 'http://a/b/c/'),
+			array('..', 'http://a/b/'),
+			array('../', 'http://a/b/'),
+			array('../g', 'http://a/b/g'),
+			array('../..', 'http://a/'),
+			array('../../', 'http://a/'),
+			array('../../g', 'http://a/g')
 		);
 
 		foreach($rfcTests as $i=>$test) {

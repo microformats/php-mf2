@@ -20,6 +20,7 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
  * @author Barnaby Walters waterpigs.co.uk <barnaby@waterpigs.co.uk>
  */
 class MicroformatsWikiExamplesTest extends TestCase {
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	protected function set_up() {
 		date_default_timezone_set('Europe/London');
 	}
@@ -39,7 +40,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 	}
 
 	public function testHandlesNullCorrectly() {
-		$input = Null;
+		$input = null;
 		$expected = '{
 	"rels": {},
 	"rel-urls": {},

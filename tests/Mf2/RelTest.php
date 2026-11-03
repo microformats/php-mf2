@@ -11,60 +11,60 @@ use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 class RelTest extends TestCase {
   public function testRelValueOnLinkTag() {
-    $input = '<link rel="webmention" href="https://example.com/webmention">';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<link rel="webmention" href="https://example.com/webmention">';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
   public function testRelValueOnATag() {
-    $input = '<a rel="webmention" href="https://example.com/webmention">webmention me</a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<a rel="webmention" href="https://example.com/webmention">webmention me</a>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
   public function testRelValueOnAreaTag() {
-    $input = '<map><area rel="webmention" href="https://example.com/webmention"/></map>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<map><area rel="webmention" href="https://example.com/webmention"/></map>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
 
   public function testRelValueOrder() {
-    $input = '<map><area rel="webmention" href="https://example.com/area"/></map>
+	$input = '<map><area rel="webmention" href="https://example.com/area"/></map>
       <a rel="webmention" href="https://example.com/a">webmention me</a>
       <link rel="webmention" href="https://example.com/link">';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
-    $this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
-    $this->assertEquals('https://example.com/link', $output['rels']['webmention'][2]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
+	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
+	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][2]);
   }
 
   public function testRelValueOrder2() {
-    $input = '<map><area rel="webmention" href="https://example.com/area"/></map>
+	$input = '<map><area rel="webmention" href="https://example.com/area"/></map>
       <link rel="webmention" href="https://example.com/link">
       <a rel="webmention" href="https://example.com/a">webmention me</a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
-    $this->assertEquals('https://example.com/link', $output['rels']['webmention'][1]);
-    $this->assertEquals('https://example.com/a', $output['rels']['webmention'][2]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
+	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][1]);
+	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][2]);
   }
 
   public function testRelValueOrder3() {
-    $input = '<html>
+	$input = '<html>
       <head>
         <link rel="webmention" href="https://example.com/link">
       </head>
@@ -73,25 +73,25 @@ class RelTest extends TestCase {
         <map><area rel="webmention" href="https://example.com/area"/></map>
       </body>
     </html>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('webmention', $output['rels']);
-    $this->assertEquals('https://example.com/link', $output['rels']['webmention'][0]);
-    $this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
-    $this->assertEquals('https://example.com/area', $output['rels']['webmention'][2]);
+	$this->assertArrayHasKey('webmention', $output['rels']);
+	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][0]);
+	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
+	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][2]);
   }
 
   public function testRelValueOnBTag() {
-    $input = '<b rel="webmention" href="https://example.com/webmention">this makes no sense</b>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$input = '<b rel="webmention" href="https://example.com/webmention">this makes no sense</b>';
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayNotHasKey('webmention', $output['rels']);
+	$this->assertArrayNotHasKey('webmention', $output['rels']);
   }
 
   public function testEnableAlternatesFlagTrue() {
-    $input = '<a rel="author" href="https://example.com/a">author a</a>
+	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
 <a rel="in-reply-to" href="https://example.com/2">post 2</a>
@@ -99,15 +99,15 @@ class RelTest extends TestCase {
    href="https://example.com/fr"
    media="handheld"
    hreflang="fr">French mobile homepage</a>';
-    $parser = new Parser($input);
-    $parser->enableAlternates = true;
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$parser->enableAlternates = true;
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('alternates', $output);
+	$this->assertArrayHasKey('alternates', $output);
   }
 
   public function testEnableAlternatesFlagFalse() {
-    $input = '<a rel="author" href="https://example.com/a">author a</a>
+	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
 <a rel="in-reply-to" href="https://example.com/2">post 2</a>
@@ -115,11 +115,11 @@ class RelTest extends TestCase {
    href="https://example.com/fr"
    media="handheld"
    hreflang="fr">French mobile homepage</a>';
-    $parser = new Parser($input);
-    $parser->enableAlternates = false;
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$parser->enableAlternates = false;
+	$output = $parser->parse();
 
-    $this->assertArrayNotHasKey('alternates', $output);
+	$this->assertArrayNotHasKey('alternates', $output);
   }
 
   /**
@@ -127,7 +127,7 @@ class RelTest extends TestCase {
    * @see https://microformats.org/wiki/microformats2-parsing#rel_parse_examples
    */
   public function testRelURLs() {
-    $input = '<a rel="author" href="https://example.com/a">author a</a>
+	$input = '<a rel="author" href="https://example.com/a">author a</a>
 <a rel="author" href="https://example.com/b">author b</a>
 <a rel="in-reply-to" href="https://example.com/1">post 1</a>
 <a rel="in-reply-to" href="https://example.com/2">post 2</a>
@@ -136,40 +136,40 @@ class RelTest extends TestCase {
    media="handheld"
    hreflang="fr">French mobile homepage</a>
 <link rel="alternate" type="application/atom+xml" href="https://example.com/articles.atom" title="Atom Feed" />';
-    $parser = new Parser($input);
-    $output = $parser->parse();
+	$parser = new Parser($input);
+	$output = $parser->parse();
 
-    $this->assertArrayHasKey('rels', $output);
-    $this->assertCount(4, $output['rels']);
-    $this->assertArrayHasKey('author', $output['rels']);
-    $this->assertArrayHasKey('in-reply-to', $output['rels']);
-    $this->assertArrayHasKey('alternate', $output['rels']);
-    $this->assertArrayHasKey('home', $output['rels']);
+	$this->assertArrayHasKey('rels', $output);
+	$this->assertCount(4, $output['rels']);
+	$this->assertArrayHasKey('author', $output['rels']);
+	$this->assertArrayHasKey('in-reply-to', $output['rels']);
+	$this->assertArrayHasKey('alternate', $output['rels']);
+	$this->assertArrayHasKey('home', $output['rels']);
 
-    $this->assertArrayHasKey('rel-urls', $output);
-    $this->assertCount(6, $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/a', $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/b', $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/1', $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/2', $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/fr', $output['rel-urls']);
-    $this->assertArrayHasKey('https://example.com/articles.atom', $output['rel-urls']);
+	$this->assertArrayHasKey('rel-urls', $output);
+	$this->assertCount(6, $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/a', $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/b', $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/1', $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/2', $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/fr', $output['rel-urls']);
+	$this->assertArrayHasKey('https://example.com/articles.atom', $output['rel-urls']);
 
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/a']);
-    $this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/a']);
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/b']);
-    $this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/b']);
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/1']);
-    $this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/1']);
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/2']);
-    $this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/2']);
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/fr']);
-    $this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/fr']);
-    $this->assertArrayHasKey('media', $output['rel-urls']['https://example.com/fr']);
-    $this->assertArrayHasKey('hreflang', $output['rel-urls']['https://example.com/fr']);
-    $this->assertArrayHasKey('title', $output['rel-urls']['https://example.com/articles.atom']);
-    $this->assertArrayHasKey('type', $output['rel-urls']['https://example.com/articles.atom']);
-    $this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/articles.atom']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/a']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/a']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/b']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/b']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/1']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/1']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/2']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/2']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/fr']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/fr']);
+	$this->assertArrayHasKey('media', $output['rel-urls']['https://example.com/fr']);
+	$this->assertArrayHasKey('hreflang', $output['rel-urls']['https://example.com/fr']);
+	$this->assertArrayHasKey('title', $output['rel-urls']['https://example.com/articles.atom']);
+	$this->assertArrayHasKey('type', $output['rel-urls']['https://example.com/articles.atom']);
+	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/articles.atom']);
   }
 
   /**
@@ -177,42 +177,42 @@ class RelTest extends TestCase {
    * @see https://github.com/microformats/microformats2-parsing/issues/30
    */
   public function testRelURLsRelsUniqueAndSorted() {
-    $input = '<a href="#" rel="me bookmark"></a>
+	$input = '<a href="#" rel="me bookmark"></a>
 <a href="#" rel="bookmark archived"></a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
-    $this->assertEquals($output['rel-urls']['#']['rels'], array('archived', 'bookmark', 'me'));
+	$parser = new Parser($input);
+	$output = $parser->parse();
+	$this->assertEquals($output['rel-urls']['#']['rels'], array('archived', 'bookmark', 'me'));
   }
 
   public function testRelURLsInfoMergesCorrectly() {
-    $input = '<a href="#" rel="a">This nodeValue</a>
+	$input = '<a href="#" rel="a">This nodeValue</a>
 <a href="#" rel="a" hreflang="en">Not this nodeValue</a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
-    $this->assertEquals($output['rel-urls']['#']['hreflang'], 'en');
-    $this->assertArrayNotHasKey('media', $output['rel-urls']['#']);
-    $this->assertArrayNotHasKey('title', $output['rel-urls']['#']);
-    $this->assertArrayNotHasKey('type', $output['rel-urls']['#']);
-    $this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
+	$parser = new Parser($input);
+	$output = $parser->parse();
+	$this->assertEquals($output['rel-urls']['#']['hreflang'], 'en');
+	$this->assertArrayNotHasKey('media', $output['rel-urls']['#']);
+	$this->assertArrayNotHasKey('title', $output['rel-urls']['#']);
+	$this->assertArrayNotHasKey('type', $output['rel-urls']['#']);
+	$this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
   }
 
   public function testRelURLsNoDuplicates() {
-    $input = '<a href="#a" rel="a"></a>
+	$input = '<a href="#a" rel="a"></a>
 <a href="#b" rel="a"></a>
 <a href="#a" rel="a"></a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
-    $this->assertEquals($output['rels']['a'], array('#a', '#b'));
+	$parser = new Parser($input);
+	$output = $parser->parse();
+	$this->assertEquals($output['rels']['a'], array('#a', '#b'));
   }
 
   public function testRelURLsFalsyTextVSEmpty() {
-    $input = '<a href="#a" rel="a">0</a>
+	$input = '<a href="#a" rel="a">0</a>
 <a href="#b" rel="b"></a>';
-    $parser = new Parser($input);
-    $output = $parser->parse();
-    $this->assertArrayHasKey('text', $output['rel-urls']['#a']);
-    $this->assertEquals($output['rel-urls']['#a']['text'], '0');
-    $this->assertArrayNotHasKey('text', $output['rel-urls']['#b']);
+	$parser = new Parser($input);
+	$output = $parser->parse();
+	$this->assertArrayHasKey('text', $output['rel-urls']['#a']);
+	$this->assertEquals($output['rel-urls']['#a']['text'], '0');
+	$this->assertArrayNotHasKey('text', $output['rel-urls']['#b']);
   }
 
 }
