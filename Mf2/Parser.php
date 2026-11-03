@@ -613,7 +613,7 @@ class Parser {
 			// Process value-class stuff
 			$val = '';
 			foreach ($valueClassElements as $el) {
-				$val .= $this->textContent($el);
+				$val .= ($val !== '' ? $separator : '') . $this->textContent($el);
 			}
 
 			return unicodeTrim($val);
@@ -625,7 +625,7 @@ class Parser {
 			// Process value-title stuff
 			$val = '';
 			foreach ($valueTitleElements as $el) {
-				$val .= $el->getAttribute('title');
+				$val .= ($val !== '' ? $separator : '') . $el->getAttribute('title');
 			}
 
 			return unicodeTrim($val);
