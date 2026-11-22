@@ -13,7 +13,7 @@ final class TestSuiteParser extends \Mf2\Parser
 	public function textContent(\DOMElement $el, bool $dummy = false): string {
 		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
-		if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
+		if ($el->tagName and in_array(strtolower($el->tagName), $excludeTags)) {
 			return '';
 		}
 
