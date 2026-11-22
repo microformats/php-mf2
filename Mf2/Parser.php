@@ -42,7 +42,35 @@ use stdClass;
  * @param string|DOMDocument $input The HTML string or DOMDocument object to parse
  * @param string $url The URL the input document was found at, for relative URL resolution
  * @param bool $convertClassic whether or not to convert classic microformats
- * @return array Canonical MF2 array structure
+ * @return array{
+ *   items: list<array{
+ *     type: string[],
+ *     properties: array<string, mixed>|(object{}&stdClass),
+ *     id?: string,
+ *     lang?: string,
+ *     shape?: string,
+ *     coords?: string,
+ *     children?: array<mixed>,
+ *   }>,
+ *   rels: array<string, list<string>>|(object{}&stdClass),
+ *   rel-urls: (object{}&stdClass)|array<string, (object{}&stdClass)|array{
+ *     rels: string[],
+ *     media?: string,
+ *     hreflang?: string,
+ *     title?: string,
+ *     type?: string,
+ *     text?: string,
+ *   }>,
+ *   alternates?: non-empty-list<array{
+ *     url: string,
+ *     rel: string,
+ *     media?: string,
+ *     hreflang?: string,
+ *     title?: string,
+ *     type?: string,
+ *     text?: string,
+ *   }>,
+ * } Canonical MF2 array structure
  */
 function parse($input, ?string $url = null, bool $convertClassic = true):  array {
 	$parser = new Parser($input, $url);
@@ -62,8 +90,36 @@ function parse($input, ?string $url = null, bool $convertClassic = true):  array
  *
  * @param string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
- * @param array &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
- * @return array|null canonical microformats2 array structure on success, null on failure
+ * @param array<string, mixed> &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
+ * @return array{
+ *   items: list<array{
+ *     type: string[],
+ *     properties: array<string, mixed>|(object{}&stdClass),
+ *     id?: string,
+ *     lang?: string,
+ *     shape?: string,
+ *     coords?: string,
+ *     children?: array<mixed>,
+ *   }>,
+ *   rels: array<string, list<string>>|(object{}&stdClass),
+ *   rel-urls: (object{}&stdClass)|array<string, (object{}&stdClass)|array{
+ *     rels: string[],
+ *     media?: string,
+ *     hreflang?: string,
+ *     title?: string,
+ *     type?: string,
+ *     text?: string,
+ *   }>,
+ *   alternates?: non-empty-list<array{
+ *     url: string,
+ *     rel: string,
+ *     media?: string,
+ *     hreflang?: string,
+ *     title?: string,
+ *     type?: string,
+ *     text?: string,
+ *   }>,
+ * }|null canonical microformats2 array structure on success, null on failure
  */
 function fetch(string $url, bool $convertClassic = true, array &$curlInfo = []): ?array {
 	$version = '0';
@@ -953,7 +1009,14 @@ class Parser {
 	 * @param DOMElement $e The element to parse
 	 * @param bool $is_backcompat Whether using backcompat parsing or not
 	 * @param bool $has_nested_mf Whether this microformat has a nested microformat
-	 * @return array A representation of the values contained within microformat $e
+	 * @return ?array{
+	 *   type: string[],
+	 *   properties: array<string, mixed>|(object{}&stdClass),
+	 *   id?: string,
+	 *   lang?: string,
+	 *   shape?: string,
+	 *   coords?: string,
+	 * } A representation of the values contained within microformat $e
 	 */
 	public function parseH(\DOMElement $e, bool $is_backcompat = false, bool $has_nested_mf = false): ?array {
 		// If it’s already been parsed (e.g. is a child mf), skip
@@ -1266,7 +1329,26 @@ class Parser {
 	 * optimizing for JSON serialization. Otherwise they will be returned as an empty array.
 	 * Note that $alternates is deprecated in the microformats spec in favor of $rel_urls. $alternates only appears
 	 * in parsed results if $this->enableAlternates = true.
-	 * @return array{0: array, 1: array, 2: array}
+	 * @return array{
+	 *   0: (object{}&stdClass)|array<string, list<string>>|(object{}&stdClass),
+	 *   1: (object{}&stdClass)|array<string, (object{}&stdClass)|array{
+	 *     rels: string[],
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 *   2: list<array{
+	 *     url: string,
+	 *     rel: string,
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 * }
 	 */
 	public function parseRelsAndAlternates(): array {
 		$rels = array();
@@ -1394,7 +1476,35 @@ class Parser {
 	 * Kicks off the parsing routine
 	 * @param bool $convertClassic whether to do backcompat parsing on microformats1. Defaults to true.
 	 * @param DOMElement $context optionally specify an element from which to parse microformats
-	 * @return array An array containing all the microformats found in the current document
+	 * @return array{
+	 *   items: list<array{
+	 *     type: string[],
+	 *     properties: array<string, mixed>|(object{}&stdClass),
+	 *     id?: string,
+	 *     lang?: string,
+	 *     shape?: string,
+	 *     coords?: string,
+	 *     children?: array<mixed>,
+	 *   }>,
+	 *   rels: array<string, list<string>>|(object{}&stdClass),
+	 *   rel-urls: (object{}&stdClass)|array<string, (object{}&stdClass)|array{
+	 *     rels: string[],
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 *   alternates?: non-empty-list<array{
+	 *     url: string,
+	 *     rel: string,
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 * } An array containing all the microformats found in the current document
 	 */
 	public function parse(bool $convertClassic = true, ?DOMElement $context = null): array {
 		$this->convertClassic = $convertClassic;
@@ -1422,6 +1532,25 @@ class Parser {
 	 * Keeps track of whether inside a backcompat root or not
 	 * @param DOMElement $context: node to start with
 	 * @param int $depth: recursion depth
+	 * @return array<
+	 *   ($depth is 0
+	 *   ? array{
+	 *     type: string[],
+	 *     properties: array<string, mixed>|(object{}&stdClass),
+	 *     id?: string,
+	 *     lang?: string,
+	 *     shape?: string,
+	 *     coords?: string,
+	 *     children?: array<mixed>,
+	 *   }
+	 *   : (
+	 *     array{
+	 *       properties?: array<string, mixed>,
+	 *     }|array{
+	 *       children?: array<mixed>,
+	 *     }
+	 *   ))
+	 * >
 	 */
 	public function parseRecursive(?DOMElement $context = null, int $depth = 0): array {
 		$mfs = array();
@@ -1502,7 +1631,19 @@ class Parser {
 	 * Parse microformats recursively (deprecated)
 	 * @param DOMElement $context: node to start with
 	 * @param int $depth: recursion depth
-	 * @return array
+	 * @return array<array{
+	 *   type: string[],
+	 *   properties: array<string, mixed>|(object{}&stdClass),
+	 *   id?: string,
+	 *   lang?: string,
+	 *   shape?: string,
+	 *   coords?: string,
+	 *   children?: array<mixed>
+	 * }|array{
+	 *   properties?: array<string, mixed>
+	 * }|array{
+	 *   children?: array<mixed>
+	 * }>
 	 * @deprecated Use parseRecursive() instead
 	 */
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
@@ -1524,6 +1665,35 @@ class Parser {
 	 *
 	 * @param string $id
 	 * @param bool $convertClassic whether or not to convert classic microformats
+	 * @return array{
+	 *   items: list<array{
+	 *     type: string[],
+	 *     properties: array<string, mixed>|(object{}&stdClass),
+	 *     id?: string,
+	 *     lang?: string,
+	 *     shape?: string,
+	 *     coords?: string,
+	 *     children?: array<mixed>,
+	 *   }>,
+	 *   rels: array<string, list<string>>|(object{}&stdClass),
+	 *   rel-urls?: (object{}&stdClass)|array<string, (object{}&stdClass)|array{
+	 *     rels: string[],
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 *   alternates?: list<array{
+	 *     url: string,
+	 *     rel: string,
+	 *     media?: string,
+	 *     hreflang?: string,
+	 *     title?: string,
+	 *     type?: string,
+	 *     text?: string,
+	 *   }>,
+	 * }
 	 */
 	public function parseFromId(string $id, bool $convertClassic = true): array {
 		/** @var DOMNodeList<DOMElement>|false $matches */
