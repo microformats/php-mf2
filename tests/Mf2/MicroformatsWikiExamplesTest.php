@@ -38,7 +38,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	public function testHandlesNullCorrectly(): void {
@@ -53,7 +53,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser->jsonMode = true;
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -203,6 +203,6 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 }

@@ -222,7 +222,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/** as per https://github.com/indieweb/php-mf2/issues/37 */

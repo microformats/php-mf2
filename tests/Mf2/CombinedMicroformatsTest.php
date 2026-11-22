@@ -71,7 +71,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -138,7 +138,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -176,7 +176,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -212,7 +212,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -250,7 +250,7 @@ class CombinedMicroformatsTest extends TestCase {
 	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly(): void {
 		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
 		$mf = Mf2\parse($input);
-		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0]));
+		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0], \JSON_THROW_ON_ERROR));
 	}
 
 	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL(): void {
@@ -299,7 +299,7 @@ class CombinedMicroformatsTest extends TestCase {
 	  }';
 		$mf = Mf2\parse($input);
 
-		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($mf, \JSON_THROW_ON_ERROR), $expected);
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'https://example.com/post1234');
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'https://jane.example.com/');
 	}
@@ -430,12 +430,12 @@ END;
 		$parser = new Parser($input, null, true);
 		$output = $parser->parse();
 		$this->assertInstanceOf('\stdClass', $output['items'][0]['properties']);
-		$this->assertSame('{}', json_encode($output['items'][0]['properties']));
+		$this->assertSame('{}', json_encode($output['items'][0]['properties'], \JSON_THROW_ON_ERROR));
 		// Repeat in non-JSON-mode: expect the raw PHP to be an array. Check that its serialization is not what we need for mf2 JSON.
 		$parser = new Parser($input, null, false);
 		$output = $parser->parse();
 		$this->assertIsArray($output['items'][0]['properties']);
-		$this->assertSame('[]', json_encode($output['items'][0]['properties']));
+		$this->assertSame('[]', json_encode($output['items'][0]['properties'], \JSON_THROW_ON_ERROR));
 	}
 
 }

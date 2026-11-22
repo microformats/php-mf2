@@ -32,7 +32,9 @@ class ParserTest extends TestCase {
 	public function testUnicodeTrim(): void {
 		$this->assertEquals('thing', Mf2\unicodeTrim('  thing  '));
 		$this->assertEquals('thing', Mf2\unicodeTrim('			thing			'));
-		$this->assertEquals('thing', Mf2\unicodeTrim(mb_convert_encoding(' &nbsp; thing &nbsp; ', 'UTF-8', 'HTML-ENTITIES') ));
+		$entities = mb_convert_encoding(' &nbsp; thing &nbsp; ', 'UTF-8', 'HTML-ENTITIES');
+		\assert($entities !== false); // For PHPStan
+		$this->assertEquals('thing', Mf2\unicodeTrim($entities));
 	}
 
 	public function testMicroformatNameFromClassReturnsFullRootName(): void {
@@ -274,17 +276,27 @@ EOT;
 		$server = new MockWebServer();
 		$server->start();
 
+		$indexBody = file_get_contents(__DIR__ . '/waterpigs.co.uk_index.html');
+		\assert($indexBody !== false); // For PHPStan
+
+		$photoBody = file_get_contents(__DIR__ . '/waterpigs.co.uk_photo.jpg');
+		\assert($photoBody !== false); // For PHPStan
+
 		// Obtained from http://waterpigs.co.uk/
 		$indexUrl = $server->setResponseOfPath(
 			'/',
-			new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_index.html'), [], 200)
+			new MockWebServerResponse($indexBody, [], 200)
 		);
+
+		\assert($indexUrl !== ''); // For PHPStan
 
 		// Obtained from http://waterpigs.co.uk/photo.jpg
 		$photoUrl = $server->setResponseOfPath(
 			'/photo.jpg',
-			new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_photo.jpg'), ['content-type: image/jpeg'], 200)
+			new MockWebServerResponse($photoBody, ['content-type: image/jpeg'], 200)
 		);
+
+		\assert($photoUrl !== ''); // For PHPStan
 
 		$mf = Mf2\fetch($indexUrl);
 		$this->assertArrayHasKey('items', $mf);
@@ -405,11 +417,16 @@ EOT;
 		$server = new MockWebServer();
 		$server->start();
 
+		$body = file_get_contents(__DIR__ . '/aaron.pk_4Zn5.html');
+		\assert($body !== false); // For PHPStan
+
 		// Obtained from http://aaron.pk/4Zn5
 		$url = $server->setResponseOfPath(
 			'/4Zn5',
-			new MockWebServerResponse(file_get_contents(__DIR__ . '/aaron.pk_4Zn5.html'), [], 200)
+			new MockWebServerResponse($body, [], 200)
 		);
+
+		\assert($url !== ''); // For PHPStan
 
 		$mf = Mf2\fetch($url);
 
@@ -860,6 +877,7 @@ END;
 	 */
 	public function testNotMutatingPassedInDOM(): void {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
+		\assert($input !== false); // For PHPStan.
 
 		// Use same parsing as Parser::__construct(), twice to have a comparison object.
 		libxml_use_internal_errors(true);

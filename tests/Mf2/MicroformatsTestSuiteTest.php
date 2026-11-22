@@ -22,7 +22,7 @@ final class TestSuiteParser extends \Mf2\Parser
 		$clonedEl = $el->cloneNode(true);
 
 		/** @var DOMElement $imgEl */
-		foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
+		foreach ($this->xpath->query('.//img', $clonedEl) ?: [] as $imgEl) {
 			if ($imgEl->hasAttribute('alt')) {
 				$replacement = $imgEl->getAttribute('alt');
 			} else if ($imgEl->hasAttribute('src')) {
@@ -36,7 +36,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
 		foreach ($excludeTags as $tagName) {
 			/** @var DOMElement $elToRemove */
-			foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
+			foreach ($this->xpath->query(".//{$tagName}", $clonedEl) ?: [] as $elToRemove) {
 				$elToRemove->parentNode->removeChild($elToRemove);
 			}
 		}
@@ -69,7 +69,7 @@ class MicroformatsTestSuiteTest extends TestCase
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
 			$this->makeComparible(json_decode($expectedOutput, true)),
-			$this->makeComparible(json_decode(json_encode($parser->parse()), true))
+			$this->makeComparible(json_decode(json_encode($parser->parse(), \JSON_THROW_ON_ERROR), true))
 		);
 	}
 
@@ -86,7 +86,7 @@ class MicroformatsTestSuiteTest extends TestCase
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
 			$this->makeComparible(json_decode($expectedOutput, true)),
-			$this->makeComparible(json_decode(json_encode($parser->parse()), true))
+			$this->makeComparible(json_decode(json_encode($parser->parse(), \JSON_THROW_ON_ERROR), true))
 		);
 	}
 
@@ -99,7 +99,7 @@ class MicroformatsTestSuiteTest extends TestCase
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
 			$this->makeComparible(json_decode($expectedOutput, true)),
-			$this->makeComparible(json_decode(json_encode($parser->parse()), true))
+			$this->makeComparible(json_decode(json_encode($parser->parse(), \JSON_THROW_ON_ERROR), true))
 		);
 	}
 
@@ -119,7 +119,7 @@ class MicroformatsTestSuiteTest extends TestCase
 			if (gettype($value) === 'array') {
 				$array[$key] = $this->makeComparible($value);
 			} else if (gettype($value) === 'string') {
-				$array[$key] = substr(json_encode($value), 1, -1);
+				$array[$key] = substr(json_encode($value, \JSON_THROW_ON_ERROR), 1, -1);
 			}
 		}
 		return $array;
@@ -147,13 +147,14 @@ class MicroformatsTestSuiteTest extends TestCase
 		$tests = array();
 		foreach ($finder as $key => $value) {
 			$dir = realpath(pathinfo($key, PATHINFO_DIRNAME));
+			assert($dir !== false); // For PHPStan
 			$testname = substr($dir, strpos($dir, $subFolder) + strlen($subFolder) + 1) . '/' . pathinfo($key, PATHINFO_FILENAME);
 			$test = pathinfo($key, PATHINFO_BASENAME);
 			$result = pathinfo($key, PATHINFO_FILENAME) . '.json';
 			if (is_file($dir . '/' . $result)) {
 				$tests[$testname] = array(
-					'input' => file_get_contents($dir . '/' . $test),
-					'expectedOutput' => file_get_contents($dir . '/' . $result),
+					'input' => file_get_contents($dir . '/' . $test) ?: '',
+					'expectedOutput' => file_get_contents($dir . '/' . $result) ?: '',
 					'name' => $testname
 				);
 			}

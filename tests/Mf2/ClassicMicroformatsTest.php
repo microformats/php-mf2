@@ -29,14 +29,14 @@ class ClassicMicroformatsTest extends TestCase {
 		$input = '<div class="vcard"><span class="fn n">Barnaby Walters</span> is a person.</div>';
 		$expected = '{"items": [{"type": ["h-card"], "properties": {"name": ["Barnaby Walters"]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
-		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse(), \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	public function testParsesClassicHEntry(): void {
 		$input = '<div class="hentry"><h1 class="entry-title">microformats2 Is Great</h1> <p class="entry-summary">yes yes it is.</p></div>';
 		$expected = '{"items": [{"type": ["h-entry"], "properties": {"name": ["microformats2 Is Great"], "summary": ["yes yes it is."]}}], "rels": {}, "rel-urls": {}}';
 		$parser = new Parser($input, '', true);
-		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse()), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($parser->parse(), \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	public function testIgnoresClassicClassnamesUnderMf2Root(): void {
