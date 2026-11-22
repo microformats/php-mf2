@@ -88,7 +88,7 @@ function parse($input, ?string $url = null, bool $convertClassic = true):  array
  * h-entry resulting in a 410 Gone page with a stub h-entry explaining the reason for deletion). Look in $curlInfo['http_code']
  * for the actual value.
  *
- * @param string $url The URL to fetch
+ * @param non-empty-string $url The URL to fetch
  * @param bool $convertClassic (optional, default true) whether or not to convert classic microformats
  * @param array<string, mixed> &$curlInfo (optional) the results of curl_getinfo will be placed in this variable for debugging
  * @return array{
