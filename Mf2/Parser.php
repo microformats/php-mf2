@@ -2220,6 +2220,15 @@ class Parser {
 	);
 }
 
+/**
+ * @return array{
+ *   scheme: ?string,
+ *   authority: ?string,
+ *   path: ?string,
+ *   query: ?string,
+ *   fragment: ?string,
+ * }
+ */
 function parseUriToComponents(string $uri): array {
 	$result = array(
 		'scheme' => null,
@@ -2341,7 +2350,24 @@ function resolveUrl(string $baseURI, string $referenceURI): string {
 	return $result;
 }
 
-# 5.2.3 Merge Paths
+/**
+ * 5.2.3 Merge Paths
+ *
+ * @param array{
+ *   scheme: ?string,
+ *   authority: ?string,
+ *   path: ?string,
+ *   query: ?string,
+ *   fragment: ?string,
+ * } $base
+ * @param array{
+ *   scheme: ?string,
+ *   authority: ?string,
+ *   path: ?string,
+ *   query: ?string,
+ *   fragment: ?string,
+ * } $reference
+ */
 function mergePaths(array $base, array $reference): string {
 	# If the base URI has a defined authority component and an empty
 	# path,
