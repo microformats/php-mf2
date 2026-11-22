@@ -1,13 +1,16 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
+use DOMElement;
 
 final class TestSuiteParser extends \Mf2\Parser
 {
 	/** Actually textContent from before the whitespace normalisation merge (e8da04f93d548d26287a8980eca4216639cbc61d) */
-	public function textContent(\DOMElement $el, $dummy = false) {
+	public function textContent(\DOMElement $el, bool $dummy = false): string {
 		$excludeTags = array('noframe', 'noscript', 'script', 'style', 'frames', 'frameset');
 
 		if (isset($el->tagName) and in_array(strtolower($el->tagName), $excludeTags)) {
@@ -18,6 +21,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
 		$clonedEl = $el->cloneNode(true);
 
+		/** @var DOMElement $imgEl */
 		foreach ($this->xpath->query('.//img', $clonedEl) as $imgEl) {
 			if ($imgEl->hasAttribute('alt')) {
 				$replacement = $imgEl->getAttribute('alt');
@@ -31,6 +35,7 @@ final class TestSuiteParser extends \Mf2\Parser
 		}
 
 		foreach ($excludeTags as $tagName) {
+			/** @var DOMElement $elToRemove */
 			foreach ($this->xpath->query(".//{$tagName}", $clonedEl) as $elToRemove) {
 				$elToRemove->parentNode->removeChild($elToRemove);
 			}
@@ -40,7 +45,7 @@ final class TestSuiteParser extends \Mf2\Parser
 	}
 
 	// Hack. Old textContent requires "resolveChildUrls", but that method is private.
-	private $__resolveChildUrls = null;
+	private ?\ReflectionMethod $__resolveChildUrls = null;
 	private function _resolveChildUrls(\DOMElement $element) {
 		if (null === $this->__resolveChildUrls) {
 			$reflectUpon = new \ReflectionClass($this);
@@ -59,7 +64,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mf1TestsProvider
 	 * @group microformats/tests/mf1
 	 */
-	public function testMf1FromTestSuite($input, $expectedOutput)
+	public function testMf1FromTestSuite($input, $expectedOutput): void
 	{
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
@@ -72,7 +77,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mf2TestsProvider
 	 * @group microformats/tests/mf2
 	 */
-	public function testMf2FromTestSuite($input, $expectedOutput, $test)
+	public function testMf2FromTestSuite($input, $expectedOutput, $test): void
 	{
 		if ($test === 'h-event/time') {
 			$this->markTestIncomplete('This test does not match because we implement a proposed spec: https://github.com/microformats/microformats2-parsing/issues/4#issuecomment-373457720.');
@@ -89,7 +94,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mixedTestsProvider
 	 * @group microformats/tests/mixed
 	 */
-	public function testMixedFromTestSuite($input, $expectedOutput)
+	public function testMixedFromTestSuite($input, $expectedOutput): void
 	{
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
@@ -104,7 +109,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * * We json_encode strings, and cut the starting and ending ", so PHPUnit better
 	 *   shows whitespace characters like tabs and newlines.
 	 **/
-	public function makeComparible($array)
+	public function makeComparible(array $array): array
 	{
 		ksort($array);
 		foreach ($array as $key => $value) {
@@ -120,7 +125,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	/**
 	 * Data provider lists all tests from a specific directory in mf2/tests.
 	 **/
-	public function htmlAndJsonProvider($subFolder = '')
+	public function htmlAndJsonProvider($subFolder = ''): array
 	{
 		// Get the actual wanted subfolder.
 		$subFolder = '/mf2/tests/tests' . $subFolder;
