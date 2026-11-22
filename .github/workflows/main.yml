@@ -68,6 +68,9 @@ jobs:
       #run: composer validate --strict  # Currently we’re installing mf2/tests from a commit ref.
       run: composer validate
 
+    - name: Run static analysis
+      run: composer phpstan -- --error-format=github
+
     - name: Run Test Suite
       run: XDEBUG_MODE=coverage ./vendor/bin/phpunit tests --coverage-text
 
