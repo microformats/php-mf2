@@ -46,7 +46,7 @@ final class TestSuiteParser extends \Mf2\Parser
 
 	// Hack. Old textContent requires "resolveChildUrls", but that method is private.
 	private ?\ReflectionMethod $__resolveChildUrls = null;
-	private function _resolveChildUrls(\DOMElement $element) {
+	private function _resolveChildUrls(\DOMElement $element): void {
 		if (null === $this->__resolveChildUrls) {
 			$reflectUpon = new \ReflectionClass($this);
 			$this->__resolveChildUrls = $reflectUpon->getMethod('resolveChildUrls');
@@ -54,7 +54,7 @@ final class TestSuiteParser extends \Mf2\Parser
 				$this->__resolveChildUrls->setAccessible(true);
 			}
 		}
-		return $this->__resolveChildUrls->invoke($this, $element);
+		$this->__resolveChildUrls->invoke($this, $element);
 	}
 }
 
