@@ -108,7 +108,10 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * * We sort arrays by key, normalising them, because JSON objects are unordered.
 	 * * We json_encode strings, and cut the starting and ending ", so PHPUnit better
 	 *   shows whitespace characters like tabs and newlines.
-	 **/
+	 *
+	 * @param array<mixed> $array
+	 * @return array<mixed>
+	 */
 	public function makeComparible(array $array): array
 	{
 		ksort($array);
@@ -127,7 +130,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 *
 	 * @return array<array{input: string, expectedOutput: string, name: string}>
 	 */
-	public function htmlAndJsonProvider($subFolder = ''): array
+	public function htmlAndJsonProvider(string $subFolder = ''): array
 	{
 		// Get the actual wanted subfolder.
 		$subFolder = '/mf2/tests/tests' . $subFolder;
