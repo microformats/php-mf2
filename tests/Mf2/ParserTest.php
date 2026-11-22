@@ -1,7 +1,11 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 
+use donatj\MockWebServer\MockWebServer;
+use donatj\MockWebServer\Response as MockWebServerResponse;
 use Mf2\Parser;
 use Mf2;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
@@ -25,34 +29,34 @@ class ParserTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testUnicodeTrim() {
+	public function testUnicodeTrim(): void {
 		$this->assertEquals('thing', Mf2\unicodeTrim('  thing  '));
 		$this->assertEquals('thing', Mf2\unicodeTrim('			thing			'));
 		$this->assertEquals('thing', Mf2\unicodeTrim(mb_convert_encoding(' &nbsp; thing &nbsp; ', 'UTF-8', 'HTML-ENTITIES') ));
 	}
 
-	public function testMicroformatNameFromClassReturnsFullRootName() {
+	public function testMicroformatNameFromClassReturnsFullRootName(): void {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass', 'h-');
 
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testMicroformatNameFromClassHandlesMultipleHNames() {
+	public function testMicroformatNameFromClassHandlesMultipleHNames(): void {
 		$expected = array('h-card', 'h-person');
 		$actual = Mf2\mfNamesFromClass('someclass h-card someotherclass h-person yetanotherclass', 'h-');
 
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testMicroformatStripsPrefixFromPropertyClassname() {
+	public function testMicroformatStripsPrefixFromPropertyClassname(): void {
 		$expected = array('name');
 		$actual = Mf2\mfNamesFromClass('someclass p-name someotherclass', 'p-');
 
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testNestedMicroformatPropertyNameWorks() {
+	public function testNestedMicroformatPropertyNameWorks(): void {
 		$expected = array('location' => array('p-'), 'author' => array('u-', 'p-'));
 		$test = 'someclass p-location someotherclass u-author p-author';
 		$actual = Mf2\nestedMfPropertyNamesFromClass($test);
@@ -60,14 +64,14 @@ class ParserTest extends TestCase {
 		$this->assertEqualsCanonicalizing($expected, $actual);
 	}
 
-	public function testMicroformatNamesFromClassIgnoresPrefixesWithoutNames() {
+	public function testMicroformatNamesFromClassIgnoresPrefixesWithoutNames(): void {
 		$expected = array();
 		$actual = Mf2\mfNamesFromClass('someclass h- someotherclass', 'h-');
 
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testMicroformatNamesFromClassHandlesExcessiveWhitespace() {
+	public function testMicroformatNamesFromClassHandlesExcessiveWhitespace(): void {
 		$expected = array('h-card');
 		$actual = Mf2\mfNamesFromClass('  someclass
 				h-card 	 someotherclass		   	 ', 'h-');
@@ -75,14 +79,14 @@ class ParserTest extends TestCase {
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testMicroformatNamesFromClassIgnoresUppercaseClassnames() {
+	public function testMicroformatNamesFromClassIgnoresUppercaseClassnames(): void {
 		$expected = array();
 		$actual = Mf2\mfNamesFromClass('H-ENTRY', 'h-');
 
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testParseE() {
+	public function testParseE(): void {
 		$input = '<div class="h-entry"><div class="e-content">Here is a load of <strong>embedded markup</strong></div></div>';
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
@@ -92,7 +96,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('Here is a load of embedded markup', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-	public function testParseEmptyE() {
+	public function testParseEmptyE(): void {
 		$input = '<div class="h-entry"><div class="p-name">Name</div> <div class="e-content"></div></div>';
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
@@ -103,7 +107,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-	public function testParseEResolvesRelativeLinks() {
+	public function testParseEResolvesRelativeLinks(): void {
 		$input = '<div class="h-entry"><p class="e-content">Blah blah <a href="/a-url">thing</a>. <object data="/object"></object> <img src="/img" /></p></div>';
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
@@ -112,7 +116,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('Blah blah thing. https://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-	public function testParseEWithBR() {
+	public function testParseEWithBR(): void {
 		$input = '<div class="h-entry"><div class="e-content">Here is content with two lines.<br>The br tag should not be converted to an XML br/br element.</div></div>';
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
@@ -122,7 +126,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('Here is content with two lines.'."\n".'The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-	public function testParseEWithWhitespace() {
+	public function testParseEWithWhitespace(): void {
 		$input = '<div class="h-entry">
 	<div class="e-content">
 		This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.
@@ -139,7 +143,7 @@ class ParserTest extends TestCase {
 	/**
 	 * @group parseH
 	 */
-	public function testInvalidClassnamesContainingHAreIgnored() {
+	public function testInvalidClassnamesContainingHAreIgnored(): void {
 		$classname = 'asdfgh-jkl';
 		$input = sprintf('<div class="%s"></div>', $classname);
 		$parser = new Parser($input);
@@ -157,11 +161,11 @@ class ParserTest extends TestCase {
 		$this->assertEquals(0, $matches, sprintf('Class name "%s" should not have parsed as a root microformat', $classname));
 	}
 
-	public function testHtmlSpecialCharactersWorks() {
+	public function testHtmlSpecialCharactersWorks(): void {
 		$this->assertEquals('&lt;&gt;', htmlspecialchars('<>'));
 	}
 
-	public function testHtmlEncodesNonEProperties() {
+	public function testHtmlEncodesNonEProperties(): void {
 		$input = '<div class="h-card">
 			<span class="p-name">&lt;p&gt;</span>
 			<span class="dt-published">&lt;dt&gt;</span>
@@ -177,7 +181,7 @@ class ParserTest extends TestCase {
 	}
 
 
-	public function testHtmlEncodesImpliedProperties() {
+	public function testHtmlEncodesImpliedProperties(): void {
 		$input = '<a class="h-card" href="&lt;url&gt;"><img src="&lt;img&gt;" alt="" />&lt;name&gt;</a>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -191,7 +195,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals($result, $output['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testParsesRelValues() {
+	public function testParsesRelValues(): void {
 		$input = '<a rel="author" href="https://example.com">Mr. Author</a>';
 		$parser = new Parser($input);
 
@@ -201,7 +205,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('https://example.com', $output['rels']['author'][0]);
 	}
 
-	public function testParsesRelAlternateValues() {
+	public function testParsesRelAlternateValues(): void {
 		$input = '<a rel="alternate home" href="https://example.com" hreflang="de", media="screen" type="text/html" title="German Homepage Link">German Homepage</a>';
 		$parser = new Parser($input);
 		$parser->enableAlternates = true;
@@ -217,7 +221,7 @@ class ParserTest extends TestCase {
 		$this->assertEquals('German Homepage', $output['alternates'][0]['text']);
 	}
 
-	public function testParseFromIdOnlyReturnsMicroformatsWithinThatId() {
+	public function testParseFromIdOnlyReturnsMicroformatsWithinThatId(): void {
 		$input = <<<EOT
 <div class="h-entry"><span class="p-name">Not Included</span></div>
 
@@ -238,7 +242,7 @@ EOT;
 	/**
 	 * Issue #21 github.com/indieweb/php-mf2/issues/21
 	 */
-	public function testDoesntAddArraysWithOnlyValueForAlreadyParsedNestedMicroformats() {
+	public function testDoesntAddArraysWithOnlyValueForAlreadyParsedNestedMicroformats(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<div class="p-in-reply-to h-entry">
@@ -254,7 +258,7 @@ EOT;
 		$this->assertCount(1, $output['items'][0]['properties']['author']);
 	}
 
-	public function testParsesNestedMicroformatsWithClassnamesInAnyOrder() {
+	public function testParsesNestedMicroformatsWithClassnamesInAnyOrder(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<div class="note- p-in-reply-to h-entry">Name</div>
@@ -267,22 +271,37 @@ EOT;
 		$this->assertEquals('Name', $output['items'][0]['properties']['in-reply-to'][0]['properties']['name'][0]);
 	}
 
-	/**
-	 * @group internet
-	 */
-	public function testFetchMicroformats() {
-		$mf = Mf2\fetch('https://microformats.org/');
+	public function testFetchMicroformats(): void {
+		$server = new MockWebServer();
+		$server->start();
+
+		// Obtained from http://waterpigs.co.uk/
+		$indexUrl = $server->setResponseOfPath(
+			'/',
+			new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_index.html'), [], 200)
+		);
+
+		// Obtained from http://waterpigs.co.uk/photo.jpg
+		$photoUrl = $server->setResponseOfPath(
+			'/photo.jpg',
+			new MockWebServerResponse(file_get_contents(__DIR__ . '/waterpigs.co.uk_photo.jpg'), ['content-type: image/jpeg'], 200)
+		);
+
+		$mf = Mf2\fetch($indexUrl);
 		$this->assertArrayHasKey('items', $mf);
 
-		$mf = Mf2\fetch('https://microformats.org/microformats-logo.png', null, $curlInfo);
+		$curlInfo = [];
+		$mf = Mf2\fetch($photoUrl, false, $curlInfo);
 		$this->assertNull($mf);
-		$this->assertStringContainsString('image/png', $curlInfo['content_type']);
+		$this->assertStringContainsString('jpeg', $curlInfo['content_type']);
+
+		$server->stop();
 	}
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/48
 	 */
-	public function testIgnoreClassesEndingInHyphen() {
+	public function testIgnoreClassesEndingInHyphen(): void {
 		$input = '<span class="h-entry"> <span class="e-">foo</span> </span>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -294,7 +313,7 @@ EOT;
 	 * @see https://github.com/indieweb/php-mf2/issues/52
 	 * @see https://github.com/tommorris/mf2py/commit/92740deb7e19b8f1e7fbf6bec001cf52f2b07e99
 	 */
-	public function testIgnoresTemplateElements() {
+	public function testIgnoresTemplateElements(): void {
 		$result = Mf2\parse('<template class="h-card"><span class="p-name">Tom Morris</span></template>');
 		$this->assertCount(0, $result['items']);
 	}
@@ -303,7 +322,7 @@ EOT;
 	 * @see https://github.com/indieweb/php-mf2/issues/53
 	 * @see https://microformats.org/wiki/microformats2-parsing#parsing_an_e-_property
 	 */
-	public function testConvertsNestedImgElementToAltOrSrc() {
+	public function testConvertsNestedImgElementToAltOrSrc(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<p class="e-content">It is a strange thing to see a <img alt="five legged elephant" src="/photos/five-legged-elephant.jpg" /></p>
@@ -314,7 +333,7 @@ EOT;
 	}
 
 	// parser not respecting not[h-*] in rule  "else if .h-x>a[href]:only-of-type:not[.h-*] then use that [href] for url"
-	public function testNotImpliedUrlFromHCard() {
+	public function testNotImpliedUrlFromHCard(): void {
 		$input = <<<EOT
 <span class="h-entry">
 	<a class="h-card" href="http://test.com">John Q</a>
@@ -327,7 +346,7 @@ EOT;
 		$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
 	}
 
-	public function testAreaTag() {
+	public function testAreaTag(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<area class="p-category h-card" href="http://personB.example.com" alt="Person Bee" shape="rect" coords="100,100,120,120">
@@ -345,7 +364,7 @@ EOT;
 		$this->assertEquals('Person Bee', $output['items'][0]['properties']['category'][0]['value']);
 	}
 
-	public function testParseHcardInCategory() {
+	public function testParseHcardInCategory(): void {
 		$input = <<<EOT
 <span class="h-entry">
 	<a class="p-author h-card" href="http://a.example.com/">Alice</a> tagged
@@ -368,8 +387,8 @@ EOT;
 		$this->assertEquals('http://b.example.com/', $output['items'][0]['properties']['category'][0]['properties']['url'][0]);
 	}
 
-	public function testApplyTransformationToSrcset() {
-		$transformation = function ($url) {
+	public function testApplyTransformationToSrcset(): void {
+		$transformation = function ($url): string {
 			return 'https://example.com/' . ltrim($url, '/');
 		};
 
@@ -382,25 +401,30 @@ EOT;
 
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/84
-	 * @group internet
-	 *
-	 * 2024-04-07: The final photo URL in this test changed over time.
-	 * Updated it to only check that the final URL's hostname was correct,
-	 * not the full photo URL.
 	 */
-	public function testRelativeURLResolvedWithFinalURL() {
-		$mf = Mf2\fetch('http://aaron.pk/4Zn5');
+	public function testRelativeURLResolvedWithFinalURL(): void {
+		$server = new MockWebServer();
+		$server->start();
+
+		// Obtained from http://aaron.pk/4Zn5
+		$url = $server->setResponseOfPath(
+			'/4Zn5',
+			new MockWebServerResponse(file_get_contents(__DIR__ . '/aaron.pk_4Zn5.html'), [], 200)
+		);
+
+		$mf = Mf2\fetch($url);
+
+		$server->stop();
 
 		$this->assertArrayHasKey('photo', $mf['items'][0]['properties']);
 
 		$hostname = parse_url($mf['items'][0]['properties']['photo'][0], PHP_URL_HOST);
-		$this->assertEquals('aaronparecki.com', $hostname);
+		$this->assertEquals('127.0.0.1', $hostname);
 
-		// previous assertion: not the photo URL changed over time
-		// $this->assertEquals('https://aaronparecki.com/img/1240x0/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
+		$this->assertEquals($server->getServerRoot() . '/img/1240x,q60/2014/12/23/5/photo.jpeg', $mf['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testScriptTagContentsRemovedFromTextValue() {
+	public function testScriptTagContentsRemovedFromTextValue(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<div class="p-content">
@@ -421,7 +445,7 @@ EOT;
 		$this->assertStringNotContainsString('alert', $output['items'][0]['properties']['content'][0]);
 	}
 
-	public function testScriptElementContentsRemovedFromAllPlaintextValues() {
+	public function testScriptElementContentsRemovedFromAllPlaintextValues(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<span class="dt-published">contained<script>not contained</script><style>not contained</style></span>
@@ -436,7 +460,7 @@ EOT;
 		$this->assertStringNotContainsString('not contained', $output['items'][0]['properties']['url'][0]);
 	}
 
-	public function testScriptTagContentsNotRemovedFromHTMLValue() {
+	public function testScriptTagContentsNotRemovedFromHTMLValue(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<div class="e-content">
@@ -464,7 +488,7 @@ EOT;
 		$this->assertStringNotContainsString('visibility', $output['items'][0]['properties']['content'][0]['value']);
 	}
 
-	public function testWhitespaceBetweenElements() {
+	public function testWhitespaceBetweenElements(): void {
 		$input = <<<EOT
 <div class="h-entry">
 	<data class="p-rsvp" value="yes">I'm attending</data>
@@ -486,7 +510,7 @@ EOT;
 	/**
 	 * @see http://www.kevinmarks.com/twitterutils.html
 	 */
-	public function testCamelCaseClassNames() {
+	public function testCamelCaseClassNames(): void {
 		$input = <<<EOT
 <div class="EmbeddedTweet js-clickToOpenTarget" data-click-to-open-target="https://twitter.com/kevinmarks/status/700752598123433985" data-iframe-title="Twitter Tweet" data-dt-full="%{hours12}:%{minutes} %{amPm} - %{day} %{month} %{year}" data-dt-months="Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec" data-dt-am="AM" data-dt-pm="PM" data-dt-now="now" data-dt-s="s" data-dt-m="m" data-dt-h="h" data-dt-second="second" data-dt-seconds="seconds" data-dt-minute="minute" data-dt-minutes="minutes" data-dt-hour="hour" data-dt-hours="hours" data-dt-abbr="%{number}%{symbol}" data-dt-short="%{day} %{month}" data-dt-long="%{day} %{month} %{year}" data-scribe="page:tweet" id="twitter-widget-0" lang="en" data-twitter-event-id="0">
 
@@ -555,7 +579,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/127
 	 */
-	public function testCamelCaseRootClassNames() {
+	public function testCamelCaseRootClassNames(): void {
 		$input = '<div class="h-Entry"> <a href="https://example.com" class="u-url">content</a> </div>';
 		$output = Mf2\parse($input);
 
@@ -566,7 +590,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/127
 	 */
-	public function testMisTypedRootClassNames() {
+	public function testMisTypedRootClassNames(): void {
 		$input = '<div class="h-entry>"> <a href="https://example.com" class="u-url">content</a></div>
 		<div class="h-entry1>"> <a href="https://example.com" class="u-url">content</a></div>
 		<div class="h-👍"> <a href="https://example.com" class="u-url">content</a></div>
@@ -577,7 +601,7 @@ EOT;
 		$this->assertEmpty($output['items']);
 	}
 
-	public function testClassNameNumbers() {
+	public function testClassNameNumbers(): void {
 		$input = '<div class="h-entry"> <div class="u-column1"> <p class="p-title">Test</p> </div> </div>';
 		$output = Mf2\parse($input);
 
@@ -587,7 +611,7 @@ EOT;
 	/**
 	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
 	 */
-	public function testNoImpliedNameWhenE()
+	public function testNoImpliedNameWhenE(): void
 	{
 		$input = '<article class="h-entry">
 	<div class="e-content">
@@ -605,7 +629,7 @@ EOT;
 	/**
 	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
 	 */
-	public function testNoImpliedNameWhenP()
+	public function testNoImpliedNameWhenP(): void
 	{
 		$input = '<article class="h-entry">
 	<div class="p-content">
@@ -623,7 +647,7 @@ EOT;
 	/**
 	 * @see https://github.com/microformats/microformats2-parsing/issues/6#issuecomment-366473390
 	 */
-	public function testNoImpliedNameWhenNestedMicroformat()
+	public function testNoImpliedNameWhenNestedMicroformat(): void
 	{
 		$input = '<article class="h-entry">
 	<div class="u-like-of h-cite">
@@ -641,7 +665,7 @@ EOT;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/143
 	 */
-	public function testChildObjects() {
+	public function testChildObjects(): void {
 		$input = <<<END
 <html>
 	<head>
@@ -683,7 +707,7 @@ END;
 	}
 
 
-	public function testMultiLevelRecursion() {
+	public function testMultiLevelRecursion(): void {
 		$input = <<<END
 <html>
 	<head>
@@ -737,7 +761,7 @@ END;
 		$this->assertEquals('Four', $output['items'][0]['children'][3]['properties']['name'][0]);
 	}
 
-	public function testNoErrantWhitespaceOnEHtml()
+	public function testNoErrantWhitespaceOnEHtml(): void
 	{
 		$input = '<div class="h-entry"><div class="e-content"><p>1</p><p>2</p></div></div>';
 		$output = Mf2\parse($input);
@@ -747,7 +771,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/158
 	 */
-	public function testPrefixWithNumbers() {
+	public function testPrefixWithNumbers(): void {
 		$input = '<li class="h-entry">
 	<data class="p-name" value="Coffee"></data>
 	<div class="p-p3k-drank h-p3k-food">
@@ -764,7 +788,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/160
 	 */
-	public function testConsecutiveDashes() {
+	public function testConsecutiveDashes(): void {
 		$input = '<div class="h-entry h-----">
 <p> <a href="https://example.com/post" class="u-in-reply--to">https://example.com/post posted:</a> </p>
 <span class="p-name">Too many dashes</span>
@@ -787,7 +811,7 @@ END;
 	 * @see https://github.com/indieweb/php-mf2/issues/160
 	 * @see https://github.com/indieweb/php-mf2/issues/158
 	 */
-	public function testMfClassRegex() {
+	public function testMfClassRegex(): void {
 		$input = '<article class="h-x-test h-p3k-entry h-feed h-Entry h-p3k-fEed h--d h-test-">
 		<a class="u-url u-Url u-p3k-url u--url u-url- u-123-url u-123A-url" href="example.com" >URL </a>
 		<span class="p-name p-nAme p-p3k-name p--name p-name-" >name</span>
@@ -809,7 +833,7 @@ END;
 	/**
 	 * @see https://github.com/microformats/microformats2-parsing/issues/30
 	 */
-	public function testUniqueAndAlphabeticalMfClasses() {
+	public function testUniqueAndAlphabeticalMfClasses(): void {
 		$input = '<div class="h-entry h-cite h-entry"></div>';
 		$output = Mf2\parse($input);
 
@@ -820,7 +844,7 @@ END;
 	 * The default DOMDocument parser will trip here because it does not know HTML5 elements.
 	 * @see https://html.spec.whatwg.org/#optional-tags:the-p-element
 	 **/
-	public function testHtml5OptionalPEndTag() {
+	public function testHtml5OptionalPEndTag(): void {
 		if (!class_exists('Masterminds\\HTML5')) {
 			$this->markTestSkipped('masterminds/html5 is required for this test.');
 		}
@@ -835,7 +859,7 @@ END;
 	 * @see https://github.com/indieweb/php-mf2/issues/174
 	 * @see https://github.com/microformats/mf2py/issues/104
 	 */
-	public function testNotMutatingPassedInDOM() {
+	public function testNotMutatingPassedInDOM(): void {
 		$input = file_get_contents(__DIR__ . '/snarfed.org.html');
 
 		// Use same parsing as Parser::__construct(), twice to have a comparison object.
@@ -853,7 +877,7 @@ END;
 		$this->assertEquals($refDoc, $inputDoc, 'Parsing mutated the DOMDocument.');
 	}
 
-	public function testNoImpliedURLForEmptyProperties() {
+	public function testNoImpliedURLForEmptyProperties(): void {
 		// In the 0.4.5 release, this caused an error
 		// https://github.com/microformats/php-mf2/issues/196
 
@@ -876,7 +900,7 @@ EOD;
 	 * Make sure day of year passed to normalizeOrdinalDate() is valid
 	 * @see https://github.com/indieweb/php-mf2/issues/167
 	 */
-	public function testInvalidOrdinalDate() {
+	public function testInvalidOrdinalDate(): void {
 		# 365 days in non-leap years
 		$this->assertEquals('2018-12-31', Mf2\normalizeOrdinalDate('2018-365'));
 		$this->assertEquals('', Mf2\normalizeOrdinalDate('2018-366'));
@@ -888,7 +912,7 @@ EOD;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/230
 	 */
-	public function testPropertyWithInvalidHPrefixedRootClassParsed() {
+	public function testPropertyWithInvalidHPrefixedRootClassParsed(): void {
 		$input = <<<EOF
 <div class="h-card">
 	<img class="u-photo w-32 h-32" alt="Jon Doe" src="/image.jpg"/>
@@ -899,7 +923,7 @@ EOF;
 		$this->assertEquals(array('value' => '/image.jpg', 'alt' => 'Jon Doe'), $output['items'][0]['properties']['photo'][0]);
 	}
 
-	public function testGetRootMfOnlyFindsValidElements() {
+	public function testGetRootMfOnlyFindsValidElements(): void {
 		$input = <<<EOF
 <div class="h-entry>"> <a href="https://example.com" class="u-url">content</a></div>
 <div class="h-entry1>"> <a href="https://example.com" class="u-url">content</a></div>
@@ -919,7 +943,7 @@ EOF;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/245
 	 */
-	public function testNewlineBeforePrefix() {
+	public function testNewlineBeforePrefix(): void {
 		$input = <<<EOT
 <div class="h-entry">
 <h1 class="post_title__text
@@ -935,7 +959,7 @@ EOT;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/249
 	 */
-	public function testInvalidRootsIgnored() {
+	public function testInvalidRootsIgnored(): void {
 		$input = <<<EOF
 <div class=" h-5 pt-2">
 	<div class="p-4 h-entry">
@@ -959,7 +983,7 @@ EOF;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/249
 	 */
-	public function testInvalidNestedRootsIgnored() {
+	public function testInvalidNestedRootsIgnored(): void {
 		$input = <<<EOF
 <div class=" h-5 pt-2">
 	<div class="p-4 h-entry">
@@ -986,7 +1010,7 @@ EOF;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/249
 	 */
-	public function testInvalidNestedPropertiesIgnored1() {
+	public function testInvalidNestedPropertiesIgnored1(): void {
 		$input = <<<EOF
 <div class=" h-feed pt-2">
 	<div class="p-4 h-entry">
@@ -1014,7 +1038,7 @@ EOF;
 	/**
 	 * @see https://github.com/microformats/php-mf2/issues/246
 	 */
-	public function testInvalidNestedPropertiesIgnored2() {
+	public function testInvalidNestedPropertiesIgnored2(): void {
 		$input = <<<EOF
 <article class="h-card">
 	 <h1> TITLE </h1>

@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 /**
  * Tests of the language parsing methods within mf2\Parser
  */
@@ -19,7 +21,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test with only <html lang>
 	 */
-	public function testHtmlLangOnly()
+	public function testHtmlLangOnly(): void
 	{
 		$input = '<html lang="en"> <div class="h-entry">This test is in English.</div> </html>';
 		$parser = new Parser($input);
@@ -33,7 +35,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test with only h-entry lang
 	 */
-	public function testHEntryLangOnly()
+	public function testHEntryLangOnly(): void
 	{
 		$input = '<html> <div class="h-entry" lang="en">This test is in English.</div> </html>';
 		$parser = new Parser($input);
@@ -47,7 +49,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test with different <html lang> and h-entry lang
 	 */
-	public function testHtmlAndHEntryLang()
+	public function testHtmlAndHEntryLang(): void
 	{
 		$input = '<html lang="en"> <div class="h-entry" lang="es">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
@@ -61,7 +63,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test HTML fragment with only h-entry lang
 	 */
-	public function testFragmentHEntryLangOnly()
+	public function testFragmentHEntryLangOnly(): void
 	{
 		$input = '<div class="h-entry" lang="en">This test is in English.</div>';
 		$parser = new Parser($input);
@@ -75,7 +77,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test HTML fragment with no lang
 	 */
-	public function testFragmentHEntryNoLang()
+	public function testFragmentHEntryNoLang(): void
 	{
 		$input = '<div class="h-entry">This test is in English.</div>';
 		$parser = new Parser($input);
@@ -88,7 +90,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test HTML fragment with no lang, loaded with loadXML()
 	 */
-	public function testFragmentHEntryNoLangXML()
+	public function testFragmentHEntryNoLangXML(): void
 	{
 		$input = new \DOMDocument();
 		$input->loadXML('<div class="h-entry">This test is in English.</div>');
@@ -102,7 +104,7 @@ class ParseLanguageTest extends TestCase {
 	 * Test with different <html lang>, h-entry lang, and h-entry without lang,
 	 * which should inherit from the <html lang>
 	 */
-	public function testMultiLanguageInheritance()
+	public function testMultiLanguageInheritance(): void
 	{
 		$input = '<html lang="en"> <div class="h-entry">This test is in English.</div> <div class="h-entry" lang="es">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
@@ -119,7 +121,7 @@ class ParseLanguageTest extends TestCase {
 	 * Test feed with .h-feed lang which contains multiple h-entries of different languages
 	 * (or none specified), which should inherit from the .h-feed lang.
 	 */
-	public function testMultiLanguageFeed()
+	public function testMultiLanguageFeed(): void
 	{
 		$input = '<html> <div class="h-feed" lang="en"> <h1 class="p-name">Test Feed</h1> <div class="h-entry">This test is in English.</div> <div class="h-entry" lang="es">Esta prueba está en español.</div> <div class="h-entry" lang="fr">Ce test est en français.</div> </html>';
 		$parser = new Parser($input);
@@ -142,7 +144,7 @@ class ParseLanguageTest extends TestCase {
 	/**
 	 * Test with language specified in <meta> http-equiv Content-Language
 	 */
-	public function testMetaContentLanguage()
+	public function testMetaContentLanguage(): void
 	{
 		$input = '<html> <meta http-equiv="Content-Language" content="es"/> <div class="h-entry">Esta prueba está en español.</div> </html>';
 		$parser = new Parser($input);
@@ -157,7 +159,7 @@ class ParseLanguageTest extends TestCase {
 	 * Test with real-world post on voxpelli.com
 	 * @see http://voxpelli.com/2015/09/oberoende-sociala-webben-2015/
 	 */
-	public function testVoxpelliCom()
+	public function testVoxpelliCom(): void
 	{
 		$input = <<< END
 <!DOCTYPE html>
@@ -252,7 +254,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/96#issuecomment-304457341
 	 */
-	public function testNoLangInParsedProperties() {
+	public function testNoLangInParsedProperties(): void {
 		$input = '<div class="h-entry" lang="sv" id="postfrag123">
   <h1 class="p-name">En svensk titel</h1>
   <div class="e-content" lang="en">With an <em>english</em> summary</div>
