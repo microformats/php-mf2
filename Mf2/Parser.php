@@ -291,7 +291,7 @@ function normalizeTimezoneOffset(string &$dtValue): ?string {
 		}
 		$timezoneOffset = str_pad($timezoneOffset, 4, '0', STR_PAD_LEFT);
 		$timezoneOffset = $plus_minus . $timezoneOffset;
-		$dtValue = preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue);
+		$dtValue = preg_replace('/Z?[+-]\d{1,2}:?(\d{2})?$/i', $timezoneOffset, $dtValue) ?? $dtValue;
 	}
 
 	return $timezoneOffset;
@@ -2365,9 +2365,9 @@ function mergePaths(array $base, array $reference): string {
 # 5.2.4.A Remove leading ../ or ./
 function removeLeadingDotSlash(string &$input): void {
 	if(substr($input, 0, 3) == '../') {
-		$input = substr($input, 3);
+		$input = substr($input, 3) ?: '';
 	} elseif(substr($input, 0, 2) == './') {
-		$input = substr($input, 2);
+		$input = substr($input, 2) ?: '';
 	}
 }
 
@@ -2391,7 +2391,7 @@ function removeOneDirLevel(string &$input, string &$output): void {
 	if ($end === false) {
 		$output = '';
 	} else {
-		$output = substr($output, 0, $end);
+		$output = substr($output, 0, $end) ?: '';
 	}
 }
 
@@ -2400,7 +2400,7 @@ function removeLoneDotDot(string &$input): void {
 	if($input == '.') {
 		$input = substr($input, 1);
 	} else {
-		$input = substr($input, 2);
+		$input = substr($input, 2) ?: '';
 	}
 }
 
@@ -2417,7 +2417,7 @@ function moveOneSegmentFromInput(string &$input, string &$output): void {
 		$input = '';
 	} else {
 		$output .= substr($input, 0, $pos);
-		$input = substr($input, $pos);
+		$input = substr($input, $pos) ?: '';
 	}
 }
 
