@@ -18,6 +18,9 @@ class PlainTextTest extends TestCase {
 		$this->assertEquals($eHtml, $entryProperties['content'][0]['html']);
 	}
 
+	/**
+	 * @return array<int, array{string, string, string, string}>
+	 */
 	public function aaronpkExpectations(): array {
 		return array(
 			1 => array(

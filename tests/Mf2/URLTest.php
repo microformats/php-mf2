@@ -103,6 +103,9 @@ class URLTest extends TestCase {
 		$this->assertEquals($expected, $actual, $assert);
 	}
 
+	/**
+	 * @return list<array{string, string, string}>
+	 */
 	public function removeDotSegmentsData(): array {
 		return array(
 			array('Should remove .. and .',
@@ -163,7 +166,7 @@ class URLTest extends TestCase {
   }
 
 	/**
-	 * @return mixed[]
+	 * @return list<array{string, string, string, string}>
 	 */
 	public function dataProvider(): array {
 		// seriously, please update to PHP 5.4 so I can use nice array syntax ;)

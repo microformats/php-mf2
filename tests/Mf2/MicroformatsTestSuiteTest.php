@@ -124,7 +124,9 @@ class MicroformatsTestSuiteTest extends TestCase
 
 	/**
 	 * Data provider lists all tests from a specific directory in mf2/tests.
-	 **/
+	 *
+	 * @return array<array{input: string, expectedOutput: string, name: string}>
+	 */
 	public function htmlAndJsonProvider($subFolder = ''): array
 	{
 		// Get the actual wanted subfolder.
@@ -158,18 +160,26 @@ class MicroformatsTestSuiteTest extends TestCase
 
 	/**
 	 * Following three functions are the actual dataProviders used by the test methods.
+	 *
+	 * @return array<array{input: string, expectedOutput: string, name: string}>
 	 */
-	public function mf1TestsProvider()
+	public function mf1TestsProvider(): array
 	{
 		return $this->htmlAndJsonProvider('/microformats-v1');
 	}
 
-	public function mf2TestsProvider()
+	/**
+	 * @return array<array{input: string, expectedOutput: string, name: string}>
+	 */
+	public function mf2TestsProvider(): array
 	{
 		return $this->htmlAndJsonProvider('/microformats-v2');
 	}
 
-	public function mixedTestsProvider()
+	/**
+	 * @return array<array{input: string, expectedOutput: string, name: string}>
+	 */
+	public function mixedTestsProvider(): array
 	{
 		return $this->htmlAndJsonProvider('/microformats-mixed');
 	}
