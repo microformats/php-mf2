@@ -215,7 +215,6 @@ function nestedMfPropertyNamesFromElement(\DOMElement $e) {
  * @return string
  */
 function convertTimeFormat($time) {
-	$hh = $mm = $ss = '';
 	preg_match('/(\d{1,2}):?(\d{2})?:?(\d{2})?(a\.?m\.?|p\.?m\.?)?/i', $time, $matches);
 
 	// If no am/pm is specified:
@@ -941,12 +940,6 @@ class Parser {
 		}
 
 		return $return;
-	}
-
-	private function removeTags(\DOMElement &$e, $tagName) {
-		while(($r = $e->getElementsByTagName($tagName)) && $r->length) {
-			$r->item(0)->parentNode->removeChild($r->item(0));
-		}
 	}
 
 	/**
