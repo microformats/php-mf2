@@ -159,7 +159,7 @@ class URLTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider
 	 */
-  public function testReturnsUrlIfAbsolute($assert, $base, $url, $expected): void {
+  public function testReturnsUrlIfAbsolute(string $assert, string $base, string $url, string $expected): void {
 	$actual = mf2\resolveUrl($base, $url);
 
 	$this->assertEquals($expected, $actual, $assert);

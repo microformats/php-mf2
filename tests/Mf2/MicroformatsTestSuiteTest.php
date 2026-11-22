@@ -64,7 +64,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mf1TestsProvider
 	 * @group microformats/tests/mf1
 	 */
-	public function testMf1FromTestSuite($input, $expectedOutput): void
+	public function testMf1FromTestSuite(string $input, string $expectedOutput): void
 	{
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
@@ -77,7 +77,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mf2TestsProvider
 	 * @group microformats/tests/mf2
 	 */
-	public function testMf2FromTestSuite($input, $expectedOutput, $test): void
+	public function testMf2FromTestSuite(string $input, string $expectedOutput, string $test): void
 	{
 		if ($test === 'h-event/time') {
 			$this->markTestIncomplete('This test does not match because we implement a proposed spec: https://github.com/microformats/microformats2-parsing/issues/4#issuecomment-373457720.');
@@ -94,7 +94,7 @@ class MicroformatsTestSuiteTest extends TestCase
 	 * @dataProvider mixedTestsProvider
 	 * @group microformats/tests/mixed
 	 */
-	public function testMixedFromTestSuite($input, $expectedOutput): void
+	public function testMixedFromTestSuite(string $input, string $expectedOutput): void
 	{
 		$parser = new TestSuiteParser($input, 'http://example.com/');
 		$this->assertEquals(
