@@ -13,6 +13,7 @@ class PlainTextTest extends TestCase {
 		$parser = new \Mf2\Parser($input);
 		$output = $parser->parse();
 		$entryProperties = $output['items'][0]['properties'];
+		$this->assertIsArray($entryProperties);
 		$this->assertEquals($pName, $entryProperties['name'][0]);
 		$this->assertEquals($eValue, $entryProperties['content'][0]['value']);
 		$this->assertEquals($eHtml, $entryProperties['content'][0]['html']);

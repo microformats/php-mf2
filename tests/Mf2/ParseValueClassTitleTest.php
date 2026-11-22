@@ -23,6 +23,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -32,6 +33,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('NameEndname', $output['items'][0]['properties']['name'][0]);
 	}
@@ -41,6 +43,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -50,6 +53,7 @@ class ParseValueClassTitleTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Real Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -72,6 +76,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('published', $output['items'][0]['properties']);
 		$this->assertEquals('2013-06-27 10:17', $output['items'][0]['properties']['published'][0]);
 	}
@@ -90,6 +95,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2012-02-16T16:14:47+00:00', $output['items'][0]['properties']['published'][0]);
 	}
 
@@ -97,7 +103,9 @@ EOT;
 	public function testIgnoresValueClassNestedFurtherThanChild(): void {
 		$test = '<div class="h-card"><span class="p-tel"><span class="value">1234</span><span class="h-card"><span class="p-tel"><span class="value">5678</span>';
 		$result = Mf2\parse($test);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('1234', $result['items'][0]['properties']['tel'][0]);
+		$this->assertArrayHasKey('children', $result['items'][0]);
 		$this->assertEquals('5678', $result['items'][0]['children'][0]['properties']['tel'][0]);
 	}
 
@@ -105,6 +113,7 @@ EOT;
 	public function testValueClassDtMatchesSingleDigitTimeComponent(): void {
 		$test = '<div class="h-entry"><span class="dt-published"><time class="value">6:01</time>, <time class="value">2013-02-01</time></span></div>';
 		$result = Mf2\parse($test);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('2013-02-01 6:01', $result['items'][0]['properties']['published'][0]);
 	}
 }

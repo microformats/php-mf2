@@ -225,6 +225,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$input = '<article class="h-entry"><div class="p-like-of p-in-reply-to h-cite"></div></article>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertCount(1, $mf['items'][0]['properties']['like-of']);
 		$this->assertCount(1, $mf['items'][0]['properties']['in-reply-to']);
 	}
@@ -238,6 +239,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $mf['items'][0]['properties']['content'][0]);
 		$this->assertEquals($mf['items'][0]['properties']['content'][0]['value'], 'Hello');
 		$this->assertArrayHasKey('html', $mf['items'][0]['properties']['content'][0]);
@@ -250,6 +252,7 @@ class CombinedMicroformatsTest extends TestCase {
 	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly(): void {
 		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
 		$mf = Mf2\parse($input);
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0], \JSON_THROW_ON_ERROR));
 	}
 
@@ -300,6 +303,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$mf = Mf2\parse($input);
 
 		$this->assertJsonStringEqualsJsonString(json_encode($mf, \JSON_THROW_ON_ERROR), $expected);
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'https://example.com/post1234');
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'https://jane.example.com/');
 	}
@@ -308,6 +312,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertEquals($mf['items'][0]['properties']['author'][0]['value'], 'Zoe');
 	}
 
@@ -357,6 +362,7 @@ END;
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 	$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 	$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
@@ -380,6 +386,7 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $output['items'][0]['properties']['location'][0]);
 		$this->assertEquals('Portland, Oregon • 44°F', $output['items'][0]['properties']['location'][0]['value']);
 	}
@@ -396,6 +403,7 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $output['items'][0]['properties']['acme'][0]);
 		$this->assertEquals('1997-12-12', $output['items'][0]['properties']['acme'][0]['value']);
 	}
@@ -416,7 +424,9 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('category', $output['items'][0]['properties']);
+		$this->assertIsArray($output['items'][1]['properties']);
 		$this->assertArrayNotHasKey('category', $output['items'][1]['properties']);
 	}
 

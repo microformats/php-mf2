@@ -48,6 +48,7 @@ class ClassicMicroformatsTest extends TestCase {
 EOT;
 		$parser = new Parser($input);
 		$result = $parser->parse();
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('I wrote this', $result['items'][0]['properties']['author'][0]['properties']['name'][0]);
 
 	}
@@ -105,6 +106,7 @@ EOT;
 		$result = $parser->parse();
 		$e = $result['items'][0];
 		$this->assertContains('h-entry', $e['type']);
+		$this->assertIsArray($e['properties']);
 		$this->assertArrayHasKey('category', $e['properties']);
 		$this->assertCount(7, $e['properties']['category']);
 		$this->assertContains('speaking', $e['properties']['category']);
@@ -176,6 +178,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('description', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
@@ -250,6 +253,7 @@ END;
 		foreach ( $u_urls as $key => $url )
 		{
 			$this->assertEquals('h-entry', $output['items'][$key]['type'][0]);
+			$this->assertIsArray($output['items'][$key]['properties']);
 			$this->assertArrayHasKey('url', $output['items'][$key]['properties']);
 			$this->assertEquals($url, $output['items'][$key]['properties']['url'][0]);
 		}
@@ -270,6 +274,7 @@ END;
 
 		$this->assertCount(1, $result['items'][0]['type']);
 		$this->assertEquals('h-adr', $result['items'][0]['type'][0]);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(1, $result['items'][0]['properties']['locality']);
 		$this->assertEquals('MF2 adr locality', $result['items'][0]['properties']['locality'][0]);
 	}
@@ -288,6 +293,7 @@ END;
 
 		$this->assertCount(1, $result['items'][0]['type']);
 		$this->assertEquals('h-acme-address', $result['items'][0]['type'][0]);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(1, $result['items'][0]['properties']['locality']);
 		$this->assertEquals('MF2 acme locality', $result['items'][0]['properties']['locality'][0]);
 	}
@@ -306,6 +312,7 @@ END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(1, $result['items'][0]['properties']['adr'][0]['type']);
 		$this->assertEquals('h-acme-some-acme-object', $result['items'][0]['properties']['adr'][0]['type'][0]);
 		$this->assertCount(1, $result['items'][0]['properties']['adr'][0]['properties']['locality']);
@@ -582,6 +589,7 @@ END;
 		$parser = new Parser($input, 'http://notiz.blog/2014/02/20/wir-brauchen-metadaten-fuer-telefonnummern/');
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(1, $result['items'][0]['properties']['author']);
 		$this->assertCount(1, $result['items'][0]['properties']['author'][0]['type']);
 		$this->assertEquals('h-card', $result['items'][0]['properties']['author'][0]['type'][0]);
@@ -675,6 +683,7 @@ END;
 		$parser = new Parser($input, 'https://aaronparecki.com/2016/12/15/16/dropvox');
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(1, $result['items'][0]['properties']['item']);
 		$this->assertCount(1, $result['items'][0]['properties']['item'][0]['type']);
 		$this->assertCount(1, $result['items'][0]['properties']['name']);
@@ -713,6 +722,7 @@ END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertCount(2, $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('street-address', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('locality', $result['items'][0]['properties']);
@@ -745,6 +755,7 @@ END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		// p-name is no longer implied for this test due to nested microformat
 		// see https://github.com/microformats/microformats2-parsing/issues/6
 		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
@@ -775,6 +786,8 @@ END;
 END;
 		$parser = new Parser($input);
 		$result = $parser->parse();
+
+		$this->assertIsArray($result['items'][0]['properties']);
 
 		$this->assertArrayNotHasKey('reviewer', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('description', $result['items'][0]['properties']);
@@ -888,6 +901,7 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
 		$this->assertCount(5, $output['items'][0]['properties']['category']);
 		$this->assertContains('technology', $output['items'][0]['properties']['category']);
@@ -910,6 +924,7 @@ END;
 	$output = $parser->parse();
 	$item = $output['items'][0];
 
+	$this->assertIsArray($item['properties']);
 	$this->assertEquals(['test'], $item['properties']['category']);
 	$this->assertEquals('Entry content should not include the generated data element for rel tag backcompat test', $item['properties']['content'][0]['value']);
 	$this->assertEquals('Entry content should not include the generated <code>data</code> element for rel tag backcompat <a href="/tag/test" rel="tag">test</a>', $item['properties']['content'][0]['html']);
@@ -949,6 +964,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
 		$this->assertCount(2, $output['items'][0]['properties']['category']);
 		$this->assertContains('Garcon', $output['items'][0]['properties']['category']);
@@ -967,6 +983,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
 
 		# assert item type is h-event
@@ -991,6 +1008,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('item', $output['items'][0]['properties']);
 
 		# assert item type is h-product
@@ -1021,9 +1039,11 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
 		$this->assertContains('testing', $output['items'][0]['properties']['category']);
 		$this->assertContains('microformats', $output['items'][0]['properties']['category']);
+		$this->assertIsArray($output['items'][1]['properties']);
 		$this->assertArrayHasKey('category', $output['items'][1]['properties']);
 		$this->assertContains('phpmf2', $output['items'][1]['properties']['category']);
 		$this->assertContains('mf2py', $output['items'][1]['properties']['category']);
@@ -1043,6 +1063,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$this->assertCount(2, $result['items'][0]['type']);
 		$this->assertContains('h-event', $result['items'][0]['type']);
 		$this->assertContains('h-entry', $result['items'][0]['type']);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
 		$this->assertCount(2, $result['items'][0]['properties']['name']);
 		$this->assertContains('h-event name', $result['items'][0]['properties']['name']);
@@ -1060,6 +1081,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']['geo'][0]['properties']);
 	}
 
@@ -1087,6 +1109,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']['location'][0]['type']);
 		$this->assertEquals('h-card', $output['items'][0]['properties']['location'][0]['type'][0]);
@@ -1106,6 +1129,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']['location'][0]['type']);
 		$this->assertEquals('h-adr', $output['items'][0]['properties']['location'][0]['type'][0]);
@@ -1125,6 +1149,7 @@ Two perfectly poached eggs and a thin slice of tasty, French ham rest on a circl
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('location', $output['items'][0]['properties']);
 		$this->assertEquals('San Francisco', $output['items'][0]['properties']['location'][0]);
 	}

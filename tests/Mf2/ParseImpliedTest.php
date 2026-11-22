@@ -26,6 +26,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -35,6 +36,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -44,6 +46,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -53,6 +56,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('The Name', $output['items'][0]['properties']['name'][0]);
 	}
@@ -62,6 +66,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -71,6 +76,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
 		$this->assertEquals('', $output['items'][0]['properties']['photo'][0]['alt']);
@@ -81,6 +87,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/img.png', $output['items'][0]['properties']['photo'][0]['value']);
 		$this->assertEquals('Example', $output['items'][0]['properties']['photo'][0]['alt']);
@@ -91,6 +98,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$return = [
 			'value' => 'https://example.com/img.png',
@@ -104,6 +112,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$result = [
 			'alt' => '',
@@ -119,6 +128,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
 
@@ -127,6 +137,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $output['items'][0]['properties']);
 	}
 	*/
@@ -136,6 +147,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
@@ -146,6 +158,7 @@ class ParseImpliedTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
@@ -155,6 +168,7 @@ class ParseImpliedTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 	$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
   }
@@ -164,6 +178,7 @@ class ParseImpliedTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 	$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	$this->assertEquals('Some Name', $output['items'][0]['properties']['name'][0]);
@@ -230,7 +245,9 @@ class ParseImpliedTest extends TestCase {
 		$inner = "Name	\nand more";
 		$test = '<span class="h-card"> ' . $inner .' </span><span class="h-card"><span class="p-name"> ' . $inner . ' </span></span>';
 		$result = Mf2\parse($test);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('Name and more', $result['items'][0]['properties']['name'][0]);
+		$this->assertIsArray($result['items'][1]['properties']);
 		$this->assertEquals('Name and more', $result['items'][1]['properties']['name'][0]);
 	}
 
@@ -239,6 +256,7 @@ class ParseImpliedTest extends TestCase {
 	public function testParsesImpliedNameFromAbbrTitle(): void {
 		$input = '<abbr class="h-card" title="Barnaby Walters">BJW</abbr>';
 		$result = Mf2\parse($input);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('Barnaby Walters', $result['items'][0]['properties']['name'][0]);
 	}
 
@@ -246,6 +264,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<object class="h-card" data="http://example/photo1.jpg">John Doe</object>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
 		$this->assertEquals('http://example/photo1.jpg', $result['items'][0]['properties']['photo'][0]);
 	}
@@ -259,6 +278,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<span class="h-card"><a href="http://tantek.com/" class="external text" style="border: 0px none;"><img src="https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg" style="width:128px;float:right;margin-left:1em"><b><span style="font-size:2em">Tantek Çelik</span></b></a></span>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
 		$this->assertEquals('https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH.jpeg', $result['items'][0]['properties']['photo'][0]);
 	}
@@ -267,6 +287,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"><img src="http://example/photo2.jpg" /> <img src="http://example/photo3.jpg" /> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -278,6 +299,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <p>Moar text</p></div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $result['items'][0]['properties']);
 		$this->assertEquals('http://example/photo3.jpg', $result['items'][0]['properties']['photo'][0]);
 	}
@@ -286,6 +308,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"><object data="http://example/photo3.jpg">John Doe</object> <object data="http://example/photo4.jpg"></object> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -293,6 +316,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" class="h-card" /> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -300,6 +324,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <img src="http://example/photo2.jpg" alt="John Doe" class="h-card" /> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -307,6 +332,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <object data="http://example/photo3.jpg" class="h-card">John Doe</object> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -317,6 +343,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <img src="/image.jpg"> </div> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -327,6 +354,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <div class="u-comment h-cite"> <object data="/image2.jpg">John Doe</object> </div> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -337,6 +365,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"> <a href="https://example.com"><img src="https://example.com/photo.jpg"></a> <span class="p-name"><a href="/User:Example.com">Max Mustermann</a></span> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -347,6 +376,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"> <a href="https://example.com"><object data="https://example.com/photo.jpg"></object></a> <span class="p-name"><a href="/User:Example.com">Max Mustermann</a></span> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -358,6 +388,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="hentry"> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
 	}
@@ -371,6 +402,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="hentry"> <img src="https://example.com/photo.jpg" alt="photo" /> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEmpty($result['items'][0]['properties']);
 	}
 
@@ -383,6 +415,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="hentry"> <a href="https://example.com/this-post" class="entry-title">Title</a> <div class="entry-content"> <p> blah blah blah </p> </div> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $result['items'][0]['properties']);
@@ -398,6 +431,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <h1 class="p-name"><a href="https://example.com/this-post">Title</a></h1> <div class="e-content"> <p> blah blah blah </p> </div> <a href="https://othersite.example.com/syndicate" class="u-syndication"></a> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('url', $result['items'][0]['properties']);
 	}
 
@@ -409,6 +443,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<p class="h-card">My Name <img src="http://xyz" /></p>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $result['items'][0]['properties']);
 		$this->assertEquals('My Name', $result['items'][0]['properties']['name'][0]);
 	}
@@ -420,6 +455,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-card"> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 	}
 
@@ -430,6 +466,7 @@ class ParseImpliedTest extends TestCase {
 		$input = '<div class="h-entry"> <img src="/photo.jpg" alt=""> <div class="p-author h-card"> <span class="p-name">Alice</span> <span class="p-org">Organization Name</span> <img src="/logo.png" class="u-logo" alt=""> </div> </div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('author', $result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('photo', $result['items'][0]['properties']['author'][0]['properties']);

@@ -18,6 +18,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
@@ -27,6 +28,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
@@ -36,6 +38,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/webmention', $output['rels']['webmention'][0]);
   }
@@ -47,6 +50,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
 	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
@@ -60,6 +64,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/area', $output['rels']['webmention'][0]);
 	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][1]);
@@ -79,6 +84,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayHasKey('webmention', $output['rels']);
 	$this->assertEquals('https://example.com/link', $output['rels']['webmention'][0]);
 	$this->assertEquals('https://example.com/a', $output['rels']['webmention'][1]);
@@ -90,6 +96,7 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertArrayNotHasKey('webmention', $output['rels']);
   }
 
@@ -142,12 +149,14 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['rels']);
 	$this->assertCount(4, $output['rels']);
 	$this->assertArrayHasKey('author', $output['rels']);
 	$this->assertArrayHasKey('in-reply-to', $output['rels']);
 	$this->assertArrayHasKey('alternate', $output['rels']);
 	$this->assertArrayHasKey('home', $output['rels']);
 
+	$this->assertIsArray($output['rel-urls']);
 	$this->assertCount(6, $output['rel-urls']);
 	$this->assertArrayHasKey('https://example.com/a', $output['rel-urls']);
 	$this->assertArrayHasKey('https://example.com/b', $output['rel-urls']);
@@ -156,18 +165,24 @@ class RelTest extends TestCase {
 	$this->assertArrayHasKey('https://example.com/fr', $output['rel-urls']);
 	$this->assertArrayHasKey('https://example.com/articles.atom', $output['rel-urls']);
 
+	$this->assertIsArray($output['rel-urls']['https://example.com/a']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/a']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/a']);
+	$this->assertIsArray($output['rel-urls']['https://example.com/b']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/b']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/b']);
+	$this->assertIsArray($output['rel-urls']['https://example.com/1']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/1']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/1']);
+	$this->assertIsArray($output['rel-urls']['https://example.com/2']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/2']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/2']);
+	$this->assertIsArray($output['rel-urls']['https://example.com/fr']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/fr']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['https://example.com/fr']);
 	$this->assertArrayHasKey('media', $output['rel-urls']['https://example.com/fr']);
 	$this->assertArrayHasKey('hreflang', $output['rel-urls']['https://example.com/fr']);
+	$this->assertIsArray($output['rel-urls']['https://example.com/articles.atom']);
 	$this->assertArrayHasKey('title', $output['rel-urls']['https://example.com/articles.atom']);
 	$this->assertArrayHasKey('type', $output['rel-urls']['https://example.com/articles.atom']);
 	$this->assertArrayHasKey('rels', $output['rel-urls']['https://example.com/articles.atom']);
@@ -182,6 +197,8 @@ class RelTest extends TestCase {
 <a href="#" rel="bookmark archived"></a>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
+	$this->assertIsArray($output['rel-urls']);
+	$this->assertIsArray($output['rel-urls']['#']);
 	$this->assertEquals($output['rel-urls']['#']['rels'], array('archived', 'bookmark', 'me'));
   }
 
@@ -190,10 +207,14 @@ class RelTest extends TestCase {
 <a href="#" rel="a" hreflang="en">Not this nodeValue</a>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
+	$this->assertIsArray($output['rel-urls']);
+	$this->assertIsArray($output['rel-urls']['#']);
+	$this->assertArrayHasKey('hreflang', $output['rel-urls']['#']);
 	$this->assertEquals($output['rel-urls']['#']['hreflang'], 'en');
 	$this->assertArrayNotHasKey('media', $output['rel-urls']['#']);
 	$this->assertArrayNotHasKey('title', $output['rel-urls']['#']);
 	$this->assertArrayNotHasKey('type', $output['rel-urls']['#']);
+	$this->assertArrayHasKey('text', $output['rel-urls']['#']);
 	$this->assertEquals($output['rel-urls']['#']['text'], 'This nodeValue');
   }
 
@@ -203,6 +224,7 @@ class RelTest extends TestCase {
 <a href="#a" rel="a"></a>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
+	$this->assertIsArray($output['rels']);
 	$this->assertEquals($output['rels']['a'], array('#a', '#b'));
   }
 
@@ -211,8 +233,11 @@ class RelTest extends TestCase {
 <a href="#b" rel="b"></a>';
 	$parser = new Parser($input);
 	$output = $parser->parse();
+	$this->assertIsArray($output['rel-urls']);
+	$this->assertIsArray($output['rel-urls']['#a']);
 	$this->assertArrayHasKey('text', $output['rel-urls']['#a']);
 	$this->assertEquals($output['rel-urls']['#a']['text'], '0');
+	$this->assertIsArray($output['rel-urls']['#b']);
 	$this->assertArrayNotHasKey('text', $output['rel-urls']['#b']);
   }
 

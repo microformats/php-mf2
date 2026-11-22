@@ -27,6 +27,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -39,6 +40,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -51,6 +53,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -63,6 +66,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -75,6 +79,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -87,6 +92,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -99,6 +105,7 @@ class ParseDTTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 	$this->assertEquals('2012-08-05T14:50:00Z', $output['items'][0]['properties']['start'][0]);
   }
@@ -111,6 +118,7 @@ class ParseDTTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 	$this->assertEquals('2012-08-05T14:50:00-0700', $output['items'][0]['properties']['start'][0]);
   }
@@ -123,6 +131,7 @@ class ParseDTTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 	$this->assertEquals('2012-08-05T14:50:00-07:00', $output['items'][0]['properties']['start'][0]);
   }
@@ -135,6 +144,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
 	}
@@ -147,6 +157,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
 		$this->assertEquals('2012-08-05T14:50', $output['items'][0]['properties']['start'][0]);
@@ -162,6 +173,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07 21:18', $output['items'][0]['properties']['start'][0]);
 	}
@@ -175,6 +187,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07 21:18', $output['items'][0]['properties']['start'][0]);
 	}
@@ -188,6 +201,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07 21:00', $output['items'][0]['properties']['start'][0]);
 	}
@@ -201,6 +215,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07 21:00', $output['items'][0]['properties']['start'][0]);
 	}
@@ -214,6 +229,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2012-10-07 21:00:00', $output['items'][0]['properties']['start'][0]);
 	}
@@ -228,6 +244,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-04 18:30', $output['items'][0]['properties']['start'][0]);
@@ -245,6 +262,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-05 18:31', $output['items'][0]['properties']['start'][0]);
@@ -262,6 +280,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('end', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-05T18:31', $output['items'][0]['properties']['start'][0]);
@@ -277,6 +296,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-06 18:32', $output['items'][0]['properties']['start'][0]);
 		$this->assertArrayNotHasKey('end', $output['items'][0]['properties']);
@@ -291,6 +311,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('start', $output['items'][0]['properties']);
 		$this->assertEquals('2014-06-07', $output['items'][0]['properties']['start'][0]);
 	}
@@ -308,6 +329,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-05-27 20:57-0700', $output['items'][0]['properties']['start'][0]);
 	}
 
@@ -320,6 +342,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2018-03-13 15:30-07:00', $output['items'][0]['properties']['start'][0]);
 	}
 
@@ -337,6 +360,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2009-06-26 19:00:00-0800', $output['items'][0]['properties']['start'][0]);
 	}
 
@@ -348,6 +372,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2009-06-26T19:01-08:00', $output['items'][0]['properties']['start'][0]);
 	}
 
@@ -364,6 +389,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-05-31 19:00+0200', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-05-31 21:00+0200', $output['items'][0]['properties']['end'][0]);
 	}
@@ -381,6 +407,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-05-31 19:00+0200', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-05-31 21:00+0200', $output['items'][0]['properties']['end'][0]);
 	}
@@ -402,6 +429,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-06-17 22:00-0700', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-06-17 23:00-0700', $output['items'][0]['properties']['end'][0]);
 	}
@@ -414,6 +442,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2014-09-11 13:30-0700', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2014-09-11 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
@@ -426,6 +455,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2014-09-11 13:30-0700', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2014-09-11 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
@@ -447,6 +477,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-06-11 22:00', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-06-12 02:00', $output['items'][0]['properties']['end'][0]);
 	}
@@ -468,6 +499,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-06-17 22:30', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-06-18 02:30', $output['items'][0]['properties']['end'][0]);
 	}
@@ -489,6 +521,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2017-06-17 13:30-0700', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2017-06-17 15:30-0700', $output['items'][0]['properties']['end'][0]);
 	}
@@ -516,6 +549,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2014-06-01 12:30-0600', $output['items'][0]['properties']['start'][0]);
 		$this->assertEquals('2014-06-01 19:30-0600', $output['items'][0]['properties']['end'][0]);
 	}
@@ -528,6 +562,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('--12-28', $output['items'][0]['properties']['bday'][0]);
 	}
 
@@ -548,6 +583,7 @@ class ParseDTTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('2016-03-02 12:30-0600', $output['items'][0]['properties']['start'][0]);
 	}
 }

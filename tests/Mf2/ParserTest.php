@@ -93,6 +93,7 @@ class ParserTest extends TestCase {
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('Here is a load of <strong>embedded markup</strong>', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertEquals('Here is a load of embedded markup', $output['items'][0]['properties']['content'][0]['value']);
@@ -103,6 +104,7 @@ class ParserTest extends TestCase {
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('', $output['items'][0]['properties']['content'][0]['html']);
@@ -114,6 +116,7 @@ class ParserTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('Blah blah <a href="https://example.com/a-url">thing</a>. <object data="https://example.com/object"></object> <img src="https://example.com/img">', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertEquals('Blah blah thing. https://example.com/img', $output['items'][0]['properties']['content'][0]['value']);
 	}
@@ -123,6 +126,7 @@ class ParserTest extends TestCase {
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('Here is content with two lines.<br>The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertEquals('Here is content with two lines.'."\n".'The br tag should not be converted to an XML br/br element.', $output['items'][0]['properties']['content'][0]['value']);
@@ -137,6 +141,7 @@ class ParserTest extends TestCase {
 		//$parser = new Parser($input);
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 		$this->assertEquals('This <strong>leading and trailing whitespace</strong> should be removed from the HTML and text values.', $output['items'][0]['properties']['content'][0]['html']);
 		$this->assertEquals('This leading and trailing whitespace should be removed from the HTML and text values.', $output['items'][0]['properties']['content'][0]['value']);
@@ -177,6 +182,7 @@ class ParserTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('<p>', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('<dt>', $output['items'][0]['properties']['published'][0]);
 		$this->assertEquals('<u>', $output['items'][0]['properties']['url'][0]);
@@ -188,6 +194,7 @@ class ParserTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('<name>', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('<url>', $output['items'][0]['properties']['url'][0]);
 		$result = [
@@ -203,6 +210,7 @@ class ParserTest extends TestCase {
 
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['rels']);
 		$this->assertEquals('https://example.com', $output['rels']['author'][0]);
 	}
 
@@ -215,10 +223,15 @@ class ParserTest extends TestCase {
 		$this->assertArrayHasKey('alternates', $output);
 		$this->assertEquals('https://example.com', $output['alternates'][0]['url']);
 		$this->assertEquals('home', $output['alternates'][0]['rel']);
+		$this->assertArrayHasKey('hreflang', $output['alternates'][0]);
 		$this->assertEquals('de', $output['alternates'][0]['hreflang']);
+		$this->assertArrayHasKey('media', $output['alternates'][0]);
 		$this->assertEquals('screen', $output['alternates'][0]['media']);
+		$this->assertArrayHasKey('type', $output['alternates'][0]);
 		$this->assertEquals('text/html', $output['alternates'][0]['type']);
+		$this->assertArrayHasKey('title', $output['alternates'][0]);
 		$this->assertEquals('German Homepage Link', $output['alternates'][0]['title']);
+		$this->assertArrayHasKey('text', $output['alternates'][0]);
 		$this->assertEquals('German Homepage', $output['alternates'][0]['text']);
 	}
 
@@ -237,6 +250,7 @@ EOT;
 		$output = $parser->parseFromId('parse-here');
 
 		$this->assertCount(1, $output['items']);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('Included', $output['items'][0]['properties']['name'][0]);
 	}
 
@@ -256,6 +270,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']['author']);
 	}
 
@@ -268,6 +283,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']['in-reply-to']);
 		$this->assertEquals('Name', $output['items'][0]['properties']['in-reply-to'][0]['properties']['name'][0]);
 	}
@@ -317,6 +333,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('0', $output['items'][0]['properties']);
 	}
 
@@ -340,6 +357,7 @@ EOT;
 </div>
 EOT;
 		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('It is a strange thing to see a five legged elephant', $result['items'][0]['properties']['content'][0]['value']);
 	}
 
@@ -354,6 +372,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
 	}
 
@@ -369,6 +388,7 @@ EOT;
 
 		// p-name is no longer implied for this test due to nested microformat
 		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('rect', $output['items'][0]['properties']['category'][0]['shape']);
 		$this->assertEquals('100,100,120,120', $output['items'][0]['properties']['category'][0]['coords']);
@@ -390,6 +410,7 @@ EOT;
 		$output = $parser->parse();
 
 		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('category', $output['items'][0]['properties']);
 		$this->assertContains('h-card', $output['items'][0]['properties']['category'][0]['type']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']['category'][0]['properties']);
@@ -432,6 +453,7 @@ EOT;
 
 		$server->stop();
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $mf['items'][0]['properties']);
 
 		$hostname = parse_url($mf['items'][0]['properties']['photo'][0], PHP_URL_HOST);
@@ -453,6 +475,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertContains('h-entry', $output['items'][0]['type']);
 		$this->assertStringContainsString(
 			'Hello World',
@@ -472,6 +495,7 @@ EOT;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertStringNotContainsString('not contained', $output['items'][0]['properties']['published'][0]);
 		$this->assertStringNotContainsString('not contained', $output['items'][0]['properties']['url'][0]);
 	}
@@ -495,6 +519,7 @@ EOT;
 		$output = $parser->parse();
 
 		$this->assertContains('h-entry', $output['items'][0]['type']);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertStringContainsString('Hello World', $output['items'][0]['properties']['content'][0]['value']);
 		$this->assertStringContainsString('<b>Hello World</b>', $output['items'][0]['properties']['content'][0]['html']);
 		# The script and style tags should be removed from plaintext results but left in HTML results.
@@ -519,6 +544,7 @@ EOT;
 		$this->assertContains('h-entry', $output['items'][0]['type']);
 		// p-name is no longer implied for this test due to other p-*
 		// see https://github.com/microformats/microformats2-parsing/issues/6
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
@@ -586,6 +612,7 @@ EOT;
 
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('linkBlend', $output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('hiddenInNarrowEnv', $output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('floatRight', $output['items'][0]['properties']);
@@ -621,6 +648,7 @@ EOT;
 		$input = '<div class="h-entry"> <div class="u-column1"> <p class="p-title">Test</p> </div> </div>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('column1', $output['items'][0]['properties']);
 	}
 
@@ -639,6 +667,7 @@ EOT;
 </article>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
@@ -657,6 +686,7 @@ EOT;
 </article>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
@@ -675,6 +705,7 @@ EOT;
 </article>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('name', $output['items'][0]['properties']);
 	}
 
@@ -713,8 +744,10 @@ EOT;
 END;
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('author', $output['items'][0]['properties']);
 		$this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('children', $output['items'][0]);
 		$this->assertCount(4, $output['items'][0]['children']);
 		$this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
 		$this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
@@ -763,8 +796,10 @@ END;
 END;
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('author', $output['items'][0]['properties']);
 		$this->assertEquals('Author Name', $output['items'][0]['properties']['author'][0]['properties']['name'][0]);
+		$this->assertArrayHasKey('children', $output['items'][0]);
 		$this->assertCount(4, $output['items'][0]['children']);
 		$this->assertEquals('One', $output['items'][0]['children'][0]['properties']['name'][0]);
 		$this->assertEquals('Two', $output['items'][0]['children'][1]['properties']['name'][0]);
@@ -781,6 +816,7 @@ END;
 	{
 		$input = '<div class="h-entry"><div class="e-content"><p>1</p><p>2</p></div></div>';
 		$output = Mf2\parse($input);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('<p>1</p><p>2</p>', $output['items'][0]['properties']['content'][0]['html']);
 	}
 
@@ -796,6 +832,7 @@ END;
 </li>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('p3k-drank', $output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']['p3k-drank']);
 		$this->assertEquals('h-p3k-food', $output['items'][0]['properties']['p3k-drank'][0]['type'][0]);
@@ -816,6 +853,7 @@ END;
 
 		$this->assertCount(1, $output['items'][0]['type']);
 		$this->assertEquals('h-entry', $output['items'][0]['type'][0]);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertCount(1, $output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 	}
@@ -838,6 +876,7 @@ END;
 		$this->assertContains('h-feed', $output['items'][0]['type']);
 		$this->assertContains('h-p3k-entry', $output['items'][0]['type']);
 		$this->assertContains('h-x-test', $output['items'][0]['type']);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertCount(5, $output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertArrayHasKey('p3k-url', $output['items'][0]['properties']);
@@ -867,6 +906,7 @@ END;
 		$input = '<div class="h-entry"><p class="p-name">Name<article>Not Name</article></div>';
 		$output = Mf2\parse($input);
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('Name', $output['items'][0]['properties']['name'][0]);
 	}
 
@@ -907,6 +947,7 @@ END;
 EOD;
 
 		$output = Mf2\parse($input);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertIsArray($output['items'][0]['properties']['comment'][0]['properties']);
 		$this->assertIsArray($output['items'][0]['properties']['comment'][0]['children'][0]['properties']);
 		$this->assertEmpty($output['items'][0]['properties']['comment'][0]['properties']);
@@ -937,6 +978,7 @@ EOD;
 EOF;
 
 		$output = Mf2\parse($input);
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals(array('value' => '/image.jpg', 'alt' => 'Jon Doe'), $output['items'][0]['properties']['photo'][0]);
 	}
 
@@ -969,6 +1011,7 @@ p-name">Page Title</h1>
 </div>
 EOT;
 		$result = Mf2\parse($input);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('Page Title', $result['items'][0]['properties']['name'][0]);
 		$this->assertEquals('A summary so the p-name won\'t be implied. This test demonstrates p-name is not being parsed.', $result['items'][0]['properties']['summary'][0]);
 	}
@@ -1041,6 +1084,7 @@ EOF;
 		$output = Mf2\parse($input);
 
 		# `properties` should be empty
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals(0, count($output['items'][0]['properties']));
 
 		# `children` should have length=2
@@ -1069,6 +1113,7 @@ EOF;
 		$output = Mf2\parse($input);
 
 		# `properties` should have length=3
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals(3, count($output['items'][0]['properties']));
 
 		# should have these properties

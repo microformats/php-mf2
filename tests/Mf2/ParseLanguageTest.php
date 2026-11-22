@@ -131,6 +131,7 @@ class ParseLanguageTest extends TestCase {
 		$this->assertArrayHasKey('lang', $result['items'][0]);
 		$this->assertEquals('en', $result['items'][0]['lang']);
 
+		$this->assertArrayHasKey('children', $result['items'][0]);
 		$this->assertArrayHasKey('lang', $result['items'][0]['children'][0]);
 		$this->assertEquals('en', $result['items'][0]['children'][0]['lang']);
 
@@ -264,6 +265,7 @@ END;
 		$parser->lang = true;
 		$result = $parser->parse();
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayNotHasKey('lang', $result['items'][0]['properties']);
 		$this->assertArrayHasKey('lang', $result['items'][0]);
 	}

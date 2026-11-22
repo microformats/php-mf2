@@ -27,6 +27,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
@@ -39,6 +40,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
@@ -51,6 +53,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
@@ -63,6 +66,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('Example User', $output['items'][0]['properties']['name'][0]);
 	}
@@ -75,6 +79,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 	}
@@ -87,6 +92,7 @@ class ParsePTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
 		$this->assertEquals('', $output['items'][0]['properties']['name'][0]);
@@ -95,6 +101,7 @@ class ParsePTest extends TestCase {
 	public function testParsesInputValue(): void {
 		$input = '<span class="h-card"><input class="u-url" value="https://example.com" /></span>';
 		$result = Mf2\parse($input);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('https://example.com', $result['items'][0]['properties']['url'][0]);
 	}
 
@@ -110,6 +117,7 @@ class ParsePTest extends TestCase {
 </div>
 EOT;
 		$result = Mf2\parse($input, 'http://waterpigs.co.uk/articles/five-legged-elephant');
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('The day I saw a five legged elephant', $result['items'][0]['properties']['name'][0]);
 		$this->assertEquals('Blah blah http://waterpigs.co.uk/photos/five-legged-elephant.jpg', $result['items'][0]['properties']['summary'][0]);
 	}
@@ -121,6 +129,7 @@ EOT;
 		$input = '<div class="h-card"><p class="p-adr"><span class="p-street-address">Street Name 9</span><br/><span class="p-locality">12345 NY, USA</span></p></div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('Street Name 9' . "\n" . '12345 NY, USA', $result['items'][0]['properties']['adr'][0]);
 		$this->assertEquals('Street Name 9', $result['items'][0]['properties']['street-address'][0]);
 		$this->assertEquals('12345 NY, USA', $result['items'][0]['properties']['locality'][0]);
@@ -136,6 +145,7 @@ EOT;
 		$input = '<div class="p-author h-card"><a href="/" class="p-org p-name"><img class="u-logo" src="/static/logo.jpg" alt="" />mention.tech</a></div>';
 		$result = Mf2\parse($input);
 
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('mention.tech', $result['items'][0]['properties']['org'][0]);
 		$this->assertEquals('mention.tech', $result['items'][0]['properties']['name'][0]);
 	}

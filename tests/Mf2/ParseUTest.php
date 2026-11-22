@@ -26,6 +26,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com', $output['items'][0]['properties']['url'][0]);
 	}
@@ -38,6 +39,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 	}
@@ -50,6 +52,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/Awesome example website', $output['items'][0]['properties']['url'][0]);
 	}
@@ -62,6 +65,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -74,6 +78,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$result = array(
 			'value' => 'https://example.com/someimage.png',
@@ -90,6 +95,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals( 'https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -102,6 +108,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -114,6 +121,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -126,6 +134,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -138,6 +147,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('no title attribute', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -150,6 +160,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('photo', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/someimage.png', $output['items'][0]['properties']['photo'][0]);
 	}
@@ -162,6 +173,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/things/more/more.html');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
@@ -173,6 +185,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/things/more/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
@@ -184,6 +197,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/things/more.html');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
@@ -195,6 +209,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com/');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/things/image.png', $output['items'][0]['properties']['photo'][0]);
 	}
 
@@ -202,6 +217,7 @@ class ParseUTest extends TestCase {
 	public function testParsesHrefBeforeValueClass(): void {
 		$input = '<span class="h-card"><a class="u-url" href="https://example.com/right"><span class="value">WRONG</span></a></span>';
 		$result = Mf2\parse($input);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertEquals('https://example.com/right', $result['items'][0]['properties']['url'][0]);
 	}
 
@@ -213,6 +229,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('audio', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/audio.mp3', $output['items'][0]['properties']['audio'][0]);
 	}
@@ -225,6 +242,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 	}
@@ -237,6 +255,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
 		$this->assertEquals('no video support', $output['items'][0]['properties']['video'][0]);
 	}
@@ -249,6 +268,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 		$this->assertEquals('https://example.com/video.ogg', $output['items'][0]['properties']['video'][1]);
@@ -262,6 +282,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('video', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/video.mp4', $output['items'][0]['properties']['video'][0]);
 		$this->assertEquals('https://example.com/posterimage.jpg', $output['items'][0]['properties']['photo'][0]);
@@ -275,6 +296,7 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com', $output['items'][0]['properties']['url'][0]);
 	}
@@ -291,18 +313,23 @@ class ParseUTest extends TestCase {
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 
+		$this->assertIsArray($output['items'][1]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][1]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][1]['properties']['url'][0]);
 
+		$this->assertIsArray($output['items'][2]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][2]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][2]['properties']['url'][0]);
 
+		$this->assertIsArray($output['items'][3]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][3]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][3]['properties']['url'][0]);
 
+		$this->assertArrayHasKey('children', $output['items'][4]);
 		$this->assertArrayHasKey('url', $output['items'][4]['children'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][4]['children'][0]['properties']['url'][0]);
 	}
@@ -321,6 +348,8 @@ END;
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
+
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/', $output['items'][0]['properties']['url'][0]);
 
@@ -332,6 +361,7 @@ END;
 		$parser = new Parser('<div class="h-test"><data class="u-url" value="relative.html"></data></div>', 'https://example.com/index.html');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/relative.html', $output['items'][0]['properties']['url'][0]);
 	}
@@ -349,6 +379,7 @@ END;
 		$parser = new Parser($input, 'https://example.com');
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('url', $output['items'][0]['properties']);
 		$this->assertEquals('https://example.com/index.html', $output['items'][0]['properties']['url'][0]);
 	}

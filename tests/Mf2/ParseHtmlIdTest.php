@@ -31,8 +31,10 @@ class ParseHtmlIdTest extends TestCase {
 		$result = Mf2\parse($test);
 		$this->assertArrayHasKey('id', $result['items'][0]);
 		$this->assertEquals('recentArticles', $result['items'][0]['id']);
+		$this->assertArrayHasKey('children', $result['items'][0]);
 		$this->assertArrayHasKey('id', $result['items'][0]['children'][0]);
 		$this->assertEquals('article', $result['items'][0]['children'][0]['id']);
+		$this->assertIsArray($result['items'][0]['properties']);
 		$this->assertArrayHasKey('id', $result['items'][0]['properties']['author'][0]);
 		$this->assertEquals('theAuthor', $result['items'][0]['properties']['author'][0]['id']);
 		$this->assertArrayNotHasKey('id', $result['items'][0]['children'][1]);
