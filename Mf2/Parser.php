@@ -334,6 +334,7 @@ class Parser {
 	/** @var DOMDocument */
 	public DOMDocument $doc;
 
+	/** @var SplObjectStorage<DOMElement, list<string>> */
 	protected SplObjectStorage $parsed;
 
 	public bool $jsonMode;
@@ -345,7 +346,7 @@ class Parser {
 	public bool $enableAlternates = false;
 
 	/**
-	 * @var SplObjectStorage Elements upgraded to mf2 during backcompat
+	 * @var SplObjectStorage<DOMElement, list<string>> Elements upgraded to mf2 during backcompat
 	 */
 	protected SplObjectStorage $upgraded;
 
@@ -701,7 +702,7 @@ class Parser {
 	 * Given an element with class="dt-*", get the value of the datetime as a php date object
 	 *
 	 * @param DOMElement $dt The element to parse
-	 * @param array $dates Array of dates processed so far
+	 * @param list<string> $dates Array of dates processed so far
 	 * @return string The datetime string found
 	 */
 	public function parseDT(\DOMElement $dt, array &$dates = array(), ?string &$impliedTimezone = null): string {
@@ -1744,7 +1745,7 @@ class Parser {
 
 	/**
 	 * Add element + property as upgraded during backcompat
-	 * @param string|array $property
+	 * @param string|list<string> $property
 	 */
 	public function addUpgraded(DOMElement $el, $property): void {
 		if ( !is_array($property) ) {
@@ -1820,13 +1821,15 @@ class Parser {
 	 *
 	 * Runs an XPath query over the current document. Works in exactly the same
 	 * way as DOMXPath::query.
+	 *
+	 * @return DOMNodeList<DOMNode>
 	 */
 	public function query(string $expression, ?DOMNode $context = null): DOMNodeList {
 		return $this->xpath->query($expression, $context);
 	}
 
 	/**
-	 * @var array Classic Root Classname map
+	 * @var array<string, string> Classic Root Classname map
 	 */
 	public array $classicRootMap = array(
 		'vcard' => 'h-card',
@@ -1843,7 +1846,7 @@ class Parser {
 	);
 
 	/**
-	 * @var array Mapping of mf1 properties to mf2 and the context they're parsed with
+	 * @var array<string, array<string, array{replace: string, context?: string}>> Mapping of mf1 properties to mf2 and the context they're parsed with
 	 */
 	public array $classicPropertyMap = array(
 		'vcard' => array(
