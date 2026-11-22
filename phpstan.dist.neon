@@ -1,0 +1,8 @@
+parameters:
+	level: 4
+
+	phpVersion: 70400
+
+	paths:
+		- Mf2/
+		- tests/
