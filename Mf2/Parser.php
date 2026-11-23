@@ -1404,7 +1404,7 @@ class Parser {
 		list($rels, $rel_urls, $alternates) = $this->parseRelsAndAlternates();
 
 		$top = array(
-			'items' => array_values(array_filter($mfs)),
+			'items' => array_values($mfs),
 			'rels' => $rels,
 			'rel-urls' => $rel_urls,
 		);
