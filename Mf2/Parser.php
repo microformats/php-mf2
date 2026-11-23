@@ -2008,9 +2008,9 @@ class Parser {
 	 * Runs an XPath query over the current document. Works in exactly the same
 	 * way as DOMXPath::query.
 	 *
-	 * @return DOMNodeList<DOMNode>
+	 * @return DOMNodeList<\DOMNameSpaceNode|DOMNode>|false
 	 */
-	public function query(string $expression, ?DOMNode $context = null): DOMNodeList {
+	public function query(string $expression, ?DOMNode $context = null) {
 		return $this->xpath->query($expression, $context);
 	}
 
