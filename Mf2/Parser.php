@@ -1612,8 +1612,12 @@ class Parser {
 								$prefixSpecificResult['value'] = (!is_array($prefixSpecificResult['properties']) || empty($prefixSpecificResult['properties']['name'][0])) ? $this->parseP($node) : $prefixSpecificResult['properties']['name'][0];
 							} elseif (in_array('e-', $prefixes)) {
 								$eParsedResult = $this->parseE($node);
-								$prefixSpecificResult['html'] = $eParsedResult['html'];
-								$prefixSpecificResult['value'] = $eParsedResult['value'];
+								if (is_string($eParsedResult)) {
+									$prefixSpecificResult['value'] = $eParsedResult;
+								} else {
+									$prefixSpecificResult['html'] = $eParsedResult['html'];
+									$prefixSpecificResult['value'] = $eParsedResult['value'];
+								}
 							} elseif (in_array('u-', $prefixes)) {
 								$prefixSpecificResult['value'] = (!is_array($result['properties']) || empty($result['properties']['url'])) ? $this->parseU($node) : reset($result['properties']['url']);
 							} elseif (in_array('dt-', $prefixes)) {
