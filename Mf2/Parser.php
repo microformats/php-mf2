@@ -1252,7 +1252,7 @@ class Parser {
 
 		// Properties should be an object when JSON serialised
 		if (empty($return) and $this->jsonMode) {
-			$return = new stdClass();
+			$return = (object) [];
 		}
 
 		// Phew. Return the final result.
@@ -1442,11 +1442,11 @@ class Parser {
 		}
 
 		if (empty($rels) and $this->jsonMode) {
-			$rels = new stdClass();
+			$rels = (object) [];
 		}
 
 		if (empty($rel_urls) and $this->jsonMode) {
-			$rel_urls = new stdClass();
+			$rel_urls = (object) [];
 		}
 
 		return array($rels, $rel_urls, $alternates);
