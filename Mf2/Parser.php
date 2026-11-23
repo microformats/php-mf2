@@ -763,9 +763,9 @@ class Parser {
 	 *
 	 * @param DOMElement $dt The element to parse
 	 * @param list<string> $dates Array of dates processed so far
-	 * @return string The datetime string found
+	 * @return string|false The datetime string found
 	 */
-	public function parseDT(\DOMElement $dt, array &$dates = array(), ?string &$impliedTimezone = null): string {
+	public function parseDT(\DOMElement $dt, array &$dates = array(), ?string &$impliedTimezone = null) {
 		// Check for value-class pattern
 		/** @var DOMNodeList<DOMElement> $valueClassChildren */
 		$valueClassChildren = $this->xpath->query('./*[contains(concat(" ", normalize-space(@class), " "), " value ") or contains(concat(" ", normalize-space(@class), " "), " value-title ")]', $dt);
@@ -922,6 +922,10 @@ class Parser {
 				$dtValue = $this->textContent($dt);
 			}
 
+			if ($dtValue === false) {
+				return $dtValue;
+			}
+
 			// if the dtValue is not just YYYY-MM-DD
 			if (!preg_match('/^(\d{4}-\d{2}-\d{2})$/', $dtValue)) {
 				// no implied timezone set and dtValue has a TZ offset, use un-normalized TZ offset
@@ -943,7 +947,7 @@ class Parser {
 		 * if $dtValue is only a time and there are recently parsed dates,
 		 * form the full date-time using the most recently parsed dt- value
 		 */
-		if ((preg_match('/^\d{1,2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2}?)?$/', $dtValue) or preg_match('/^\d{1,2}(:\d{2})?(:\d{2})?[ap]\.?m\.?$/i', $dtValue)) && !empty($dates)) {
+		if ($dtValue !== false && (preg_match('/^\d{1,2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2}?)?$/', $dtValue) or preg_match('/^\d{1,2}(:\d{2})?(:\d{2})?[ap]\.?m\.?$/i', $dtValue)) && !empty($dates)) {
 			$timezoneOffset = normalizeTimezoneOffset($dtValue);
 			if (!$impliedTimezone && $timezoneOffset) {
 				$impliedTimezone = $timezoneOffset;
