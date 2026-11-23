@@ -239,7 +239,7 @@ function nestedMfPropertyNamesFromClass(string $class): array {
 	}
 
 	foreach ($propertyNames as $property => $prefixes) {
-		$propertyNames[$property] = array_unique($prefixes);
+		$propertyNames[$property] = array_values(array_unique($prefixes));
 	}
 
 	return $propertyNames;
