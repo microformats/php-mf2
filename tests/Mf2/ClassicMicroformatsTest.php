@@ -839,7 +839,6 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
-		$this->assertArrayHasKey('type', $output['items'][0]);
 		$this->assertEquals('h-feed', $output['items'][0]['type'][0]);
 		$this->assertArrayHasKey('children', $output['items'][0]);
 		$this->assertArrayHasKey('type', $output['items'][0]['children'][0]);

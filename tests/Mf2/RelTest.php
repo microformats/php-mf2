@@ -142,14 +142,12 @@ class RelTest extends TestCase {
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
-	$this->assertArrayHasKey('rels', $output);
 	$this->assertCount(4, $output['rels']);
 	$this->assertArrayHasKey('author', $output['rels']);
 	$this->assertArrayHasKey('in-reply-to', $output['rels']);
 	$this->assertArrayHasKey('alternate', $output['rels']);
 	$this->assertArrayHasKey('home', $output['rels']);
 
-	$this->assertArrayHasKey('rel-urls', $output);
 	$this->assertCount(6, $output['rel-urls']);
 	$this->assertArrayHasKey('https://example.com/a', $output['rel-urls']);
 	$this->assertArrayHasKey('https://example.com/b', $output['rel-urls']);

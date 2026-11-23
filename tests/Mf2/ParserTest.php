@@ -201,7 +201,6 @@ class ParserTest extends TestCase {
 
 		$output = $parser->parse();
 
-		$this->assertArrayHasKey('rels', $output);
 		$this->assertEquals('https://example.com', $output['rels']['author'][0]);
 	}
 
