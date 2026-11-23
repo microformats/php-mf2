@@ -178,7 +178,7 @@ function unicodeToHtmlEntities(string $input): string {
 		0x80, 0x1FFFFF, 0, 0x10FFFF,
 	];
 
-	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input), true);
+	return mb_encode_numericentity($input, $convmap, mb_detect_encoding($input) ?: mb_internal_encoding(), true);
 }
 
 function unicodeTrim(string $str): string {
