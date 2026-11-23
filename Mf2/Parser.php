@@ -448,7 +448,7 @@ class Parser {
 		$url = $url ?? '';
 		$baseurl = $url;
 		/** @var DOMElement $base */
-		foreach ($this->xpath->query('//base[@href]') as $base) {
+		foreach ($this->xpath->query('//base[@href]') ?: [] as $base) {
 			$baseElementUrl = $base->getAttribute('href');
 
 			if (parse_url($baseElementUrl, PHP_URL_SCHEME) === null) {
@@ -467,7 +467,7 @@ class Parser {
 
 		// Ignore <template> elements as per the HTML5 spec
 		/** @var DOMElement $templateEl */
-		foreach ($this->xpath->query('//template') as $templateEl) {
+		foreach ($this->xpath->query('//template') ?: [] as $templateEl) {
 			$templateEl->parentNode->removeChild($templateEl);
 		}
 
@@ -521,7 +521,7 @@ class Parser {
 	}
 
 	private function resolveChildUrls(DOMElement $el): void {
-		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el);
+		$hyperlinkChildren = $this->xpath->query('.//*[@src or @href or @data]', $el) ?: [];
 
 		/** @var DOMElement $child */
 		foreach ($hyperlinkChildren as $child) {
@@ -617,7 +617,7 @@ class Parser {
 		if ($el->tagName == 'html') {
 			// we're at the <html> element and no lang; check <meta> http-equiv Content-Language
 			/** @var DOMElement $node */
-			foreach ( $this->xpath->query('.//meta[@http-equiv]') as $node )
+			foreach ( $this->xpath->query('.//meta[@http-equiv]') ?: [] as $node )
 			{
 				if ($node->hasAttribute('http-equiv') && $node->hasAttribute('content') && strtolower($node->getAttribute('http-equiv')) == 'content-language') {
 					return unicodeTrim($node->getAttribute('content'));
@@ -1044,7 +1044,7 @@ class Parser {
 
 		// Handle p-*
 		/** @var DOMElement $p */
-		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)) ," p-")]', $e) as $p) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)) ," p-")]', $e) ?: [] as $p) {
 			// element is already parsed
 			if ($this->isElementParsed($p, 'p')) {
 				continue;
@@ -1070,7 +1070,7 @@ class Parser {
 
 		// Handle u-*
 		/** @var DOMElement $u */
-		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," u-")]', $e) as $u) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," u-")]', $e) ?: [] as $u) {
 			// element is already parsed
 			if ($this->isElementParsed($u, 'u')) {
 				continue;
@@ -1096,7 +1096,7 @@ class Parser {
 
 		// Handle dt-*
 		/** @var DOMElement $dt */
-		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)), " dt-")]', $e) as $dt) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class)), " dt-")]', $e) ?: [] as $dt) {
 			// element is already parsed
 			if ($this->isElementParsed($dt, 'dt')) {
 				continue;
@@ -1132,7 +1132,7 @@ class Parser {
 
 		// Handle e-*
 		/** @var DOMElement $em */
-		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," e-")]', $e) as $em) {
+		foreach ($this->xpath->query('.//*[contains(concat(" ", normalize-space(@class))," e-")]', $e) ?: [] as $em) {
 			// element is already parsed
 			if ($this->isElementParsed($em, 'e')) {
 				continue;
@@ -1357,7 +1357,7 @@ class Parser {
 
 		// Iterate through all a, area and link elements with rel attributes
 		/** @var DOMElement $hyperlink */
-		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') as $hyperlink) {
+		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') ?: [] as $hyperlink) {
 			// Parse the set of rels for the current link
 			$linkRels = array_unique(array_filter(preg_split('/[\t\n\f\r ]/', $hyperlink->getAttribute('rel'))));
 			if (count($linkRels) === 0) {
@@ -1968,7 +1968,7 @@ class Parser {
 		// replace all roots
 		foreach ($this->classicRootMap as $old => $new) {
 			/** @var DOMElement $el */
-			foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $new . ' "))]') as $el) {
+			foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $new . ' "))]') ?: [] as $el) {
 				$el->setAttribute('class', $el->getAttribute('class') . ' ' . $new);
 			}
 		}
@@ -1977,7 +1977,7 @@ class Parser {
 			$newRoot = $this->classicRootMap[$oldRoot];
 			foreach ($properties as $old => $data) {
 				/** @var DOMElement $el */
-				foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $data['replace'] . ' "))]') as $el) {
+				foreach ($xp->query('//*[contains(concat(" ", normalize-space(@class), " "), " ' . $oldRoot . ' ")]//*[contains(concat(" ", normalize-space(@class), " "), " ' . $old . ' ") and not(contains(concat(" ", normalize-space(@class), " "), " ' . $data['replace'] . ' "))]') ?: [] as $el) {
 					$el->setAttribute('class', $el->getAttribute('class') . ' ' . $data['replace']);
 				}
 			}
