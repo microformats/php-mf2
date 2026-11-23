@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
@@ -7,16 +9,20 @@ class PlainTextTest extends TestCase {
 	/**
 	 * @dataProvider aaronpkExpectations
 	 */
-	public function testAaronpkExpectations($input, $pName, $eValue, $eHtml) {
+	public function testAaronpkExpectations(string $input, string $pName, string $eValue, string $eHtml): void {
 		$parser = new \Mf2\Parser($input);
 		$output = $parser->parse();
 		$entryProperties = $output['items'][0]['properties'];
+		$this->assertIsArray($entryProperties);
 		$this->assertEquals($pName, $entryProperties['name'][0]);
 		$this->assertEquals($eValue, $entryProperties['content'][0]['value']);
 		$this->assertEquals($eHtml, $entryProperties['content'][0]['html']);
 	}
 
-	public function aaronpkExpectations() {
+	/**
+	 * @return array<int, array{string, string, string, string}>
+	 */
+	public function aaronpkExpectations(): array {
 		return array(
 			1 => array(
 				"<div class=\"h-entry\">\n  <div class=\"e-content p-name\"><p>Hello World</p></div>\n</div>",
