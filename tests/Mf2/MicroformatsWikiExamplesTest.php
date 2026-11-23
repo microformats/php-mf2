@@ -4,6 +4,8 @@
  * Tests of the parsing methods within mf2\Parser
  */
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
@@ -25,7 +27,7 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		date_default_timezone_set('Europe/London');
 	}
 
-	public function testHandlesEmptyStringsCorrectly() {
+	public function testHandlesEmptyStringsCorrectly(): void {
 		$input = '';
 		$expected = '{
 	"rels": {},
@@ -36,10 +38,10 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
-	public function testHandlesNullCorrectly() {
+	public function testHandlesNullCorrectly(): void {
 		$input = null;
 		$expected = '{
 	"rels": {},
@@ -51,13 +53,13 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser->jsonMode = true;
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats-2
 	 */
-	public function testSimplePersonReference() {
+	public function testSimplePersonReference(): void {
 		$input = '<span class="h-card">Frances Berriman</span>';
 		$expected = '{
 	"rels": {},
@@ -72,13 +74,13 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats-2
 	 */
-	public function testSimpleHyperlinkedPersonReference() {
+	public function testSimpleHyperlinkedPersonReference(): void {
 		$input = '<a class="h-card" href="http://benward.me">Ben Ward</a>';
 		$expected = '{
 	"rels": {},
@@ -94,13 +96,13 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats-2-implied-properties
 	 */
-	public function testSimplePersonImage() {
+	public function testSimplePersonImage(): void {
 		$input = '<img class="h-card" src="http://example.com/pic.jpg" alt="Chris Messina" />';
 		// Added root items key
 		$expected = '{
@@ -119,13 +121,13 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats-2-implied-properties
 	 */
-	public function testHyperlinkedImageNameAndPhotoProperties() {
+	public function testHyperlinkedImageNameAndPhotoProperties(): void {
 		$input = '<a class="h-card" href="http://rohit.khare.org/">
  <img alt="Rohit Khare"
 	  src="https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg" />
@@ -148,13 +150,13 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats-2
 	 */
-	public function testMoreDetailedPerson() {
+	public function testMoreDetailedPerson(): void {
 		$input = '<div class="h-card">
   <img class="u-photo" alt="photo of Mitchell"
 	   src="https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg"/>
@@ -201,6 +203,6 @@ class MicroformatsWikiExamplesTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 }

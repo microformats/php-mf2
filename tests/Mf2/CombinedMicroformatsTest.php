@@ -1,5 +1,7 @@
 <?php
 
+declare (strict_types=1);
+
 namespace Mf2\Parser\Test;
 
 use Mf2\Parser;
@@ -26,7 +28,7 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHEventLocationHCard() {
+	public function testHEventLocationHCard(): void {
 		// Note: The venue for IWC 2012 no longer exists so we switched
 		// this to Powell's since it's a long-term Portland institution
 		$input = '<div class="h-event">
@@ -69,13 +71,13 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardOrgPOrg() {
+	public function testHCardOrgPOrg(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -98,13 +100,13 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardOrgHCard() {
+	public function testHCardOrgHCard(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -136,13 +138,13 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardPOrgHCardHOrg() {
+	public function testHCardPOrgHCardHOrg(): void {
 		$input = '<div class="h-card">
   <a class="p-name u-url"
 	 href="http://blog.lizardwrangler.com/"
@@ -174,13 +176,13 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
 	 * From https://microformats.org/wiki/microformats2#combining_microformats
 	 */
-	public function testHCardChildHCard() {
+	public function testHCardChildHCard(): void {
 		$input = '<div class="h-card">
 	<a class="p-name u-url"
 	href="http://blog.lizardwrangler.com/">
@@ -210,7 +212,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$parser = new Parser($input, '', true);
 		$output = $parser->parse();
 
-		$this->assertJsonStringEqualsJsonString(json_encode($output), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($output, \JSON_THROW_ON_ERROR), $expected);
 	}
 
 	/**
@@ -219,10 +221,11 @@ class CombinedMicroformatsTest extends TestCase {
 	 * This was occurring because mfPropertyNamesFromClass was only ever returning the first property name
 	 * rather than all of them.
 	 */
-	public function testNestedMicroformatUnderMultipleProperties() {
+	public function testNestedMicroformatUnderMultipleProperties(): void {
 		$input = '<article class="h-entry"><div class="p-like-of p-in-reply-to h-cite"></div></article>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertCount(1, $mf['items'][0]['properties']['like-of']);
 		$this->assertCount(1, $mf['items'][0]['properties']['in-reply-to']);
 	}
@@ -232,10 +235,11 @@ class CombinedMicroformatsTest extends TestCase {
 	 *
 	 * @see https://github.com/indieweb/php-mf2/issues/64
 	 */
-	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey() {
+	public function testMicroformatsNestedUnderEPropertyClassnamesRetainHtmlKey(): void {
 		$input = '<div class="h-entry"><div class="h-card e-content"><p>Hello</p></div></div>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $mf['items'][0]['properties']['content'][0]);
 		$this->assertEquals($mf['items'][0]['properties']['content'][0]['value'], 'Hello');
 		$this->assertArrayHasKey('html', $mf['items'][0]['properties']['content'][0]);
@@ -245,13 +249,14 @@ class CombinedMicroformatsTest extends TestCase {
 	/**
 	 * Test microformats nested under u-* property classnames derive value: key from parsing as u-*
 	 */
-	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly() {
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueCorrectly(): void {
 		$input = '<div class="h-entry"><img class="u-url h-card" alt="This should not be the value" src="This should be the value" /></div>';
 		$mf = Mf2\parse($input);
-		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0]));
+		$this->assertIsArray($mf['items'][0]['properties']);
+		$this->assertEquals($mf['items'][0]['properties']['url'][0]['value'], 'This should be the value', json_encode($mf['items'][0]['properties']['url'][0], \JSON_THROW_ON_ERROR));
 	}
 
-	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL() {
+	public function testMicroformatsNestedUnderUPropertyClassnamesDeriveValueFromURL(): void {
 		$input = '<div class="h-entry">
 		  <h1 class="p-name">Name</h1>
 		  <p class="e-content">Hello World</p>
@@ -297,15 +302,17 @@ class CombinedMicroformatsTest extends TestCase {
 	  }';
 		$mf = Mf2\parse($input);
 
-		$this->assertJsonStringEqualsJsonString(json_encode($mf), $expected);
+		$this->assertJsonStringEqualsJsonString(json_encode($mf, \JSON_THROW_ON_ERROR), $expected);
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['value'], 'https://example.com/post1234');
 		$this->assertEquals($mf['items'][0]['properties']['comment'][0]['properties']['author'][0]['value'], 'https://jane.example.com/');
 	}
 
-	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName() {
+	public function testMicroformatsNestedUnderPPropertyClassnamesDeriveValueFromFirstPName(): void {
 		$input = '<div class="h-entry"><div class="p-author h-card">This post was written by <span class="p-name">Zoe</span>.</div></div>';
 		$mf = Mf2\parse($input);
 
+		$this->assertIsArray($mf['items'][0]['properties']);
 		$this->assertEquals($mf['items'][0]['properties']['author'][0]['value'], 'Zoe');
 	}
 
@@ -314,7 +321,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 * @see https://github.com/indieweb/php-mf2/issues/98
 	 * @see https://github.com/microformats/tests/issues/58
 	 */
-	public function testNoValueForNestedMicroformatWithoutProperty() {
+	public function testNoValueForNestedMicroformatWithoutProperty(): void {
 		$input = '<div class="h-card" ><a class="h-card" href="jane.html">Jane Doe</a><p></p></div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -330,7 +337,7 @@ class CombinedMicroformatsTest extends TestCase {
 	 * I fixed that but then wanted to ensure it worked beyond 1-level deep. This example
 	 * is contrived, but lets me test to confirm 'children' is set correctly. - Gregor Morrill
 	 */
-	public function testNestedMf1() {
+	public function testNestedMf1(): void {
 		$input = '<div class="hentry"> <div class="vcard"><span class="fn">Jane Doe</span> and <div class="vcard"><span class="fn">John Doe</span></div> </div> </div>';
 		$parser = new Parser($input);
 		$output = $parser->parse();
@@ -345,7 +352,7 @@ class CombinedMicroformatsTest extends TestCase {
 		$this->assertEquals('John Doe', $child_mf['children'][0]['properties']['name'][0]);
 	}
 
-  public function testNoUrlFromRelOnMf2() {
+  public function testNoUrlFromRelOnMf2(): void {
 	$input = <<< END
 <div class="h-entry">
 <p> <a href="/article" rel="bookmark" class="p-name">Title of Post</a> </p>
@@ -355,6 +362,7 @@ END;
 	$parser = new Parser($input);
 	$output = $parser->parse();
 
+	$this->assertIsArray($output['items'][0]['properties']);
 	$this->assertArrayHasKey('name', $output['items'][0]['properties']);
 	$this->assertArrayHasKey('content', $output['items'][0]['properties']);
 	$this->assertArrayNotHasKey('url', $output['items'][0]['properties']);
@@ -365,7 +373,7 @@ END;
 	 * Whitespace cleaned up for easier test assertion
 	 * @see https://github.com/indieweb/php-mf2/issues/151
 	 */
-	public function testNestedValuePProperty() {
+	public function testNestedValuePProperty(): void {
 		$input = <<< END
 <div class="h-entry">
 <span class="p-location h-adr">
@@ -378,6 +386,7 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $output['items'][0]['properties']['location'][0]);
 		$this->assertEquals('Portland, Oregon • 44°F', $output['items'][0]['properties']['location'][0]['value']);
 	}
@@ -385,7 +394,7 @@ END;
 	/**
 	 * @see https://github.com/indieweb/php-mf2/issues/151
 	 */
-	public function testNestedValueDTProperty() {
+	public function testNestedValueDTProperty(): void {
 		$input = <<< END
 <div class="h-entry">
 	<div class="dt-acme h-acme-object">1997-12-12</div>
@@ -394,6 +403,7 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayHasKey('value', $output['items'][0]['properties']['acme'][0]);
 		$this->assertEquals('1997-12-12', $output['items'][0]['properties']['acme'][0]['value']);
 	}
@@ -402,7 +412,7 @@ END;
 	 * rel=tag should not be upgraded within microformats2
 	 * @see https://github.com/indieweb/php-mf2/issues/157
 	 */
-	public function testMf2DoesNotParseRelTag() {
+	public function testMf2DoesNotParseRelTag(): void {
 		$input = '<div class="h-entry">
 <a rel="tag" href="/tags/tests">Tests</a>
 </div>
@@ -414,7 +424,9 @@ END;
 		$parser = new Parser($input);
 		$output = $parser->parse();
 
+		$this->assertIsArray($output['items'][0]['properties']);
 		$this->assertArrayNotHasKey('category', $output['items'][0]['properties']);
+		$this->assertIsArray($output['items'][1]['properties']);
 		$this->assertArrayNotHasKey('category', $output['items'][1]['properties']);
 	}
 
@@ -422,18 +434,18 @@ END;
 	 * JSON-mode should return an empty stdClass when a microformat has no properties.
 	 * @see https://github.com/indieweb/php-mf2/issues/171
 	 */
-	public function testEmptyPropertiesObjectInJSONMode() {
+	public function testEmptyPropertiesObjectInJSONMode(): void {
 		$input = '<div class="h-feed"><div class="h-entry"></div></div>';
 		// Try in JSON-mode: expect the raw PHP to be an stdClass instance that serializes to an empty object.
 		$parser = new Parser($input, null, true);
 		$output = $parser->parse();
 		$this->assertInstanceOf('\stdClass', $output['items'][0]['properties']);
-		$this->assertSame('{}', json_encode($output['items'][0]['properties']));
+		$this->assertSame('{}', json_encode($output['items'][0]['properties'], \JSON_THROW_ON_ERROR));
 		// Repeat in non-JSON-mode: expect the raw PHP to be an array. Check that its serialization is not what we need for mf2 JSON.
 		$parser = new Parser($input, null, false);
 		$output = $parser->parse();
 		$this->assertIsArray($output['items'][0]['properties']);
-		$this->assertSame('[]', json_encode($output['items'][0]['properties']));
+		$this->assertSame('[]', json_encode($output['items'][0]['properties'], \JSON_THROW_ON_ERROR));
 	}
 
 }
