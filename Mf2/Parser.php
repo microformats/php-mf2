@@ -989,7 +989,7 @@ class Parser {
 			while ($e->hasChildNodes()) {
 				$innerNodes->appendChild($e->firstChild);
 			}
-			$html = $e->ownerDocument->saveHtml($innerNodes);
+			$html = $e->ownerDocument->saveHtml($innerNodes) ?: '';
 			// Put the nodes back in place.
 			if ($innerNodes->hasChildNodes()) {
 				$e->appendChild($innerNodes);
@@ -1367,7 +1367,7 @@ class Parser {
 		/** @var DOMElement $hyperlink */
 		foreach ($this->xpath->query('//a[@rel and @href] | //link[@rel and @href] | //area[@rel and @href]') ?: [] as $hyperlink) {
 			// Parse the set of rels for the current link
-			$linkRels = array_unique(array_filter(preg_split('/[\t\n\f\r ]/', $hyperlink->getAttribute('rel'))));
+			$linkRels = array_unique(array_filter(preg_split('/[\t\n\f\r ]/', $hyperlink->getAttribute('rel')) ?: []));
 			if (count($linkRels) === 0) {
 				continue;
 			}
@@ -1465,7 +1465,11 @@ class Parser {
 
 		if ( $rel_tag->length ) {
 			foreach ( $rel_tag as $tempEl ) {
-				$path = trim(parse_url($tempEl->getAttribute('href'), PHP_URL_PATH), ' /');
+				$path = parse_url($tempEl->getAttribute('href'), PHP_URL_PATH);
+				if (!is_string($path)) {
+					continue;
+				}
+				$path = trim($path, ' /');
 				$segments = explode('/', $path);
 				$value = array_pop($segments);
 
@@ -2419,7 +2423,7 @@ function parseUriToComponents(string $uri): array {
 		'fragment' => null
 	);
 
-	$u = @parse_url($uri);
+	$u = @parse_url($uri) ?: [];
 
 	if(array_key_exists('scheme', $u))
 		$result['scheme'] = $u['scheme'];
