@@ -145,6 +145,7 @@ function fetch(string $url, bool $convertClassic = true, array &$curlInfo = []):
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 		'Accept: text/html'
 	));
+	/** @var string|false $html For PHPStan: We are enabling CURLOPT_RETURNTRANSFER so true cannot occur. */
 	$html = curl_exec($ch);
 
 	if ($html === false) {
@@ -156,13 +157,13 @@ function fetch(string $url, bool $convertClassic = true, array &$curlInfo = []):
 		curl_close($ch);
 	}
 
-	if (strpos(strtolower($info['content_type']), 'html') === false) {
+	if (strpos(strtolower($info['content_type'] ?? ''), 'html') === false) {
 		// The content was not delivered as HTML, do not attempt to parse it.
 		return null;
 	}
 
 	# ensure the final URL is used to resolve relative URLs
-	$url = $info['url'];
+	$url = $info['url'] ?? $url;
 
 	return parse($html, $url, $convertClassic);
 }
@@ -197,7 +198,7 @@ function unicodeTrim(string $str): string {
 function mfNamesFromClass(string $class, string $prefix = 'h-'): array {
 	$class = str_replace(array(' ', '	', "\n"), ' ', $class);
 	$classes = explode(' ', $class);
-	$classes = preg_grep('#^(h|p|u|dt|e)-([a-z0-9]+-)?[a-z]+(-[a-z]+)*$#', $classes);
+	$classes = preg_grep('#^(h|p|u|dt|e)-([a-z0-9]+-)?[a-z]+(-[a-z]+)*$#', $classes) ?: [];
 	$matches = array();
 
 	foreach ($classes as $classname) {
@@ -317,6 +318,9 @@ function normalizeOrdinalDate(string $dtValue): string {
 	$day = intval($day);
 	if ($day < 367 && $day > 0) {
 		$date = \DateTime::createFromFormat('Y-z', $dtValue);
+		if ($date === false) {
+			return '';
+		}
 		$date->modify('-1 day'); # 'z' format is zero-based so need to adjust
 		if ($date->format('Y') === $year) {
 			return $date->format('Y-m-d');
