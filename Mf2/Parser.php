@@ -182,7 +182,7 @@ function unicodeToHtmlEntities(string $input): string {
 }
 
 function unicodeTrim(string $str): string {
-	return preg_replace('/^\s+|\s+$/u', '', $str);
+	return preg_replace('/^\s+|\s+$/u', '', $str) ?? '';
 }
 
 /**
@@ -437,7 +437,7 @@ class Parser {
 				$doc = new DOMDocument();
 				@$doc->loadHTML(unicodeToHtmlEntities($input), \LIBXML_NOWARNING);
 			}
-		} elseif (is_a($input, 'DOMDocument')) {
+		} elseif ($input instanceof DOMDocument) {
 			$doc = clone $input;
 		} else {
 			$doc = new DOMDocument();
@@ -472,6 +472,9 @@ class Parser {
 		// Ignore <template> elements as per the HTML5 spec
 		/** @var DOMElement $templateEl */
 		foreach ($this->xpath->query('//template') ?: [] as $templateEl) {
+			if ($templateEl->parentNode === null) {
+				continue;
+			}
 			$templateEl->parentNode->removeChild($templateEl);
 		}
 
@@ -550,7 +553,7 @@ class Parser {
 						'/(^[\t\n\f\r ]+| +(?=\n)|(?<=\n) +| +(?= )|[\t\n\f\r ]+$)/',
 						'',
 						$this->elementToString($element, $implied)
-				);
+				) ?? '';
 	}
 	private function elementToString(DOMElement $input, bool $implied = false): string
 	{
@@ -791,21 +794,21 @@ class Parser {
 				}
 				elseif ($e->tagName == 'data') {
 					// Use @value, otherwise innertext
-					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->nodeValue);
+					$value = $e->hasAttribute('value') ? $e->getAttribute('value') : unicodeTrim($e->nodeValue ?? '');
 					if (!empty($value)) {
 						$dateParts[] = $value;
 					}
 				}
 				elseif ($e->tagName == 'abbr') {
 					// Use @title, otherwise innertext
-					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->nodeValue);
+					$title = $e->hasAttribute('title') ? $e->getAttribute('title') : unicodeTrim($e->nodeValue ?? '');
 					if (!empty($title)) {
 						$dateParts[] = $title;
 					}
 				}
 				elseif ($e->tagName == 'del' or $e->tagName == 'ins' or $e->tagName == 'time') {
 					// Use @datetime if available, otherwise innertext
-					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->nodeValue);
+					$dtAttr = ($e->hasAttribute('datetime')) ? $e->getAttribute('datetime') : unicodeTrim($e->nodeValue ?? '');
 					if (!empty($dtAttr)) {
 						$dateParts[] = $dtAttr;
 					}
@@ -978,6 +981,10 @@ class Parser {
 		// TODO: as it is this is not relative to only children, make this .// and rerun tests
 		$this->resolveChildUrls($e);
 
+		if ($e->ownerDocument === null) {
+			throw new Exception('Missing ownerDocument');
+		}
+
 		// Temporarily move all descendants into a separate DocumentFragment.
 		// This way we can DOMDocument::saveHTML on the entire collection at once.
 		// Running DOMDocument::saveHTML per node may add whitespace that isn't in source.
@@ -986,7 +993,7 @@ class Parser {
 		$innerNodes = $e->ownerDocument->createDocumentFragment();
 		$html = '';
 		if ($innerNodes !== false) {
-			while ($e->hasChildNodes()) {
+			while ($e->firstChild !== null) {
 				$innerNodes->appendChild($e->firstChild);
 			}
 			$html = $e->ownerDocument->saveHtml($innerNodes) ?: '';
@@ -1195,6 +1202,7 @@ class Parser {
 					$nameElement = $this->xpath->query($xpath, $e);
 					if ($nameElement !== false && $nameElement->length === 1) {
 						$nameElement = $nameElement->item(0);
+						\assert($nameElement !== null); // For PHPStan: already ensured by length check above.
 						if ($nameElement->tagName === 'img' || $nameElement->tagName === 'area') {
 							$name = $nameElement->getAttribute('alt');
 						} else {
@@ -1239,6 +1247,7 @@ class Parser {
 					/** @var DOMNodeList<DOMElement>|false $url */
 					$url = $this->xpath->query($xpath, $e);
 					if ($url !== false && $url->length === 1) {
+						\assert($url->item(0) !== null); // For PHPStan: already ensured by length check above.
 						$return['url'][] = $this->resolveUrl($url->item(0)->getAttribute('href'));
 						break;
 					}
@@ -1316,6 +1325,7 @@ class Parser {
 
 			if ($els !== false && $els->length === 1) {
 				$el = $els->item(0);
+				\assert($el !== null); // For PHPStan: already ensured by length check above.
 				if ($el->tagName == 'img') {
 					$return = $this->parseImg($el);
 					return $this->resolveImg($return);
